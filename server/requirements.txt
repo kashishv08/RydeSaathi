@@ -1,0 +1,8 @@
+Django==5.0.6
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+psycopg2-binary==2.9.9 #translator between Python/Django application and the PostgreSQL database.
+redis==5.0.4
+django-cors-headers==4.3.1
+python-decouple==3.8 # helps you read environment variables from a .env file.
+Pillow==10.3.0
