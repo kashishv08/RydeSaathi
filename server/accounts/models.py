@@ -9,6 +9,7 @@ class User(AbstractUser):
         DRIVER = "DRIVER","Driver"
 
     id =  models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    phone = models.IntegerField(max_length=10, blank=True, null=True)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=6, choices=Role.choices, default=Role.RIDER)
     rating_avg = models.DecimalField(max_digits=2, decimal_places=1 , default=5.0)
