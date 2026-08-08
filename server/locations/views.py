@@ -12,5 +12,11 @@ class DriverPingView(APIView):
         profile = request.user.driverprofile
         lat = request.data.get("lat")
         lng = request.data.get("lng")
-        update_driver_location(lat,lng,profile.user.id,profile.current_city)
+        city = request.data.get("city")
+
+        if profile.current_city != city:
+            profile.current_city = city
+            profile.save(update_fields=["current_city"])
+
+        update_driver_location(lat, lng, profile.user.id, city)
         return Response(status=status.HTTP_200_OK)

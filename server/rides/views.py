@@ -2,13 +2,14 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status as  http_status
 from rest_framework.views import APIView
-from .permission import IsRider
+from .permission import IsRider, IsDriver
 from .serializers import RideCreateSerializer, RideSerializer, RideTransitionSerializer, RideDriverAssignSerializer
 from rest_framework.response import Response
 from .models import Ride
 from rest_framework.exceptions import PermissionDenied
 from .services import transition_ride, assign_driver
 from locations.routing import engine
+from .matching import find_and_offer_driver, confirm_offer_accept
 
 # Create your views here.
 class RideCreateView(APIView):
@@ -25,6 +26,9 @@ class RideCreateView(APIView):
         created_ride.route_duration_min = route["duration_min"]
 
         created_ride.save(update_fields=["route_geometry", "route_distance_km", "route_duration_min"])
+        
+        find_and_offer_driver(created_ride)
+
         ride = RideSerializer(created_ride)
         return Response(ride.data, status=http_status.HTTP_201_CREATED)
 
@@ -58,5 +62,20 @@ class RideDriverAssignView(APIView):
             ride = assign_driver(ride_id, serializer.validated_data["driver_id"])
         except (ValidationError, Ride.DoesNotExist) as e:
             return Response({"error": e.message}, status=http_status.HTTP_400_BAD_REQUEST)
-
         return Response(RideSerializer(ride).data)
+
+class RideDriverAccept(APIView):
+    permission_classes = [IsDriver]
+
+    def post(self, request, ride_id):
+        try:
+            confirm_offer_accept(str(request.user.id), str(ride_id))
+        except ValidationError as e:
+            return Response(
+                {"error": e.message if hasattr(e, "message") else str(e)},
+                status=http_status.HTTP_400_BAD_REQUEST
+            )
+
+        ride = get_object_or_404(Ride, pk=ride_id)
+        return Response(RideSerializer(ride).data)
+

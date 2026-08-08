@@ -24,3 +24,25 @@ def get_nearby_driver_ids(city:str, lng:float, lat:float, radius: float=3, count
         count=count,
         sort="ASC",
     )
+
+def get_drivers_locations(city, drivers):
+    return redis_client.geopos(_key(city), *[str(d.user.id) for d in drivers])
+
+def set_driver_offer_lock(driver_id, ride_id):
+    lock_key = f"driver:offer:{driver_id}"
+    return redis_client.set(lock_key, str(ride_id),nx=True, ex=15)
+
+def set_ride_offer_batch_lock(ride_id, driver_ids):
+    lock_key = f"ride:offer_batch:{ride_id}"
+    return redis_client.set(lock_key, ",".join(driver_ids), ex=15)
+
+def get_ride_from_key(driver_id):
+    key = f"driver:offer:{driver_id}"
+    return redis_client.get(key)
+
+def delete_key(key):
+    redis_client.delete(key)
+
+def get_drivers_from_key(ride_id):
+    key = f"ride:offer_batch:{ride_id}"  
+    return redis_client.get(key)
