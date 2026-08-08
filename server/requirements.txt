@@ -6,3 +6,5 @@ redis==5.0.4
 django-cors-headers==4.3.1
 python-decouple==3.8 # helps you read environment variables from a .env file.
 Pillow==10.3.0
+haversine==2.8.1
+requests==2.31.0

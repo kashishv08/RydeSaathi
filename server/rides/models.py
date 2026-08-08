@@ -24,6 +24,9 @@ class Ride(models.Model):
 
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     city = models.CharField(max_length=255, db_index=True)
+    route_geometry = models.JSONField(null=True, blank=True)
+    route_distance_km = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    route_duration_min = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
 
     requested_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(null=True, blank=True)

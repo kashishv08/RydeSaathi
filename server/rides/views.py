@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from .models import Ride
 from rest_framework.exceptions import PermissionDenied
 from .services import transition_ride, assign_driver
+from locations.routing import engine
 
 # Create your views here.
 class RideCreateView(APIView):
@@ -16,9 +17,15 @@ class RideCreateView(APIView):
     def post(self, request):
         serializer = RideCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        update_ride = serializer.save(rider=request.user)
-        ride = RideSerializer(update_ride)
-        print(ride)
+        created_ride = serializer.save(rider=request.user)
+
+        route = engine.get_route(float(created_ride.pickup_lat), float(created_ride.pickup_lng), float(created_ride.drop_lat), float(created_ride.drop_lng))
+        created_ride.route_geometry = route["geometry"]
+        created_ride.route_distance_km = route["distance_km"]
+        created_ride.route_duration_min = route["duration_min"]
+
+        created_ride.save(update_fields=["route_geometry", "route_distance_km", "route_duration_min"])
+        ride = RideSerializer(created_ride)
         return Response(ride.data, status=http_status.HTTP_201_CREATED)
 
 

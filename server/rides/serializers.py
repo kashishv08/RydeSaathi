@@ -16,7 +16,7 @@ class RideSerializer(serializers.ModelSerializer):
             "pickup_lat", "pickup_lng", "drop_lat", "drop_lng",
             "amount", "city",
             "requested_at", "accepted_at", "arrived_at",
-            "started_at", "completed_at", "cancelled_at",
+            "started_at", "completed_at", "cancelled_at","route_geometry", "route_distance_km", "route_duration_min",
         ]
 
 class RideTransitionSerializer(serializers.Serializer):
