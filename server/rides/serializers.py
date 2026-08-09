@@ -14,7 +14,7 @@ class RideSerializer(serializers.ModelSerializer):
         fields = [
             "id", "status", "rider_email", "driver_email",
             "pickup_lat", "pickup_lng", "drop_lat", "drop_lng",
-            "amount", "city",
+            "amount", "city","pickup_address", "drop_address",
             "requested_at", "accepted_at", "arrived_at",
             "started_at", "completed_at", "cancelled_at","route_geometry", "route_distance_km", "route_duration_min",
         ]

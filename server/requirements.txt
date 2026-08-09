@@ -11,3 +11,4 @@ requests==2.31.0
 channels==4.0.0
 channels-redis==4.1.0
 daphne==4.0.0
+geopy==2.5.0

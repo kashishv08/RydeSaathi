@@ -6,6 +6,9 @@ import redis
 from django.conf import settings
 from locations.routing import engine
 from .services import assign_driver
+from .notify import notify_driver_of_offer, notify_driver_offer_cancelled
+import logging
+logger = logging.getLogger(__name__)
 
 BATCH_SIZE = 5
 
@@ -49,13 +52,15 @@ def find_and_offer_driver(ride: Ride) -> list[str]:
         logger.warning(f"[MATCH] Lock for driver={driverprofile.user_id} ETA={ETA}min → locked={locked}")
         if locked:
             offered.append(str(driverprofile.user_id))
-            notify_driver_of_offer(driverprofile.user_id, ride.id)
+            notify_driver_of_offer(driverprofile.user_id, ride.id, ride)
 
     if offered:
         set_ride_offer_batch_lock(ride.id, offered)
         logger.warning(f"[MATCH] Batch lock set for ride={ride.id}, offered to: {offered}")
     return offered
-def confirm_offer_accept(driver_id, ride_id):
+
+    
+def confirm_offer_accept(driver_id, ride_id, ride):
     offered_ride = get_ride_from_key(driver_id)
     if(offered_ride != ride_id):
         raise ValidationError("This offer has expired or is no longer valid")
@@ -66,9 +71,9 @@ def confirm_offer_accept(driver_id, ride_id):
         raise
 
     delete_key(f"driver:offer:{driver_id}")
-    _cancel_other_offers(ride_id, winner_driver_id=driver_id)
+    _cancel_other_offers(ride_id, ride, winner_driver_id=driver_id)
     
-def _cancel_other_offers(ride_id, winner_driver_id):
+def _cancel_other_offers(ride_id, ride, winner_driver_id):
     lose_drivers = get_drivers_from_key(ride_id)
     if not lose_drivers:
         return
@@ -76,17 +81,10 @@ def _cancel_other_offers(ride_id, winner_driver_id):
         if winner_driver_id == driver_id:
             continue
         delete_key(f"driver:offer:{driver_id}")
-        notify_driver_offer_cancelled(driver_id, ride_id)
+        notify_driver_offer_cancelled(driver_id, ride_id, ride)
 
     delete_key(f"ride:offer_batch:{ride_id}")
 
 
 
-import logging
-logger = logging.getLogger(__name__)
 
-def notify_driver_of_offer(driver_id, ride_id):
-    logger.warning(f"WEBSOCKET=====================Sending Ride Offer {ride_id} to Driver {driver_id}")
-
-def notify_driver_offer_cancelled(driver_id, ride_id):
-    logger.warning(f"WEBSOCKET=====================Cancelling Ride Offer {ride_id} for Driver {driver_id}")

@@ -12,6 +12,7 @@ class Ride(models.Model):
         COMPLETED = "COMPLETED", "Completed"
         CANCELLED = "CANCELLED", "Cancelled"
 
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     rider = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="ride_rider")
     driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="ride_driver")
@@ -21,6 +22,9 @@ class Ride(models.Model):
     pickup_lng = models.DecimalField(max_digits=9, decimal_places=6)
     drop_lat = models.DecimalField(max_digits=9, decimal_places=6)
     drop_lng = models.DecimalField(max_digits=9, decimal_places=6)
+
+    pickup_address = models.CharField(max_length=255, null=True, blank=True)
+    drop_address = models.CharField(max_length=255, null=True, blank=True)
 
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     city = models.CharField(max_length=255, db_index=True)

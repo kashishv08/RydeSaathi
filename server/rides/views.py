@@ -10,6 +10,8 @@ from rest_framework.exceptions import PermissionDenied
 from .services import transition_ride, assign_driver
 from locations.routing import engine
 from .matching import find_and_offer_driver, confirm_offer_accept
+from .services import get_location_from_coord
+from .fare import cal_fare
 
 # Create your views here.
 class RideCreateView(APIView):
@@ -25,7 +27,12 @@ class RideCreateView(APIView):
         created_ride.route_distance_km = route["distance_km"]
         created_ride.route_duration_min = route["duration_min"]
 
-        created_ride.save(update_fields=["route_geometry", "route_distance_km", "route_duration_min"])
+        pickup_address = get_location_from_coord(created_ride.pickup_lat, created_ride.pickup_lng)
+        drop_address = get_location_from_coord(created_ride.drop_lat, created_ride.drop_lng)
+        created_ride.pickup_address = pickup_address
+        created_ride.drop_address = drop_address
+
+        created_ride.save(update_fields=["drop_address","pickup_address","route_geometry", "route_distance_km", "route_duration_min"])
         
         find_and_offer_driver(created_ride)
 
@@ -68,14 +75,16 @@ class RideDriverAccept(APIView):
     permission_classes = [IsDriver]
 
     def post(self, request, ride_id):
+        ride = get_object_or_404(Ride, pk=ride_id)
+
         try:
-            confirm_offer_accept(str(request.user.id), str(ride_id))
+            confirm_offer_accept(str(request.user.id), str(ride_id), ride)
         except ValidationError as e:
             return Response(
                 {"error": e.message if hasattr(e, "message") else str(e)},
                 status=http_status.HTTP_400_BAD_REQUEST
             )
 
-        ride = get_object_or_404(Ride, pk=ride_id)
+        ride.refresh_from_db()
         return Response(RideSerializer(ride).data)
 

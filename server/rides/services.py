@@ -1,8 +1,10 @@
+from .fare import cal_fare
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .models import Ride
 from django.db import transaction
 from django.utils import timezone
+from geopy.geocoders import Nominatim
 
 VALID_TRANSITIONS = {
     Ride.Status.REQUESTED: {Ride.Status.ACCEPTED, Ride.Status.CANCELLED},
@@ -46,3 +48,16 @@ def assign_driver(ride_id, driver_id):
         ride.save(update_fields=["driver"])
 
         return transition_ride(ride_id, Ride.Status.ACCEPTED)
+
+def get_location_from_coord(lat, lon):
+    geolocator = Nominatim(user_agent="my_reverse_geocoder_app")
+    try:
+        coordinates = f"{lat}, {lon}"
+        location = geolocator.reverse(coordinates, timeout=10)
+        if location:
+            return location.address
+        else:
+            return "No location found for these coordinates."
+            
+    except Exception as e:
+        return f"An error occurred: {e}"
