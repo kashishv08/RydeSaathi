@@ -12,11 +12,16 @@ class Ride(models.Model):
         COMPLETED = "COMPLETED", "Completed"
         CANCELLED = "CANCELLED", "Cancelled"
 
+    class VehicleType(models.TextChoices):
+        MINI = "MINI", "Mini"
+        SEDAN = "SEDAN", "Sedan"
+        SUV = "SUV", "SUV"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     rider = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="ride_rider")
     driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="ride_driver")
     status = models.CharField(max_length=15, choices=Status.choices, default=Status.REQUESTED)
+    vehicle_type = models.CharField(max_length=20, choices=VehicleType.choices, default=VehicleType.MINI, null=True, blank=True)
 
     pickup_lat = models.DecimalField(max_digits=9, decimal_places=6)
     pickup_lng = models.DecimalField(max_digits=9, decimal_places=6)

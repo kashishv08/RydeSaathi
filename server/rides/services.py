@@ -34,7 +34,10 @@ def transition_ride(ride_id, new_status):
         if ts:
             setattr(ride, ts, timezone.now()) 
             ride.save(update_fields=["status", ts])
-        else :
+        if new_status == Ride.Status.COMPLETED:
+            ride.amount = cal_fare(ride.vehicle_type, float(ride.route_distance_km), float(ride.route_duration_min))
+            ride.save(update_fields=["status", "amount"])
+        else:
             ride.save(update_fields=["status"])
 
         return ride 
@@ -54,8 +57,14 @@ def get_location_from_coord(lat, lon):
     try:
         coordinates = f"{lat}, {lon}"
         location = geolocator.reverse(coordinates, timeout=10)
-        if location:
-            return location.address
+        if location and "address" in location.raw:
+            address = location.raw["address"]
+            
+            city = address.get('city') or address.get('town') or address.get('village') or address.get('suburb')
+            return {
+                "address": address,
+                "city": city.lower()
+            }
         else:
             return "No location found for these coordinates."
             

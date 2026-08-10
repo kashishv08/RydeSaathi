@@ -4,6 +4,7 @@ from .geo import update_driver_location
 from rides.permission import IsDriver
 from rest_framework.response import Response
 from rest_framework import status
+from rides.services import get_location_from_coord
 
 # Create your views here.
 class DriverPingView(APIView):
@@ -12,7 +13,7 @@ class DriverPingView(APIView):
         profile = request.user.driverprofile
         lat = request.data.get("lat")
         lng = request.data.get("lng")
-        city = request.data.get("city")
+        city = get_location_from_coord(lat, lng)["city"]
 
         if profile.current_city != city:
             profile.current_city = city

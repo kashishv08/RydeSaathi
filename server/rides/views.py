@@ -1,3 +1,7 @@
+from django.contrib.admin import options
+from lib2to3.pgen2 import driver
+from asgiref import local
+from asgiref import local
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status as  http_status
@@ -12,6 +16,11 @@ from locations.routing import engine
 from .matching import find_and_offer_driver, confirm_offer_accept
 from .services import get_location_from_coord
 from .fare import cal_fare
+from locations.geo import get_nearby_driver_ids, get_drivers_locations
+from drivers.models import DriverProfile
+from .permission import IsRider
+import logging
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class RideCreateView(APIView):
@@ -27,8 +36,8 @@ class RideCreateView(APIView):
         created_ride.route_distance_km = route["distance_km"]
         created_ride.route_duration_min = route["duration_min"]
 
-        pickup_address = get_location_from_coord(created_ride.pickup_lat, created_ride.pickup_lng)
-        drop_address = get_location_from_coord(created_ride.drop_lat, created_ride.drop_lng)
+        pickup_address = get_location_from_coord(created_ride.pickup_lat, created_ride.pickup_lng)["address"]
+        drop_address = get_location_from_coord(created_ride.drop_lat, created_ride.drop_lng)["address"]
         created_ride.pickup_address = pickup_address
         created_ride.drop_address = drop_address
 
@@ -87,4 +96,50 @@ class RideDriverAccept(APIView):
 
         ride.refresh_from_db()
         return Response(RideSerializer(ride).data)
+
+class RideSearchView(APIView):
+    permission_classes = [IsRider]
+
+    def get(self, request):
+        pickup_lat = request.query_params.get("pickup_lat")
+        pickup_lng = request.query_params.get("pickup_lng")
+        drop_lat = request.query_params.get("drop_lat")
+        drop_lng = request.query_params.get("drop_lng")
+
+        route = engine.get_route(pickup_lat, pickup_lng, drop_lat, drop_lng)
+        distance_km = route["distance_km"]
+        duration_min = route["duration_min"]
+        geometry = route["geometry"]
+
+        city = get_location_from_coord(pickup_lat, pickup_lng)["city"]
+        logger.warning(f"{city}========================")
+        nearby_drivers_ids = get_nearby_driver_ids(city, float(pickup_lng), float(pickup_lat))
+
+        eligible_drivers = DriverProfile.objects.filter(user_id__in=nearby_drivers_ids, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__isnull=False,).select_related("vehicle")
+
+        raw_location = get_drivers_locations(city, eligible_drivers)
+        driver_eta = engine.batch_eta_minutes(pickup_lat, pickup_lng, raw_location)
+
+        obj = zip(eligible_drivers, driver_eta)
+        best_eta = {}
+
+        for driver, eta in obj:
+            if driver.vehicle.vehicle_type not in best_eta:
+                vehicle_type = driver.vehicle.vehicle_type
+                best_eta[vehicle_type] = eta
+            else:
+                best_eta[vehicle_type] = min(best_eta[vehicle_type], eta)
+
+        options = []
+
+        for vehicle_type, eta in best_eta.items():
+            options.append({
+                "vehicle_type": vehicle_type,
+                "pickup_eta":eta,
+                "duration_min": duration_min,
+                "distance_km": distance_km
+            })
+
+        options.sort(key=lambda x:x["pickup_eta"])
+        return Response({"options": options, "geometry": geometry})
 

@@ -52,7 +52,7 @@ class OSRMRoutingEngine(RoutingEngine):
 
     def batch_eta_minutes(self, from_lat, from_lng, destinations: list) -> list:
         coords = f"{from_lng},{from_lat};" + ";".join(
-            f"{lng},{lat}" for lat, lng in destinations
+            f"{lng},{lat}" for lng, lat in destinations
         )
         url = f"{self.BASE_URL}/table/v1/driving/{coords}"
         data = requests.get(url, params={
@@ -62,7 +62,7 @@ class OSRMRoutingEngine(RoutingEngine):
 
         duration_sec = data["durations"][0][1:]
         return [
-            round(d / 60, 1) if d is not None else float("inf")
+            round(d / 60, 1) if d is not None else 9999
             for d in duration_sec
         ]
 

@@ -19,8 +19,8 @@ def find_and_offer_driver(ride: Ride) -> list[str]:
     all_near_drivers = get_nearby_driver_ids(city, float(ride.pickup_lng), float(ride.pickup_lat))
     logger.warning(f"[MATCH] Nearby driver IDs from Redis: {all_near_drivers}")
 
-    eligible_drivers = DriverProfile.objects.filter(user_id__in=all_near_drivers, status=DriverProfile.Status.AVAILABLE, verified=True)
-    logger.warning(f"[MATCH] Eligible (available+verified) drivers: {list(eligible_drivers.values_list('user_id', flat=True))}")
+    eligible_drivers = DriverProfile.objects.filter(user_id__in=all_near_drivers, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__vehicle_type=ride.vehicle_type)
+    logger.warning(f"[MATCH] Eligible (available+verified+{ride.vehicle_type}) drivers: {list(eligible_drivers.values_list('user_id', flat=True))}")
 
     raw_locations = get_drivers_locations(city, eligible_drivers) # returns (lng, lat)
 
