@@ -36,12 +36,14 @@ class RideCreateView(APIView):
         created_ride.route_distance_km = route["distance_km"]
         created_ride.route_duration_min = route["duration_min"]
 
-        pickup_address = get_location_from_coord(created_ride.pickup_lat, created_ride.pickup_lng)["address"]
-        drop_address = get_location_from_coord(created_ride.drop_lat, created_ride.drop_lng)["address"]
-        created_ride.pickup_address = pickup_address
-        created_ride.drop_address = drop_address
+        pickup_location = get_location_from_coord(float(created_ride.pickup_lat),float(created_ride.pickup_lng))
+        drop_location = get_location_from_coord(float(created_ride.drop_lat),float(created_ride.drop_lng))
 
-        created_ride.save(update_fields=["drop_address","pickup_address","route_geometry", "route_distance_km", "route_duration_min"])
+        created_ride.pickup_address = pickup_location["address"]
+        created_ride.drop_address = drop_location["address"]
+        created_ride.city = pickup_location["city"]
+
+        created_ride.save(update_fields=["city", "drop_address","pickup_address","route_geometry", "route_distance_km", "route_duration_min"])
         
         find_and_offer_driver(created_ride)
 

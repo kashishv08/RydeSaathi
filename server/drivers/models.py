@@ -4,11 +4,14 @@ from django.conf import settings
 
 # Create your models here.
 
+class VehicleType(models.TextChoices):
+        MOTO = "MOTO", "Moto"
+        AUTO = "AUTO", "Auto"
+        UBER_GO = "UBER_GO", "Uber Go"
+        PREMIER = "PREMIER", "Premier"
+        UBER_XL = "UBER_XL", "Uber XL"
+
 class Vehicle(models.Model):
-    class VehicleType(models.TextChoices):
-        MINI = "MINI", "Mini"
-        SEDAN = "SEDAN", "Sedan"
-        SUV = "SUV", "SUV"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     vehicle_type = models.CharField(max_length=20, choices=VehicleType.choices)

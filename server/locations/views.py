@@ -5,6 +5,8 @@ from rides.permission import IsDriver
 from rest_framework.response import Response
 from rest_framework import status
 from rides.services import get_location_from_coord
+from rides.models import Ride
+from rides.notify import notify_rider_of_driver_loc
 
 # Create your views here.
 class DriverPingView(APIView):
@@ -20,4 +22,12 @@ class DriverPingView(APIView):
             profile.save(update_fields=["current_city"])
 
         update_driver_location(lat, lng, profile.user.id, city)
-        return Response(status=status.HTTP_200_OK)
+
+        active_ride = Ride.objects.filter(
+            driver=request.user,
+            status__in=[Ride.Status.ACCEPTED, Ride.Status.ARRIVED, Ride.Status.IN_PROGRESS]
+        ).order_by('-requested_at').first()
+
+        if active_ride:
+            notify_rider_of_driver_loc(lat, lng, active_ride)
+        return Response({"driver_id": profile.user.id},status=status.HTTP_200_OK)

@@ -5,6 +5,7 @@ from .models import Ride
 from django.db import transaction
 from django.utils import timezone
 from geopy.geocoders import Nominatim
+from .notify import notify_rider_of_status
 
 VALID_TRANSITIONS = {
     Ride.Status.REQUESTED: {Ride.Status.ACCEPTED, Ride.Status.CANCELLED},
@@ -29,7 +30,8 @@ def transition_ride(ride_id, new_status):
         allowed = VALID_TRANSITIONS[ride.status]
         if new_status not in allowed:
             raise ValidationError(f"Cannot transition ride from {ride.status} to {new_status}. " f"Allowed: {', '.join(allowed) if allowed else 'none (terminal state)'}.")
-        ride.status = new_status 
+        ride.status = new_status
+        notify_rider_of_status(ride_id, new_status) 
         ts = TIMESTAMP_FIELD[ride.status]
         if ts:
             setattr(ride, ts, timezone.now()) 

@@ -1,4 +1,3 @@
-from .services import get_location_from_coord
 import logging
 logger = logging.getLogger(__name__)
 from channels.layers import get_channel_layer
@@ -40,3 +39,29 @@ def notify_driver_offer_cancelled(driver_id, ride_id, ride):
                 "timeout": 15
             }
         )
+
+def notify_rider_of_status(ride_id, new_status):
+    rider_id = Ride.objects.get(pk=ride_id).rider.id
+    group_name = f"rider_{rider_id}"
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name, 
+        {
+            "type": "sent_ride_status",
+            "ride_id": str(ride_id),
+            "ride_status": new_status
+        }
+    )
+
+def notify_rider_of_driver_loc(lat, lng, ride):
+    group_name = f"rider_{ride.rider.id}"
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name, 
+        {
+            "type": "driver_location_update",
+            "ride_id": str(ride.id),
+            "lat":lat,
+            "lng":lng
+        }
+    )
