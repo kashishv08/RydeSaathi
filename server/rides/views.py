@@ -1,3 +1,4 @@
+from django.http import request
 from django.contrib.admin import options
 from lib2to3.pgen2 import driver
 from asgiref import local
@@ -19,6 +20,7 @@ from .fare import cal_fare
 from locations.geo import get_nearby_driver_ids, get_drivers_locations
 from drivers.models import DriverProfile
 from .permission import IsRider
+from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 
@@ -144,4 +146,12 @@ class RideSearchView(APIView):
 
         options.sort(key=lambda x:x["pickup_eta"])
         return Response({"options": options, "geometry": geometry})
+
+class CurrentRideView(APIView):
+    def get(self, request):
+        active_ride = Ride.objects.filter(Q(rider=request.user) | Q(driver=request.user), status__in=[Ride.Status.REQUESTED, Ride.Status.ACCEPTED, Ride.Status.ARRIVED, Ride.Status.IN_PROGRESS]).order_by("-requested_at").first()
+        if active_ride:
+            return Response(RideSerializer(active_ride).data)
+        return Response(status=http_status.HTTP_204_NO_CONTENT)
+
 
