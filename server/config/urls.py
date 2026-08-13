@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/drivers/", include("drivers.urls")),
     path("api/rides/", include("rides.urls")),
     path("api/locations/", include("locations.urls")),
+    path("api/reviews/", include("reviews.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

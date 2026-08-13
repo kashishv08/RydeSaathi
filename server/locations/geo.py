@@ -46,3 +46,15 @@ def delete_key(key):
 def get_drivers_from_key(ride_id):
     key = f"ride:offer_batch:{ride_id}"  
     return redis_client.get(key)
+
+def get_cached_city(driver_id):
+    key = f"driver:city:{driver_id}"
+    return redis_client.get(key)
+
+def set_cached_city(city, driver_id):
+    key = f"driver:city:{driver_id}"
+    redis_client.set(key, city, ex=300)
+
+def clear_cached_city(driver_id):
+    key = f"driver:city:{driver_id}"
+    redis_client.delete(key)

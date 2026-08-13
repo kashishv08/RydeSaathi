@@ -1,3 +1,4 @@
+from rest_framework.generics import ListAPIView
 from django.http import request
 from django.contrib.admin import options
 from lib2to3.pgen2 import driver
@@ -69,7 +70,8 @@ class RideTransitionView(APIView):
         serializer = RideTransitionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            ride = transition_ride(ride_id, serializer.validated_data["status"])
+            cancel_reason = serializer.validated_data.get("cancel_reason")
+            ride = transition_ride(ride_id, serializer.validated_data["status"], cancel_reason)
         except ValidationError as e:
             return Response({"error":e.message},status=http_status.HTTP_400_BAD_REQUEST)
         return Response(RideSerializer(ride).data)
@@ -154,4 +156,11 @@ class CurrentRideView(APIView):
             return Response(RideSerializer(active_ride).data)
         return Response(status=http_status.HTTP_204_NO_CONTENT)
 
+class AllRideView(ListAPIView):
+    serializer_class = RideSerializer
+
+    def get_queryset(self):
+        return Ride.objects.filter(Q(rider=self.request.user) | Q(driver=self.request.user), status__in=[Ride.Status.COMPLETED, Ride.Status.CANCELLED]).order_by("-requested_at")
+
+        
 

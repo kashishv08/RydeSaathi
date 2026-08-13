@@ -39,6 +39,7 @@ class Ride(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancel_reason = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"Trip {self.id} ({self.status})"

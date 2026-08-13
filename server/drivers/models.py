@@ -25,6 +25,7 @@ class DriverProfile(models.Model):
     class Status(models.TextChoices):
         PENDING_VERIFICATION = "PENDING", "Pending"
         AVAILABLE = "AVAILABLE", "Available"
+        ON_RIDE = "ON_RIDE", "On Ride"
         OFFLINE = "OFFLINE", "Offline"
         SUSPENDED = "SUSPENDED", "Suspended"
 
@@ -36,6 +37,7 @@ class DriverProfile(models.Model):
     verified = models.BooleanField(default=False)
     verification_note = models.CharField(max_length=255, blank=True)
     verified_at = models.DateTimeField(null=True, blank=True)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=5.0)
 
     def __str__(self):
         return f"DriverProfile({self.user})"

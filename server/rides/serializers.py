@@ -21,6 +21,7 @@ class RideSerializer(serializers.ModelSerializer):
 
 class RideTransitionSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=Ride.Status.choices)
+    cancel_reason = serializers.CharField(required=False, allow_blank=True, default=None)
 
 class RideDriverAssignSerializer(serializers.Serializer):
     driver_id = serializers.UUIDField()

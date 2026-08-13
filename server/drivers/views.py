@@ -1,3 +1,5 @@
+from locations.geo import clear_cached_city
+from locations.geo import remove_driver_loc
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from django.shortcuts import render
@@ -26,5 +28,23 @@ class SubmitDLView(APIView):
         profile = submit_dl(profile, serializer.validated_data.get("dl_image"))
 
         return Response(DriverProfileSerializer(profile).data)
+
+class DriverToggleOnlineView(APIView):
+    def post(self, request):
+        profile = request.user.driverprofile
+        if not profile and not profile.verified:
+            return Response({"error": "Driver is not verified"})
+
+        is_online = request.data.get("online", False)
+        if is_online:
+            profile.status = DriverProfile.Status.AVAILABLE
+            profile.save()
+        else:
+            profile.status = DriverProfile.Status.OFFLINE
+            remove_driver_loc(profile.current_city, str(request.user.id))
+            clear_cached_city(request.user.id)
+            profile.current_city = ""
+            profile.save(update_fields=["status", "current_city"])            
+
 
 

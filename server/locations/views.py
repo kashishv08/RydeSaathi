@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from django.shortcuts import render
-from .geo import update_driver_location
+from .geo import update_driver_location, get_cached_city, set_cached_city
 from rides.permission import IsDriver
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,11 +15,15 @@ class DriverPingView(APIView):
         profile = request.user.driverprofile
         lat = request.data.get("lat")
         lng = request.data.get("lng")
-        city = get_location_from_coord(lat, lng)["city"]
 
-        if profile.current_city != city:
-            profile.current_city = city
-            profile.save(update_fields=["current_city"])
+        old_city = get_cached_city(profile.user.id)
+        if not city:
+            city = get_location_from_coord(lat, lng)["city"]
+            set_cached_city(city, profile.user.id)
+
+            if profile.current_city != city:
+                profile.current_city = city
+                profile.save(update_fields=["current_city"])
 
         update_driver_location(lat, lng, profile.user.id, city)
 

@@ -6,6 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 from geopy.geocoders import Nominatim
 from .notify import notify_rider_of_status
+from drivers.models import DriverProfile
 
 VALID_TRANSITIONS = {
     Ride.Status.REQUESTED: {Ride.Status.ACCEPTED, Ride.Status.CANCELLED},
@@ -24,7 +25,7 @@ TIMESTAMP_FIELD = {
     Ride.Status.CANCELLED: "cancelled_at",
 }
 
-def transition_ride(ride_id, new_status):
+def transition_ride(ride_id, new_status, cancel_reason=None):
     with transaction.atomic():
         ride = Ride.objects.select_for_update().get(pk=ride_id)
         allowed = VALID_TRANSITIONS[ride.status]
@@ -36,13 +37,24 @@ def transition_ride(ride_id, new_status):
         if ts:
             setattr(ride, ts, timezone.now()) 
             ride.save(update_fields=["status", ts])
+
+        if new_status == Ride.Status.CANCELLED and cancel_reason:
+            ride.cancel_reason =  cancel_reason
+            ride.save(update_fields=["cancel_reason"])
+
         if new_status == Ride.Status.COMPLETED:
             ride.amount = cal_fare(ride.vehicle_type, float(ride.route_distance_km), float(ride.route_duration_min))
             ride.save(update_fields=["status", "amount"])
         else:
             ride.save(update_fields=["status"])
 
-        return ride 
+        if new_status in [Ride.Status.COMPLETED, Ride.Status.CANCELLED]:
+            if ride.driver_id:
+                DriverProfile.objects.filter(user_id=ride.driver_id).update(
+                    status=DriverProfile.Status.AVAILABLE
+                )
+
+        return ride
 
 def assign_driver(ride_id, driver_id):
     with transaction.atomic():
@@ -51,6 +63,10 @@ def assign_driver(ride_id, driver_id):
             raise ValidationError(f"Can only assign a driver to a REQUESTED ride. Current: {ride.status}.")
         ride.driver_id = driver_id
         ride.save(update_fields=["driver"])
+
+        DriverProfile.objects.filter(user_id=driver_id).update(
+            status=DriverProfile.Status.ON_RIDE
+        )
 
         return transition_ride(ride_id, Ride.Status.ACCEPTED)
 
