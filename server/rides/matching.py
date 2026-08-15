@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from drivers.models import DriverProfile
 from locations.geo import get_nearby_driver_ids, get_drivers_locations, set_driver_offer_lock, set_ride_offer_batch_lock, get_ride_from_key,delete_key, get_drivers_from_key
 from .models import Ride
-import redis 
 from django.conf import settings
 from locations.routing import engine
 from .services import assign_driver
