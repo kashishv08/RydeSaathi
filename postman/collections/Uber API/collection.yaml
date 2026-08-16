@@ -1,0 +1,44 @@
+$kind: collection
+name: Uber API
+scripts:
+  - type: http:beforeRequest
+    language: text/javascript
+    code: |-
+      const requestName = pm.info.requestName;
+      if (requestName === 'Login' || requestName === 'Refresh Token') {
+          return;
+      }
+
+      const accessToken = pm.environment.get('accessToken');
+      const refreshToken = pm.environment.get('refreshToken');
+
+      if (!refreshToken) return;
+
+      function isTokenExpired(token) {
+          try {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              return (payload.exp * 1000) < Date.now();
+          } catch (e) {
+              return true;
+          }
+      }
+
+      if (!accessToken || isTokenExpired(accessToken)) {
+          pm.sendRequest({
+              url: pm.variables.replaceIn('{{baseUrl}}/api/auth/token/refresh/'),
+              method: 'POST',
+              header: { 'Content-Type': 'application/json' },
+              body: {
+                  mode: 'raw',
+                  raw: JSON.stringify({ refresh: refreshToken })
+              }
+          }, function (err, res) {
+              if (!err && res.code === 200) {
+                  const newAccessToken = res.json().access;
+                  pm.environment.set('accessToken', newAccessToken);
+                  console.log('Token refreshed for:', pm.environment.name);
+              } else {
+                  console.warn('Token refresh failed:', err || res.status);
+              }
+          });
+      }

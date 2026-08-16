@@ -1,0 +1,12 @@
+$kind: collection
+name: Uber API
+variables:
+  baseUrl: http://localhost:8000
+  accessToken: ""
+  refreshToken: ""
+  rideId: ""
+  driverId: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"

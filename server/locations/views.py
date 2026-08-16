@@ -16,7 +16,7 @@ class DriverPingView(APIView):
         lat = request.data.get("lat")
         lng = request.data.get("lng")
 
-        old_city = get_cached_city(profile.user.id)
+        city = get_cached_city(profile.user.id) 
         if not city:
             city = get_location_from_coord(lat, lng)["city"]
             set_cached_city(city, profile.user.id)

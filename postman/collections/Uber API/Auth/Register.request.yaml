@@ -1,0 +1,29 @@
+$kind: http-request
+name: Register
+order: 1000
+method: POST
+url: "{{baseUrl}}/api/auth/register"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "username": "{{username}}",
+        "email": "{{email}}",
+        "password": "{{password}}",
+        "role": "{{role}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+          const body = pm.response.json();
+          pm.environment.set("accessToken", body.access);
+          pm.environment.set("refreshToken", body.refresh);
+          console.log("Tokens saved for:", pm.environment.name);
+      }
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+    language: text/javascript

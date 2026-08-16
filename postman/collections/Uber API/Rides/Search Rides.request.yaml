@@ -1,0 +1,18 @@
+$kind: http-request
+name: Search Rides
+order: 1000
+method: GET
+url: '{{baseUrl}}/api/rides/search/'
+queryParams:
+  - key: pickup_lat
+    value: '28.6139'
+  - key: pickup_lng
+    value: '77.2090'
+  - key: drop_lat
+    value: '28.5355'
+  - key: drop_lng
+    value: '77.3910'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

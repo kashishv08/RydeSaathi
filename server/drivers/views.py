@@ -44,7 +44,8 @@ class DriverToggleOnlineView(APIView):
             remove_driver_loc(profile.current_city, str(request.user.id))
             clear_cached_city(request.user.id)
             profile.current_city = ""
-            profile.save(update_fields=["status", "current_city"])            
+            profile.save(update_fields=["status", "current_city"])    
+        return Response(f"The driver status is now : {profile.status}")       
 
 
 

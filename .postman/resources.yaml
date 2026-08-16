@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: 6fb56a15-c2e3-4f42-856c-39bbd8f3cd5e
+
+dependencies:
+  environments:
+    43843627-8970bc6d-b3aa-48d6-95c7-65069ce77553:
+      name: New Environment
+      path: ../postman/.dependencies/environments/New Environment.environment.yaml
+
+# All resources in the `postman/` folder are automatically registered in Local View.
+# Point to additional files outside the `postman/` folder to register them individually. Example:
+#localResources:
+#  collections:
+#    - ../tests/E2E Test Collection/

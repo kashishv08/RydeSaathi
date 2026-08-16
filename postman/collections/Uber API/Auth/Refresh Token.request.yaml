@@ -1,0 +1,20 @@
+$kind: http-request
+name: Refresh Token
+order: 3000
+method: POST
+url: '{{baseUrl}}/api/auth/token/refresh/'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "refresh": "{{refreshToken}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get Current Ride
+order: 3000
+method: GET
+url: '{{baseUrl}}/api/rides/'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200 or 204", () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));'

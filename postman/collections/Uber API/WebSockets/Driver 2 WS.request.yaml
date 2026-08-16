@@ -1,0 +1,4 @@
+$kind: websocket-request
+name: 'Driver 2 WS'
+order: 2000
+url: 'ws://{{baseUrl_ws}}/ws/driver/{{driver2_id}}/'

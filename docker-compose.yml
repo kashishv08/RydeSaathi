@@ -41,5 +41,19 @@ services:
     depends_on:
       - backend
 
+  celery_worker:
+    build:
+      context: ./server
+    command: celery -A config worker --loglevel=info
+    # WHY --loglevel=info: Shows task start/success/failure in logs.
+    # Change to 'warning' in production to reduce noise.
+    volumes:
+      - ./server:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
 volumes:
   pgdata:

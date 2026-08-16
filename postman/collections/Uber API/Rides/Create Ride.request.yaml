@@ -1,0 +1,25 @@
+$kind: http-request
+name: Create Ride
+order: 2000
+method: POST
+url: "{{baseUrl}}/api/rides/create/"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "pickup_lat": 19.0760,
+        "pickup_lng": 72.8777,
+        "drop_lat": 19.0330,
+        "drop_lng": 72.8293,
+        "vehicle_type": "UBER_GO"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      if (pm.response.code === 201) {
+          pm.collectionVariables.set("rideId", pm.response.json().id);
+      }
+    language: text/javascript

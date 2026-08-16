@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get All Rides
+order: 4000
+method: GET
+url: '{{baseUrl}}/api/rides/all/'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

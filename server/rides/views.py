@@ -1,3 +1,4 @@
+from .task import expire_ride_window
 from rest_framework.generics import ListAPIView
 from django.http import request
 from django.contrib.admin import options
@@ -22,6 +23,7 @@ from locations.geo import get_nearby_driver_ids, get_drivers_locations
 from drivers.models import DriverProfile
 from .permission import IsRider
 from django.db.models import Q
+from .task import check_batch_timeout
 import logging
 logger = logging.getLogger(__name__)
 
@@ -48,7 +50,15 @@ class RideCreateView(APIView):
 
         created_ride.save(update_fields=["city", "drop_address","pickup_address","route_geometry", "route_distance_km", "route_duration_min"])
         
-        find_and_offer_driver(created_ride)
+        offered_driver_ids = find_and_offer_driver(created_ride)
+        check_batch_timeout.apply_async(
+            args=[str(created_ride.id), 1, offered_driver_ids], countdown=30
+        )
+
+        expire_ride_window.apply_async(
+            args=[str(created_ride.id)], countdown=300
+        )
+
 
         ride = RideSerializer(created_ride)
         return Response(ride.data, status=http_status.HTTP_201_CREATED)

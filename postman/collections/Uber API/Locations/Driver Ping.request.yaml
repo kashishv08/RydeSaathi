@@ -1,0 +1,18 @@
+$kind: http-request
+name: Driver Ping
+order: 1000
+method: POST
+url: "{{baseUrl}}/api/locations/ping/"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "lat": 19.0770,
+        "lng": 72.8780
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test("Status 200", () => pm.response.to.have.status(200));
+    language: text/javascript

@@ -1,0 +1,9 @@
+$kind: http-request
+name: Accept Ride Offer
+order: 8000
+method: POST
+url: '{{baseUrl}}/api/rides/{{rideId}}/accept-offer/'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

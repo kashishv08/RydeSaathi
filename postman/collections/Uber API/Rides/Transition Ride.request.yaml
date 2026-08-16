@@ -1,0 +1,19 @@
+$kind: http-request
+name: Transition Ride
+order: 6000
+method: PATCH
+url: '{{baseUrl}}/api/rides/{{rideId}}/transition/'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "status": "CANCELLED",
+      "cancel_reason": "Changed my mind"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

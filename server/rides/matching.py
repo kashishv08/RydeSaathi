@@ -10,15 +10,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 BATCH_SIZE = 5
+DEFAULT_RADIUS = 3
 
-def find_and_offer_driver(ride: Ride) -> list[str]:
+def find_and_offer_driver(ride: Ride, radius_km:float=DEFAULT_RADIUS, exclude_id: list[str]=[]) -> list[str]:
     city = ride.city.lower() 
     logger.warning(f"[MATCH] Starting for ride={ride.id} city={city} pickup=({ride.pickup_lat},{ride.pickup_lng})")
 
-    all_near_drivers = get_nearby_driver_ids(city, float(ride.pickup_lng), float(ride.pickup_lat))
-    logger.warning(f"[MATCH] Nearby driver IDs from Redis: {all_near_drivers}")
+    exclude_ids = set(exclude_id)
 
-    eligible_drivers = DriverProfile.objects.filter(user_id__in=all_near_drivers, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__vehicle_type=ride.vehicle_type)
+    all_near_drivers = get_nearby_driver_ids(city, float(ride.pickup_lng), float(ride.pickup_lat),radius=radius_km,count=50 )
+
+    filtered_near_drivers = [d for d in all_near_drivers if d not in exclude_ids]
+    if not filtered_near_drivers:
+        logger.warning(f"[MATCH] No new drivers found in {radius_km}km radius "f"after excluding {len(exclude_ids)} already-offered.")
+        return []
+
+    eligible_drivers = DriverProfile.objects.filter(user_id__in=filtered_near_drivers, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__vehicle_type=ride.vehicle_type)
     logger.warning(f"[MATCH] Eligible (available+verified+{ride.vehicle_type}) drivers: {list(eligible_drivers.values_list('user_id', flat=True))}")
 
     raw_locations = get_drivers_locations(city, eligible_drivers) # returns (lng, lat)
@@ -41,7 +48,7 @@ def find_and_offer_driver(ride: Ride) -> list[str]:
 
     final_driver_obj = dict(zip(valid_drivers, driver_eta))
     ranked_driver = sorted(final_driver_obj.items(), key=lambda item: item[1])
-    top_drivers = ranked_driver[:5]
+    top_drivers = ranked_driver[:BATCH_SIZE]
 
     offered = []
     for driverprofile, ETA in top_drivers:
