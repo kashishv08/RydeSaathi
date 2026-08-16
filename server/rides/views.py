@@ -1,4 +1,4 @@
-from .task import expire_ride_window
+from .tasks import expire_ride_window
 from rest_framework.generics import ListAPIView
 from django.http import request
 from django.contrib.admin import options
@@ -23,7 +23,7 @@ from locations.geo import get_nearby_driver_ids, get_drivers_locations
 from drivers.models import DriverProfile
 from .permission import IsRider
 from django.db.models import Q
-from .task import check_batch_timeout
+from .tasks import check_batch_timeout
 import logging
 logger = logging.getLogger(__name__)
 

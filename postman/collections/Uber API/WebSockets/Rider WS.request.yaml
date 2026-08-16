@@ -1,4 +1,0 @@
-$kind: websocket-request
-name: 'Rider WS'
-order: 4000
-url: 'ws://{{baseUrl_ws}}/ws/rider/{{rider_id}}/'

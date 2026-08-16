@@ -1,9 +1,0 @@
-$kind: http-request
-name: Get Ride Detail
-order: 5000
-method: GET
-url: '{{baseUrl}}/api/rides/{{rideId}}/'
-scripts:
-  - type: afterResponse
-    language: text/javascript
-    code: 'pm.test("Status 200", () => pm.response.to.have.status(200));'

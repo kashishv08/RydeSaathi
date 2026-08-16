@@ -1,8 +1,0 @@
-name: Rider
-values:
-  - key: refreshToken
-    value: ''
-  - key: accessToken
-    value: ''
-  - key: rider_id
-    value: ''

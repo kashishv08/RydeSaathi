@@ -1,9 +1,0 @@
-name: Driver 2
-values:
-  - key: accessToken
-    value: ''
-  - key: refreshToken
-    value: ''
-  - key: driver2_id
-    value: ''
-color: 120

@@ -1,5 +1,0 @@
-name: Globals
-values:
-  - key: baseUrl_ws
-    value: ''
-    enabled: true
