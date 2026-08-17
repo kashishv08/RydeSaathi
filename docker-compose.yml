@@ -44,7 +44,7 @@ services:
   celery_worker:
     build:
       context: ./server
-    command: celery -A config worker --loglevel=info
+    command: celery -A config worker --loglevel=info --concurrency=2
     # WHY --loglevel=info: Shows task start/success/failure in logs.
     # Change to 'warning' in production to reduce noise.
     volumes:

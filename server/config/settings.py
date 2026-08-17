@@ -30,7 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = config("DEBUG", cast=bool)
 SECRET_KEY = config("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "feuilletonistic-rochelle-inconvincible.ngrok-free.dev",
+    "localhost"
+]
 
 
 # Application definition
@@ -51,7 +54,8 @@ INSTALLED_APPS = [
     "drivers",
     "rides",
     "locations", 
-    "reviews"
+    "reviews",
+    "payments"
 ]
 
 MIDDLEWARE = [
@@ -178,10 +182,11 @@ SIMPLE_JWT = {
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # Channels uses Redis pub/sub to route messages between
-        # multiple running Daphne processes.
-        "CONFIG": {"hosts": [REDIS_URL]},
+        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+        "CONFIG": {
+            "hosts": ["redis://127.0.0.1:6379/0"],
+            # "CONFIG": {"hosts": [REDIS_URL]},
+        },
     }
 }
 
@@ -191,3 +196,7 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+RAZORPAY_WEBHOOK_SECRET=config("RAZORPAY_WEBHOOK_SECRET")
+RAZORPAY_KEY_ID=config("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET=config("RAZORPAY_KEY_SECRET")

@@ -7,6 +7,8 @@ from django.utils import timezone
 from geopy.geocoders import Nominatim
 from .notify import notify_rider_of_status
 from drivers.models import DriverProfile
+from payments.services import create_order
+from payments.models import Payment
 
 VALID_TRANSITIONS = {
     Ride.Status.REQUESTED: {Ride.Status.ACCEPTED, Ride.Status.CANCELLED},
@@ -44,6 +46,15 @@ def transition_ride(ride_id, new_status, cancel_reason=None):
 
         if new_status == Ride.Status.COMPLETED:
             ride.amount = cal_fare(ride.vehicle_type, float(ride.route_distance_km), float(ride.route_duration_min))
+
+            razorpay_order_id = create_order(ride.amount, ride.id)
+            Payment.objects.create(
+                status = Payment.Status.PENDING,
+                razorpay_order_id = razorpay_order_id,
+                ride = ride,
+                amount = ride.amount   
+            )
+
             ride.save(update_fields=["status", "amount"])
         else:
             ride.save(update_fields=["status"])

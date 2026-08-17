@@ -1,10 +1,4 @@
-from .tasks import expire_ride_window
 from rest_framework.generics import ListAPIView
-from django.http import request
-from django.contrib.admin import options
-from lib2to3.pgen2 import driver
-from asgiref import local
-from asgiref import local
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status as  http_status
@@ -18,12 +12,11 @@ from .services import transition_ride, assign_driver
 from locations.routing import engine
 from .matching import find_and_offer_driver, confirm_offer_accept
 from .services import get_location_from_coord
-from .fare import cal_fare
 from locations.geo import get_nearby_driver_ids, get_drivers_locations
 from drivers.models import DriverProfile
 from .permission import IsRider
 from django.db.models import Q
-from .tasks import check_batch_timeout
+from .tasks import check_batch_timeout, expire_ride_window
 import logging
 logger = logging.getLogger(__name__)
 
@@ -65,6 +58,8 @@ class RideCreateView(APIView):
 
 
 class RideDetailView(APIView):
+    authentication_classes=[]
+    paermission_classes = []
     def get(self, request, ride_id):
         ride = get_object_or_404(Ride, pk=ride_id)
         if request.user != ride.rider and request.user != ride.driver:
