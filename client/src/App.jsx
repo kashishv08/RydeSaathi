@@ -1,41 +1,16 @@
+import { Route, Routes } from "react-router-dom"
+import LandingPage from "./components/LandingPage"
+import Login from "./pages/Auth/Login"
+import Register from "./pages/Auth/Register"
 
 function App() {
-
-  async function completeRideAndPay(e) {
-    e.preventDefault();
-
-    var options = {
-      "key": "rzp_test_TQVGHVwNlS2cP1",
-      "currency": "INR",
-      "name": "Uber Clone",
-      "description": "Ride Payment",
-      "order_id": "order_TQmBhJpjGIsGNh",
-      "handler": async function (response) {
-        console.log("Payment Success!", response);
-        alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-      },
-      "prefill": {
-        "name": "testrider@test.com",
-        "email": "testrider@test.com",
-      },
-      "theme": {
-        "color": "#3399cc"
-      }
-    };
-
-    var rzp1 = new window.Razorpay(options);
-    rzp1.on('payment.failed', function (response) {
-      console.error("Payment Failed", response.error);
-      alert("Payment failed: " + response.error.description);
-    });
-    rzp1.open();
-  }
-
   return (
-    <div style={{ padding: "50px", fontFamily: "sans-serif" }}>
-      <button onClick={completeRideAndPay} style={{ padding: "10px 15px", cursor: "pointer" }}>
-        Complete Ride & Pay
-      </button>
+    <div>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
     </div>
   )
 }

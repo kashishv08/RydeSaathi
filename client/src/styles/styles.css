@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-uber-black: #000000;
+  --color-uber-green: #05a357; /* The exact Uber success green */
+  --color-uber-gray: #f6f6f6;  /* Light gray for page backgrounds */
+  --color-uber-text: #222222;  /* High contrast text instead of pure black */
+
+  --font-sans: "Inter", "Roboto", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-uber-gray text-uber-text font-sans antialiased;
+  }
+}

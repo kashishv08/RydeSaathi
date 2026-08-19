@@ -95,7 +95,8 @@ def get_location_from_coord(lat, lon):
                 "city": city.lower()
             }
         else:
-            return "No location found for these coordinates."
+            return {"address": None, "city": None}
             
     except Exception as e:
-        return f"An error occurred: {e}"
+        print(f"An error occurred: {e}")
+        return {"address":None, "city": None}

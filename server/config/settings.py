@@ -100,6 +100,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React dev server
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 
 DATABASES = {
     'default': {
@@ -176,7 +178,7 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15), 
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15), 
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 

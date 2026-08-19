@@ -19,13 +19,16 @@ class DriverPingView(APIView):
         city = get_cached_city(profile.user.id) 
         if not city:
             city = get_location_from_coord(lat, lng)["city"]
-            set_cached_city(city, profile.user.id)
+            print(city)
+            if city:
+                set_cached_city(city, profile.user.id)
 
-            if profile.current_city != city:
-                profile.current_city = city
-                profile.save(update_fields=["current_city"])
+                if profile.current_city != city:
+                    profile.current_city = city
+                    profile.save(update_fields=["current_city"])
 
-        update_driver_location(lat, lng, profile.user.id, city)
+        if city:
+            update_driver_location(lat, lng, profile.user.id, city)
 
         active_ride = Ride.objects.filter(
             driver=request.user,
