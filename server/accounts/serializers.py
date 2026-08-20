@@ -8,7 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "username", "password", "role"]
+        fields = ["email", "password", "role"]
 
     def create(self, validated_data):  
         password = validated_data.pop("password")
@@ -16,3 +16,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password) 
         user.save()
         return user
+
+class SendOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    role = serializers.ChoiceField(choices=User.Role.choices, required=False)
+    purpose = serializers.CharField()
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(min_length=6, max_length=6)

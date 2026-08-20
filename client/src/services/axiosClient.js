@@ -6,6 +6,10 @@ const axiosInstance = axios.create({
     withCredentials: true
 })
 
+export const axiosInstanceNoAuth = axios.create({
+    baseURL: "http://localhost:8000",
+})
+
 axiosInstance.interceptors.request.use((config) => {
     const token = get_token();
     if (token) {

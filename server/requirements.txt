@@ -14,3 +14,5 @@ daphne==4.0.0
 geopy==2.5.0
 celery==5.3.6
 razorpay==2.0.1
+django-otp==1.7.0
+pyotp==2.10.0

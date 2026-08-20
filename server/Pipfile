@@ -19,6 +19,8 @@ channels = "*"
 channels-redis = "*"
 daphne = "*"
 haversine = "*"
+django-otp = "*"
+pyotp = "*"
 
 [dev-packages]
 

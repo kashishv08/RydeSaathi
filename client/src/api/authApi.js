@@ -1,16 +1,21 @@
 import axiosInstance from "../services/axiosClient";
 
-export const loginRequest = async (creds) => {
-    const response = await axiosInstance.post("/api/auth/login/", creds);
-    return response;
-};
-
 export const logoutRequest = async () => {
     const res = await axiosInstance.post("/api/auth/logout/");
     return res;
 }
 
-export const registerReq = async (creds) => {
-    const res = await axiosInstance.post("/api/auth/register/", creds)
+export const sendOtp = async (creds) => {
+    const res = await axiosInstance.post("/api/auth/send-otp/", creds)
+    return res
+}
+
+export const verifyOtp = async (creds) => {
+    const res = await axiosInstance.post("/api/auth/verify-otp/", creds)
+    return res
+}
+
+export const userProfile = async () => {
+    const res = await axiosInstance.get("/api/auth/me/")
     return res
 }

@@ -1,7 +1,14 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import LocationInput from '../ui/LocationInput';
+
 
 
 function Hero() {
+    const [pickupCoords, setPickupCoords] = useState({});
+    const [dropCoords, setDropCoords] = useState({});
+
+
     return (
         <section className="relative bg-black text-white pt-0 pb-32 px-6 overflow-hidden">
             <div className="absolute inset-0 opacity-40">
@@ -34,26 +41,15 @@ function Hero() {
                         className="bg-white rounded-xl p-6 text-black max-w-md w-full shadow-2xl"
                     >
                         <div className="space-y-4">
-                            <div className="relative">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-black rounded-full" />
-                                <input
-                                    type="text"
-                                    placeholder="Enter location"
-                                    className="w-full bg-gray-100 border-none rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-black outline-none font-medium"
-                                    // onClick={() => setLocation('/login')}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="relative">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 border-2 border-black rounded-sm" />
-                                <input
-                                    type="text"
-                                    placeholder="Enter destination"
-                                    className="w-full bg-gray-100 border-none rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-black outline-none font-medium"
-                                    // onClick={() => setLocation('/login')}
-                                    readOnly
-                                />
-                            </div>
+                            <LocationInput
+                                placeholder="Enter pickup location"
+                                onSelectLocation={setPickupCoords}
+                            />
+
+                            <LocationInput
+                                placeholder="Enter destination"
+                                onSelectLocation={setDropCoords}
+                            />
                             <button
                                 // onClick={() => setLocation('/login')}
                                 className="w-full bg-black text-white rounded-lg py-3 font-semibold hover:bg-gray-800 transition-colors"
