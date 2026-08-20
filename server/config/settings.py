@@ -101,6 +101,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
 
 
 DATABASES = {
@@ -169,7 +170,6 @@ AUTH_USER_MODEL = "accounts.User"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -178,7 +178,7 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15), 
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15), 
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
@@ -202,3 +202,12 @@ CELERY_TIMEZONE = TIME_ZONE
 RAZORPAY_WEBHOOK_SECRET=config("RAZORPAY_WEBHOOK_SECRET")
 RAZORPAY_KEY_ID=config("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET=config("RAZORPAY_KEY_SECRET")
+
+EMAIL_BACKEND    = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST       = config("BREVO_SMTP_HOST")
+EMAIL_PORT       = config("BREVO_SMTP_PORT", cast=int)
+EMAIL_HOST_USER  = config("BREVO_SMTP_USER")
+EMAIL_HOST_PASSWORD = config("BREVO_SMTP_PASSWORD")
+EMAIL_USE_TLS    = True
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="RydeSaathi <kashish.vashistha1@gmail.com>")
+
