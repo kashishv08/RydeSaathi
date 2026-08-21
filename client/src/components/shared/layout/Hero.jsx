@@ -1,12 +1,20 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import LocationInput from '../ui/LocationInput';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function Hero() {
     const [pickupCoords, setPickupCoords] = useState({});
     const [dropCoords, setDropCoords] = useState({});
+    const navigate = useNavigate();
+
+    function handleSearchClick() {
+        if (pickupCoords?.lat && dropCoords?.lat) {
+            navigate('/ride-search', { state: { pickup: pickupCoords, drop: dropCoords } })
+        }
+    }
 
 
     return (
@@ -51,7 +59,7 @@ function Hero() {
                                 onSelectLocation={setDropCoords}
                             />
                             <button
-                                // onClick={() => setLocation('/login')}
+                                onClick={handleSearchClick}
                                 className="w-full bg-black text-white rounded-lg py-3 font-semibold hover:bg-gray-800 transition-colors"
                             >
                                 See prices

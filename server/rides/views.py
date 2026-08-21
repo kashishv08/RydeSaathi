@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView
 from django.core.exceptions import ValidationError
+from .fare import cal_fare
 from django.shortcuts import get_object_or_404
 from rest_framework import status as  http_status
 from rest_framework.views import APIView
@@ -112,47 +113,125 @@ class RideSearchView(APIView):
     permission_classes = [IsRider]
 
     def get(self, request):
-        pickup_lat = request.query_params.get("pickup_lat")
-        pickup_lng = request.query_params.get("pickup_lng")
-        drop_lat = request.query_params.get("drop_lat")
-        drop_lng = request.query_params.get("drop_lng")
+        try:
+            pickup_lat = request.query_params.get("pickup_lat")
+            pickup_lng = request.query_params.get("pickup_lng")
+            distance_km = request.query_params.get("distance_km")
+            duration_min = request.query_params.get("duration_min")
 
-        route = engine.get_route(pickup_lat, pickup_lng, drop_lat, drop_lng)
-        distance_km = route["distance_km"]
-        duration_min = route["duration_min"]
-        geometry = route["geometry"]
+            if not all([pickup_lat, pickup_lng, distance_km, duration_min]):
+                return Response(
+                    {"message": "Missing required parameters: pickup_lat, pickup_lng, distance_km, duration_min."},
+                    status=http_status.HTTP_400_BAD_REQUEST
+                )
 
-        city = get_location_from_coord(pickup_lat, pickup_lng)["city"]
-        logger.warning(f"{city}========================")
-        nearby_drivers_ids = get_nearby_driver_ids(city, float(pickup_lng), float(pickup_lat))
+            try:
+                pickup_lat = float(pickup_lat)
+                pickup_lng = float(pickup_lng)
+                distance_km = float(distance_km)
+                duration_min = float(duration_min)
+            except ValueError:
+                return Response(
+                    {"message": "Invalid parameters. All lat/lng and distance/duration values must be numbers."},
+                    status=http_status.HTTP_400_BAD_REQUEST
+                )
 
-        eligible_drivers = DriverProfile.objects.filter(user_id__in=nearby_drivers_ids, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__isnull=False,).select_related("vehicle")
+            logger.warning(f"[RideSearch] params: pickup=({pickup_lat},{pickup_lng}) distance={distance_km} duration={duration_min}")
 
-        raw_location = get_drivers_locations(city, eligible_drivers)
-        driver_eta = engine.batch_eta_minutes(pickup_lat, pickup_lng, raw_location)
+            try:
+                city_result = get_location_from_coord(pickup_lat, pickup_lng)
+                city = city_result.get("city")
+                if not city:
+                    raise ValueError("City could not be resolved from coordinates.")
+            except Exception as e:
+                logger.error(f"[RideSearch] City resolution failed: {e}")
+                return Response(
+                    {"message": "Could not determine city from pickup location."},
+                    status=http_status.HTTP_422_UNPROCESSABLE_ENTITY
+                )
 
-        obj = zip(eligible_drivers, driver_eta)
-        best_eta = {}
+            logger.warning(f"[RideSearch] resolved city: '{city}'")
 
-        for driver, eta in obj:
-            if driver.vehicle.vehicle_type not in best_eta:
+            try:
+                nearby_drivers_ids = get_nearby_driver_ids(city, pickup_lng, pickup_lat)
+                logger.warning(f"[RideSearch] nearby_driver_ids from Redis: {nearby_drivers_ids}")
+            except Exception as e:
+                logger.error(f"[RideSearch] Redis geo lookup failed: {e}")
+                return Response(
+                    {"message": "Failed to query nearby drivers. Please try again."},
+                    status=http_status.HTTP_503_SERVICE_UNAVAILABLE
+                )
+
+            if not nearby_drivers_ids:
+                return Response(
+                    {"message": "No drivers available near your pickup location. Please try again shortly."},
+                    status=http_status.HTTP_404_NOT_FOUND
+                )
+
+            eligible_drivers = DriverProfile.objects.filter(
+                user_id__in=nearby_drivers_ids,
+                status=DriverProfile.Status.AVAILABLE,
+                verified=True,
+                vehicle__isnull=False,
+            ).select_related("vehicle")
+
+            logger.warning(f"[RideSearch] eligible_drivers count: {eligible_drivers.count()}")
+
+            if not eligible_drivers.exists():
+                return Response(
+                    {"message": "No verified drivers with a vehicle are available right now."},
+                    status=http_status.HTTP_404_NOT_FOUND
+                )
+
+            try:
+                raw_location = get_drivers_locations(city, eligible_drivers)
+                logger.warning(f"[RideSearch] raw_location from Redis: {raw_location}")
+                if not raw_location or all(loc is None for loc in raw_location):
+                    raise ValueError("All driver locations are missing from Redis.")
+            except Exception as e:
+                logger.error(f"[RideSearch] Driver location fetch failed: {e}")
+                return Response(
+                    {"message": "Could not retrieve driver locations. Please try again."},
+                    status=http_status.HTTP_503_SERVICE_UNAVAILABLE
+                )
+
+            try:
+                driver_eta = engine.batch_eta_minutes(pickup_lat, pickup_lng, raw_location)
+                logger.warning(f"[RideSearch] driver_eta: {driver_eta}")
+                if not driver_eta:
+                    raise ValueError("ETA engine returned empty results.")
+            except Exception as e:
+                logger.error(f"[RideSearch] ETA calculation failed: {e}")
+                return Response(
+                    {"message": "Could not calculate driver ETAs. Please try again."},
+                    status=http_status.HTTP_503_SERVICE_UNAVAILABLE
+                )
+
+            best_eta = {}
+            for driver, eta in zip(eligible_drivers, driver_eta):
                 vehicle_type = driver.vehicle.vehicle_type
-                best_eta[vehicle_type] = eta
-            else:
-                best_eta[vehicle_type] = min(best_eta[vehicle_type], eta)
+                if vehicle_type not in best_eta:
+                    best_eta[vehicle_type] = eta
+                else:
+                    best_eta[vehicle_type] = min(best_eta[vehicle_type], eta)
 
-        options = []
+            options = [
+                {
+                    "vehicle_type": vt, 
+                    "pickup_eta": eta,
+                    "fare": cal_fare(vt, distance_km, duration_min)
+                }
+                for vt, eta in best_eta.items()
+            ]
+            options.sort(key=lambda x: x["pickup_eta"])
 
-        for vehicle_type, eta in best_eta.items():
-            options.append({
-                "vehicle_type": vehicle_type,
-                "pickup_eta":eta,
-                "duration_min": duration_min,
-                "distance_km": distance_km
-            })
+            logger.warning(f"[RideSearch] final options: {options}")
+            return Response({"options": options})
 
-        options.sort(key=lambda x:x["pickup_eta"])
-        return Response({"options": options, "geometry": geometry})
+        except Exception as e:
+            logger.error(f"[RideSearch] Unhandled EXCEPTION: {str(e)}", exc_info=True)
+            return Response({"error": str(e)}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class CurrentRideView(APIView):
     def get(self, request):

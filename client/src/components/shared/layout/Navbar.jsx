@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom"
-import { logoutRequest } from "../../api/authApi"
-import { useUserProfile } from "../../hooks/auth";
+import { logoutRequest } from "../../../api/authApi";
+import { useUserProfile } from "../../../hooks/auth";
 import { Avatar, Dropdown, Label } from "@heroui/react";
 import { ArrowUpRightFromSquare } from "lucide-react";
 
 
 function Navbar() {
-    const { data, isError, error } = useUserProfile()
+    const { data, isError } = useUserProfile()
     function handleLogout() {
         logoutRequest();
     }

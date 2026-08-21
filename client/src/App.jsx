@@ -1,7 +1,8 @@
 import { Route, Routes } from "react-router-dom"
-import LandingPage from "./components/LandingPage"
+import LandingPage from "./pages/public/LandingPage"
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
+import RideSearch from "./pages/rider/RideSearch"
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/ride-search" element={<RideSearch />} />
       </Routes>
     </div>
   )

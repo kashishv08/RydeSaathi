@@ -8,7 +8,7 @@ function Login() {
     const [step, setStep] = useState(1);
     const [email, setemail] = useState()
     const [otp, setOtp] = useState("")
-    const { mutate: sendOtpMutate, data, error, isError } = useSendOtp()
+    const { mutate: sendOtpMutate, error, isError } = useSendOtp()
     const { mutate: verifyOtpMutate, error: verifyerror, isError: isVerifyError } = useVerifyOtp()
 
     function handleSendOtp(e) {
