@@ -1,7 +1,6 @@
-
-import Navbar from './layout/Navbar';
-import Footer from './layout/Footer';
-import Hero from './layout/Hero';
+import Navbar from "../../components/shared/layout/Navbar";
+import Footer from "../../components/shared/layout/Footer";
+import Hero from "../../components/shared/layout/Hero";
 
 export default function LandingPage() {
 
