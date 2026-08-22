@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from "../../components/shared/layout/Navbar";
-import LocationInput from "../../components/shared/ui/LocationInput";
+import LocationInputGroup from '../../components/rider/LocationInputGroup';
 import { useFetchRoutePolyline, useRideSearch } from '../../hooks/rider';
 import { toast } from "@heroui/react";
 import NearDriver from '../../components/rider/NearDriver';
+import RequestingRideModal from '../../components/rider/RequestingRideModal';
+import RideListShimmer from '../../components/rider/RideListShimmer';
+import RideMap from '../../components/rider/RideMap';
 import { ChevronDown, ChevronUp, Percent } from 'lucide-react';
-const LOCATIONIQ_KEY = import.meta.env.VITE_LOCATIONIQ_KEY;
 
 export default function RideSearch() {
     const { state } = useLocation();
@@ -16,10 +18,9 @@ export default function RideSearch() {
     const [isRouteExpanded, setIsRouteExpanded] = useState(!searchTriggered);
     const [activeInput, setActiveInput] = useState(null);
     const [cachedOptions, setCachedOptions] = useState(null);
+    const [isRequestingRide, setIsRequestingRide] = useState(false);
+    const navigate = useNavigate();
 
-    const mapContainerRef = useRef(null);
-    const mapRef = useRef(null);
-    const markersRef = useRef([]);
     const locationInputsRef = useRef(null);
 
     useEffect(() => {
@@ -34,10 +35,10 @@ export default function RideSearch() {
         };
     }, []);
 
-    const { data: routeData, error, isFetching: isRouteFetching } = useFetchRoutePolyline({ 
-        pickup: pickupCoords, 
-        drop: dropCoords, 
-        enabled: !!(pickupCoords && dropCoords) 
+    const { data: routeData, error, isFetching: isRouteFetching } = useFetchRoutePolyline({
+        pickup: pickupCoords,
+        drop: dropCoords,
+        enabled: !!(pickupCoords && dropCoords)
     });
 
     const distance_km = routeData?.distanceMeters ? routeData.distanceMeters / 1000 : null;
@@ -58,100 +59,10 @@ export default function RideSearch() {
     }, [rideData]);
 
     useEffect(() => {
-        if (mapRef.current) return;
-        window.locationiq.key = LOCATIONIQ_KEY;
-
-        const map = new window.maplibregl.Map({
-            container: mapContainerRef.current,
-            style: window.locationiq.getLayer("Streets"),
-            zoom: 13,
-            center: [77.2090, 28.6139]
-        });
-
-        mapRef.current = map;
-
-        return () => {
-            if (mapRef.current) {
-                mapRef.current.remove();
-                mapRef.current = null;
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        const map = mapRef.current;
-        if (!map || !pickupCoords || !dropCoords || !routeData) return;
-
-        function drawRoute() {
-            const geometry = routeData.geometry;
-            const durationMins = Math.ceil(routeData.durationSeconds / 60);
-
-            if (map.getSource('route')) {
-                map.removeLayer('route');
-                map.removeSource('route');
-            }
-
-            markersRef.current.forEach(m => m.remove());
-            markersRef.current = [];
-
-            map.addSource('route', {
-                'type': 'geojson',
-                'data': { 'type': 'Feature', 'properties': {}, 'geometry': geometry }
-            });
-
-            map.addLayer({
-                'id': 'route',
-                'type': 'line',
-                'source': 'route',
-                'layout': { 'line-join': 'round', 'line-cap': 'round' },
-                'paint': { 'line-color': '#000000', 'line-width': 4 }
-            });
-
-            const startEl = document.createElement('div');
-            startEl.className = 'flex items-center bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden cursor-pointer';
-            startEl.innerHTML = `
-                <div class="bg-black text-white px-3 py-2 text-center text-sm font-bold leading-tight">
-                    ${durationMins}<br/>min
-                </div>
-                <div class="px-4 py-2 font-semibold text-black whitespace-nowrap">
-                    From ${pickupCoords.name || "Pickup"} &gt;
-                </div>
-            `;
-            const startMarker = new window.maplibregl.Marker({ element: startEl, offset: [0, -20] })
-                .setLngLat([pickupCoords.lon, pickupCoords.lat])
-                .addTo(map);
-
-            const endEl = document.createElement('div');
-            endEl.className = 'bg-white border border-gray-200 rounded-lg shadow-md px-4 py-2 font-semibold text-black whitespace-nowrap cursor-pointer';
-            endEl.innerHTML = `To ${dropCoords.name || "Dropoff"} &gt;`;
-
-            const endMarker = new window.maplibregl.Marker({ element: endEl, offset: [0, -20] })
-                .setLngLat([dropCoords.lon, dropCoords.lat])
-                .addTo(map);
-
-            markersRef.current = [startMarker, endMarker];
-
-            const bounds = new window.maplibregl.LngLatBounds()
-                .extend([pickupCoords.lon, pickupCoords.lat])
-                .extend([dropCoords.lon, dropCoords.lat]);
-            map.fitBounds(bounds, { padding: 100 });
-        }
-
-        drawRoute();
-    }, [pickupCoords, dropCoords, routeData]);
-
-    useEffect(() => {
         if (error) {
             toast.warning("There is no route available for the given location");
-            const map = mapRef.current;
-            if (map) {
-                if (map.getSource('route')) {
-                    map.removeLayer('route');
-                    map.removeSource('route');
-                }
-                markersRef.current.forEach(m => m.remove());
-                markersRef.current = [];
-            }
+            setPickupCoords()
+            setDropCoords()
         }
     }, [error]);
 
@@ -162,11 +73,8 @@ export default function RideSearch() {
         }
     }, [rideError]);
 
-
-
     return (
         <>
-
             <div className="h-screen flex flex-col overflow-hidden">
                 <Navbar />
                 <div className="flex flex-col md:flex-row flex-1 overflow-hidden bg-white min-h-0">
@@ -178,61 +86,48 @@ export default function RideSearch() {
                                 // SEARCH MODE (Screenshots 1 & 2)
                                 <>
                                     <h2 className="text-3xl font-bold mb-6 text-black">Get a ride</h2>
-                                    
+
                                     <div className="bg-[#e6f4ea] text-[#137333] px-3 py-2 rounded-lg text-sm font-medium flex items-center mb-4">
                                         <Percent size={14} className="mr-2" />
                                         9% off your next ride. Up to ₹1,000 per ride.
                                     </div>
 
-                                    <div className="space-y-3 relative mb-6" ref={locationInputsRef}>
-                                        <div className="absolute left-[20px] top-10 bottom-10 w-0.5 bg-black z-0"></div>
-                                        <div className={`relative ${activeInput === 'pickup' || activeInput === null ? 'z-20' : 'z-10'}`}>
-                                            <LocationInput
-                                                placeholder="Pickup location"
-                                                initialValue={pickupCoords?.name || ""}
-                                                isActive={activeInput === 'pickup'}
-                                                onFocus={() => setActiveInput('pickup')}
-                                                onSelectLocation={(loc) => {
-                                                    setPickupCoords(loc);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className={`relative ${activeInput === 'dropoff' ? 'z-20' : 'z-10'}`}>
-                                            <LocationInput
-                                                placeholder="Dropoff location"
-                                                initialValue={dropCoords?.name || ""}
-                                                isActive={activeInput === 'dropoff'}
-                                                onFocus={() => setActiveInput('dropoff')}
-                                                onSelectLocation={(loc) => {
-                                                    setDropCoords(loc);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <button 
+                                    <LocationInputGroup
+                                        extraClasses="mb-6"
+                                        containerRef={locationInputsRef}
+                                        activeInput={activeInput}
+                                        setActiveInput={setActiveInput}
+                                        pickupCoords={pickupCoords}
+                                        setPickupCoords={setPickupCoords}
+                                        dropCoords={dropCoords}
+                                        setDropCoords={setDropCoords}
+                                        setSearchTriggered={setSearchTriggered}
+                                    />
+
+                                    <button
                                         onClick={() => {
                                             if (!pickupCoords || !dropCoords) {
                                                 toast.warning("Please select both pickup and dropoff locations.");
                                                 return;
                                             }
+                                            setCachedOptions(null);
                                             setSearchTriggered(true);
                                             setIsRouteExpanded(false);
                                         }}
-                                        disabled={isRouteFetching || isRideFetching}
+                                        disabled={isRouteFetching || isRideFetching || !routeData}
                                         className="w-full bg-black text-white font-bold text-lg py-3.5 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
                                     >
-                                        {(isRouteFetching || isRideFetching) && (
+                                        {(isRideFetching) && (
                                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         )}
-                                        {isRouteFetching || isRideFetching ? "Searching..." : "Search"}
+                                        {isRideFetching ? "Searching..." : "Search"}
                                     </button>
                                 </>
                             ) : (
                                 // RESULT MODE (Screenshots 3 & 4)
                                 <>
                                     <h2 className="text-3xl font-bold mb-6 text-black">Choose a ride</h2>
-                                    
+
                                     {!isRouteExpanded ? (
                                         // COLLAPSED (Screenshot 3)
                                         <div
@@ -260,50 +155,53 @@ export default function RideSearch() {
                                                     <ChevronUp size={20} className="text-black" />
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="bg-[#e6f4ea] text-[#137333] px-3 py-2 rounded-lg text-sm font-medium flex items-center mb-4">
                                                 <Percent size={14} className="mr-2" />
                                                 9% off your next ride. Up to ₹1,000 per ride.
                                             </div>
 
-                                            <div className="space-y-3 relative" ref={locationInputsRef}>
-                                                <div className="absolute left-[20px] top-10 bottom-10 w-0.5 bg-black z-0"></div>
-                                                <div className={`relative ${activeInput === 'pickup' || activeInput === null ? 'z-20' : 'z-10'}`}>
-                                                    <LocationInput
-                                                        placeholder="Pickup location"
-                                                        initialValue={pickupCoords?.name || ""}
-                                                        isActive={activeInput === 'pickup'}
-                                                        onFocus={() => setActiveInput('pickup')}
-                                                        onSelectLocation={(loc) => {
-                                                            setPickupCoords(loc);
-                                                            setSearchTriggered(false); // Revert to Search Mode
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div className={`relative ${activeInput === 'dropoff' ? 'z-20' : 'z-10'}`}>
-                                                    <LocationInput
-                                                        placeholder="Dropoff location"
-                                                        initialValue={dropCoords?.name || ""}
-                                                        isActive={activeInput === 'dropoff'}
-                                                        onFocus={() => setActiveInput('dropoff')}
-                                                        onSelectLocation={(loc) => {
-                                                            setDropCoords(loc);
-                                                            setSearchTriggered(false); // Revert to Search Mode
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
+                                            <LocationInputGroup
+                                                containerRef={locationInputsRef}
+                                                activeInput={activeInput}
+                                                setActiveInput={setActiveInput}
+                                                pickupCoords={pickupCoords}
+                                                setPickupCoords={setPickupCoords}
+                                                dropCoords={dropCoords}
+                                                setDropCoords={setDropCoords}
+                                                setSearchTriggered={setSearchTriggered}
+                                            />
                                         </div>
                                     )}
 
-                                    {cachedOptions && (
+                                    {(!cachedOptions || isRouteFetching || isRideFetching) ? (
+                                        <RideListShimmer />
+                                    ) : (
                                         <div className="flex-1 flex flex-col relative">
-                                            {(isRouteFetching || isRideFetching) && (
-                                                <div className="absolute inset-0 bg-white/60 z-20 flex items-center justify-center rounded-xl">
-                                                    <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
-                                                </div>
-                                            )}
-                                            <NearDriver options={cachedOptions} />
+                                            <NearDriver
+                                                options={cachedOptions}
+                                                onRequest={(selectedOption) => {
+                                                    setIsRequestingRide(true);
+
+                                                    const ridePayload = {
+                                                        pickup_lat: pickupCoords.lat,
+                                                        pickup_lng: pickupCoords.lon,
+                                                        drop_lat: dropCoords.lat,
+                                                        drop_lng: dropCoords.lon,
+                                                        pickup_address: pickupCoords.name,
+                                                        drop_address: dropCoords.name,
+                                                        vehicle_type: selectedOption.vehicle_type,
+                                                        route_geometry: routeData.geometry,
+                                                        route_duration_min: Math.round(routeData.durationSeconds / 60),
+                                                        route_distance_km: parseFloat((routeData.distanceMeters / 1000).toFixed(2)),
+                                                        amount: selectedOption.fare
+                                                    }
+                                                    setTimeout(() => {
+                                                        navigate('/ride/create', { state: { ridePayload: ridePayload } });
+                                                    }, 2000);
+                                                }}
+                                            />
+                                            <RequestingRideModal isOpen={isRequestingRide} />
                                         </div>
                                     )}
                                 </>
@@ -314,7 +212,7 @@ export default function RideSearch() {
                     {/* Right Map - Fixed */}
                     <div className="flex-1 relative bg-white min-h-0 overflow-hidden p-6">
                         <div className="w-full h-full relative rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.1)]">
-                            <div ref={mapContainerRef} className="absolute inset-0 w-full h-full"></div>
+                            <RideMap pickup={pickupCoords} drop={dropCoords} routeData={routeData} />
                         </div>
                     </div>
                 </div>

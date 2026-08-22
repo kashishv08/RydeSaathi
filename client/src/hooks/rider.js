@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { autoCompleteAddressApi, fetchRoutePolylineApi, rideSearchApi } from "../api/riderApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { autoCompleteAddressApi, fetchRoutePolylineApi, rideCreateApi, rideSearchApi } from "../api/riderApi";
 
 function useAutoCompleteAdd(search) {
     return useQuery({
@@ -28,6 +28,15 @@ export function useRideSearch(loc) {
         queryKey: ["ride-search", loc],
         queryFn: () => rideSearchApi(loc),
         enabled: (loc?.enabled !== false) && !!loc?.pickup && !!loc?.distance_km,
+        retry: false,
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 5,
+    })
+}
+
+export function useRideCreate() {
+    return useMutation({
+        mutationFn: (ride) => rideCreateApi(ride),
         retry: false,
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,

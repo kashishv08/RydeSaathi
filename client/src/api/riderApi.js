@@ -10,6 +10,7 @@ export const autoCompleteAddressApi = async (search) => {
 export const fetchRoutePolylineApi = async ({ pickup, drop }) => {
     const response = await axiosInstanceNoAuth.get(`https://us1.locationiq.com/v1/directions/driving/${pickup.lon},${pickup.lat};${drop.lon},${drop.lat}?key=${LOCATIONIQ_KEY}&geometries=geojson&overview=full`);
     const data = response.data;
+    console.log("data", data)
     return {
         geometry: data.routes[0].geometry,
         durationSeconds: data.routes[0].duration,
@@ -26,5 +27,10 @@ export const rideSearchApi = async (loc) => {
             duration_min: loc.duration_min
         }
     });
+    return res;
+}
+
+export const rideCreateApi = async (ride) => {
+    const res = await axiosInstance.post("api/rides/create/", ride);
     return res;
 }

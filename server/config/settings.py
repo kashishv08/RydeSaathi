@@ -186,8 +186,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
         "CONFIG": {
-            "hosts": ["redis://127.0.0.1:6379/0"],
-            # "CONFIG": {"hosts": [REDIS_URL]},
+            "hosts": [config("REDIS_URL", default="redis://127.0.0.1:6379/0")],
         },
     }
 }
@@ -198,6 +197,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+LOCATIONIQ_KEY = config("LOCATIONIQ_KEY")
 
 RAZORPAY_WEBHOOK_SECRET=config("RAZORPAY_WEBHOOK_SECRET")
 RAZORPAY_KEY_ID=config("RAZORPAY_KEY_ID")

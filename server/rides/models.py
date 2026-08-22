@@ -19,10 +19,10 @@ class Ride(models.Model):
     status = models.CharField(max_length=15, choices=Status.choices, default=Status.REQUESTED)
     vehicle_type = models.CharField(max_length=20, choices=VehicleType.choices, default=VehicleType.MOTO, null=True, blank=True)
 
-    pickup_lat = models.DecimalField(max_digits=9, decimal_places=6)
-    pickup_lng = models.DecimalField(max_digits=9, decimal_places=6)
-    drop_lat = models.DecimalField(max_digits=9, decimal_places=6)
-    drop_lng = models.DecimalField(max_digits=9, decimal_places=6)
+    pickup_lat = models.DecimalField(max_digits=11, decimal_places=9)
+    pickup_lng = models.DecimalField(max_digits=11, decimal_places=9)
+    drop_lat = models.DecimalField(max_digits=11, decimal_places=9)
+    drop_lng = models.DecimalField(max_digits=11, decimal_places=9)
 
     pickup_address = models.TextField(null=True, blank=True)
     drop_address = models.TextField(null=True, blank=True)

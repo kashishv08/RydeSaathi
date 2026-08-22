@@ -30,11 +30,11 @@ def get_drivers_locations(city, drivers):
 
 def set_driver_offer_lock(driver_id, ride_id):
     lock_key = f"driver:offer:{driver_id}"
-    return redis_client.set(lock_key, str(ride_id),nx=True, ex=30)
+    return redis_client.set(lock_key, str(ride_id),nx=True, ex=45)
 
 def set_ride_offer_batch_lock(ride_id, driver_ids):
     lock_key = f"ride:offer_batch:{ride_id}"
-    return redis_client.set(lock_key, ",".join(driver_ids), ex=30)
+    return redis_client.set(lock_key, ",".join(driver_ids), ex=45)
 
 def get_ride_from_key(driver_id):
     key = f"driver:offer:{driver_id}"

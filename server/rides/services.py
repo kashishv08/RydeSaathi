@@ -34,19 +34,18 @@ def transition_ride(ride_id, new_status, cancel_reason=None):
         if new_status not in allowed:
             raise ValidationError(f"Cannot transition ride from {ride.status} to {new_status}. " f"Allowed: {', '.join(allowed) if allowed else 'none (terminal state)'}.")
         ride.status = new_status
-        notify_rider_of_status(ride_id, new_status) 
         ts = TIMESTAMP_FIELD[ride.status]
         if ts:
             setattr(ride, ts, timezone.now()) 
             ride.save(update_fields=["status", ts])
+        else:
+            ride.save(update_fields=["status"])
 
         if new_status == Ride.Status.CANCELLED and cancel_reason:
             ride.cancel_reason =  cancel_reason
             ride.save(update_fields=["cancel_reason"])
 
         if new_status == Ride.Status.COMPLETED:
-            ride.amount = cal_fare(ride.vehicle_type, float(ride.route_distance_km), float(ride.route_duration_min))
-
             razorpay_order_id = create_order(ride.amount, ride.id)
             Payment.objects.create(
                 status = Payment.Status.PENDING,
@@ -54,10 +53,7 @@ def transition_ride(ride_id, new_status, cancel_reason=None):
                 ride = ride,
                 amount = ride.amount   
             )
-
-            ride.save(update_fields=["status", "amount"])
-        else:
-            ride.save(update_fields=["status"])
+        notify_rider_of_status(ride_id, new_status) 
 
         if new_status in [Ride.Status.COMPLETED, Ride.Status.CANCELLED]:
             if ride.driver_id:

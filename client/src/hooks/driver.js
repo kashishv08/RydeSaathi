@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { driverProfile } from "../api/driverApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { driverPing, driverProfile, driverToggleMode } from "../api/driverApi";
 
 export const useDriverProfile = (options = {}) => {
     return useQuery({
@@ -7,5 +7,19 @@ export const useDriverProfile = (options = {}) => {
         queryFn: driverProfile,
         retry: false,
         ...options
+    })
+}
+
+export const useDriverPing = () => {
+    return useMutation({
+        mutationFn: (loc) => driverPing(loc),
+        retry: false,
+    })
+}
+
+export const useDriverToggle = () => {
+    return useMutation({
+        mutationFn: (mode) => driverToggleMode(mode),
+        retry: false
     })
 }

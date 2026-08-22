@@ -3,7 +3,7 @@ import { User, Banknote, ChevronDown } from 'lucide-react';
 import { vehicleDetails } from '../../constants/vehicleImages';
 import { getArrivalTime } from '../../utils/vehicleHelpers';
 
-export default function NearDriver({ options = [] }) {
+export default function NearDriver({ options = [], onRequest }) {
     const [selectedRide, setSelectedRide] = useState(options[0]?.vehicle_type || null);
 
     if (!options || options.length === 0) return null;
@@ -75,8 +75,14 @@ export default function NearDriver({ options = [] }) {
                             </div>
                             <ChevronDown size={20} className="text-black" />
                         </div>
-                        
-                        <button className="flex-1 bg-black text-white font-bold text-xl py-3.5 rounded-xl hover:bg-gray-800 transition-colors">
+
+                        <button
+                            onClick={() => {
+                                const selectedOption = options.find(o => o.vehicle_type == selectedRide);
+                                onRequest(selectedOption)
+                            }}
+                            className="flex-1 bg-black text-white font-bold text-xl py-3.5 rounded-xl hover:bg-gray-800 transition-colors"
+                        >
                             Request {vehicleDetails[selectedRide]?.name}
                         </button>
                     </div>

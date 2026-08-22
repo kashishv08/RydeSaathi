@@ -12,8 +12,9 @@ function Hero() {
 
     function handleSearchClick() {
         if (pickupCoords?.lat && dropCoords?.lat) {
-            navigate('/ride-search', { state: { pickup: pickupCoords, drop: dropCoords } })
+            navigate('/ride/search', { state: { pickup: pickupCoords, drop: dropCoords } })
         }
+        else navigate("/ride/search")
     }
 
 

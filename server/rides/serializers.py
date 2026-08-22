@@ -4,7 +4,7 @@ from .models import Ride
 class RideCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model=Ride
-        fields = ["pickup_lat","pickup_lng","drop_lat","drop_lng", "vehicle_type"]
+        fields = ["pickup_lat","pickup_lng","drop_lat","drop_lng", "vehicle_type", "route_geometry", "route_duration_min" , "route_distance_km", "pickup_address", "drop_address","amount"]
 
 class RideSerializer(serializers.ModelSerializer):
     rider_email  = serializers.EmailField(source="rider.email", read_only=True)

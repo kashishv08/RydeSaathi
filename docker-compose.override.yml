@@ -2,3 +2,11 @@ services:
   backend:
     # Use Django's dev server which wraps Daphne and provides auto-reloading
     command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DB_HOST=db
+
+  celery_worker:
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DB_HOST=db

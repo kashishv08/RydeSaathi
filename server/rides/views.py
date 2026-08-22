@@ -30,29 +30,18 @@ class RideCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         created_ride = serializer.save(rider=request.user)
 
-        route = engine.get_route(float(created_ride.pickup_lat), float(created_ride.pickup_lng), float(created_ride.drop_lat), float(created_ride.drop_lng))
-        created_ride.route_geometry = route["geometry"]
-        created_ride.route_distance_km = route["distance_km"]
-        created_ride.route_duration_min = route["duration_min"]
-
         pickup_location = get_location_from_coord(float(created_ride.pickup_lat),float(created_ride.pickup_lng))
-        drop_location = get_location_from_coord(float(created_ride.drop_lat),float(created_ride.drop_lng))
-
-        created_ride.pickup_address = pickup_location["address"]
-        created_ride.drop_address = drop_location["address"]
         created_ride.city = pickup_location["city"]
-
-        created_ride.save(update_fields=["city", "drop_address","pickup_address","route_geometry", "route_distance_km", "route_duration_min"])
+        created_ride.save(update_fields=["city"])
         
         offered_driver_ids = find_and_offer_driver(created_ride)
         check_batch_timeout.apply_async(
-            args=[str(created_ride.id), 1, offered_driver_ids], countdown=30
+            args=[str(created_ride.id), 1, offered_driver_ids], countdown=30  # TODO: restore to 30 in prod
         )
 
         expire_ride_window.apply_async(
-            args=[str(created_ride.id)], countdown=300
+            args=[str(created_ride.id)], countdown=60  # TODO: restore to 300 in prod
         )
-
 
         ride = RideSerializer(created_ride)
         return Response(ride.data, status=http_status.HTTP_201_CREATED)
@@ -60,7 +49,7 @@ class RideCreateView(APIView):
 
 class RideDetailView(APIView):
     authentication_classes=[]
-    paermission_classes = []
+    permission_classes = []
     def get(self, request, ride_id):
         ride = get_object_or_404(Ride, pk=ride_id)
         if request.user != ride.rider and request.user != ride.driver:
@@ -196,7 +185,8 @@ class RideSearchView(APIView):
                 )
 
             try:
-                driver_eta = engine.batch_eta_minutes(pickup_lat, pickup_lng, raw_location)
+                destinations = [(loc[1], loc[0]) for loc in raw_location if loc is not None]
+                driver_eta = engine.batch_eta_minutes(pickup_lat, pickup_lng, destinations)
                 logger.warning(f"[RideSearch] driver_eta: {driver_eta}")
                 if not driver_eta:
                     raise ValueError("ETA engine returned empty results.")

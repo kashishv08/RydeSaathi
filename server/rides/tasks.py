@@ -22,15 +22,23 @@ def check_batch_timeout(self, ride_id, attempt, already_offered_ids):
     from .matching import find_and_offer_driver
     new_driver_ids = find_and_offer_driver(ride, radius_km, already_offered_ids)
 
+    elapsed = (timezone.now() - ride.requested_at).total_seconds()
+
     if new_driver_ids:
         all_offered = list(set(already_offered_ids + new_driver_ids))
+        logger.info(f"New drivers offered. Total Offered drivers : {len(all_offered)}")
+    else:
+        all_offered = already_offered_ids
+        logger.warning(f"No new drivers found in {radius_km}km.")
+
+    if elapsed < 270:
         check_batch_timeout.apply_async(
             args=[ride_id, attempt+1, all_offered],
-            countdown = 30
+            countdown=30
         )
-        logger.info(f"New batch is Scheduled. Total Offered drivers : {len(all_offered)}")
+        logger.info(f"Scheduled next batch check (elapsed: {int(elapsed)}s)")
     else:
-        logger.warning(f"No new drivers found in {radius_km}km.")
+        logger.info(f"Window expiring soon (elapsed: {int(elapsed)}s), stopping retries.")
 
 
 @shared_task(name="rides.expire_ride_window")
