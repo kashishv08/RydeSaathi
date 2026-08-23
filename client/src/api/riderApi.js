@@ -34,3 +34,8 @@ export const rideCreateApi = async (ride) => {
     const res = await axiosInstance.post("api/rides/create/", ride);
     return res;
 }
+
+export const rideDetailApi = async () => {
+    const res = await axiosInstance.get("api/rides/");
+    return res;
+}

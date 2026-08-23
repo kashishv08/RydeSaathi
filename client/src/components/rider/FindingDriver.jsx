@@ -1,5 +1,6 @@
-import React from 'react';
-import { CreditCard, MapPin, Navigation } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
+import { CancelRideModal } from './CancelRideModal';
+import { Button } from '@heroui/react';
 
 export default function FindingDriver({ pickup, drop, fare, statusText, subText, onCancel }) {
     return (
@@ -47,7 +48,7 @@ export default function FindingDriver({ pickup, drop, fare, statusText, subText,
                     <div className="flex items-center gap-4">
                         <CreditCard size={24} className="text-black" />
                         <div>
-                            <div className="text-lg font-medium text-black">₹{fare?.toFixed(2) || "0.00"}</div>
+                            <div className="text-lg font-medium text-black">₹{fare || "0.00"}</div>
                             <div className="text-sm text-gray-500">Cash</div>
                         </div>
                     </div>
@@ -55,12 +56,14 @@ export default function FindingDriver({ pickup, drop, fare, statusText, subText,
             </div>
 
             <div className="mt-6 pt-4">
-                <button
-                    onClick={onCancel}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-red-700 font-medium text-lg py-3.5 rounded-xl transition-colors"
-                >
-                    Cancel ride
-                </button>
+                <CancelRideModal onConfirm={onCancel}>
+                    <Button
+                        type="button"
+                        className="w-full bg-gray-100 hover:bg-gray-200 text-red-700 font-medium text-lg py-3.5 rounded-xl transition-colors h-auto"
+                    >
+                        Cancel ride
+                    </Button>
+                </CancelRideModal>
             </div>
         </div>
     );

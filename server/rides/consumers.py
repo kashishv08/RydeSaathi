@@ -25,7 +25,8 @@ class DriverConsumer(AsyncWebsocketConsumer):
             "drop_address": event["drop_address"],
             "route_distance_km": event["route_distance_km"],
             "route_duration_min": event["route_duration_min"],
-            "timeout":event["timeout"]
+            "timeout": event["timeout"],
+            "amount": event.get("amount", 0.0)
         }))
 
     async def cancel_ride_offer(self, event):
@@ -36,7 +37,8 @@ class DriverConsumer(AsyncWebsocketConsumer):
             "drop_address": event["drop_address"],
             "route_distance_km": event["route_distance_km"],
             "route_duration_min": event["route_duration_min"],
-            "timeout":event["timeout"]
+            "timeout": event["timeout"],
+            "amount": event.get("amount", 0.0)
         }))
 
 
@@ -49,8 +51,8 @@ class RideConsumer(AsyncWebsocketConsumer):
 
         # if not self.user.is_authenticated:
         #     await self.close()
-        rider_id = self.scope["url_route"]["kwargs"]["rider_id"]
-        self.group_name = f"rider_{rider_id}"
+        ride_id = self.scope["url_route"]["kwargs"]["ride_id"]
+        self.group_name = f"ride_{ride_id}"
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 

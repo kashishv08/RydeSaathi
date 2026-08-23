@@ -19,7 +19,8 @@ def notify_driver_of_offer(driver_id, ride_id, ride):
                     "drop_address": ride.drop_address,
                     "route_distance_km": float(ride.route_distance_km),
                     "route_duration_min": float(ride.route_duration_min),
-                    "timeout": 15
+                    "timeout": 30,
+                    "amount": float(ride.amount)
                 }
             )
         except Exception as e:
@@ -47,8 +48,7 @@ def notify_driver_offer_cancelled(driver_id, ride_id, ride):
             logger.error(f"[notify_driver_offer_cancelled] WebSocket send failed: {e}")
 
 def notify_rider_of_status(ride_id, new_status):
-    rider_id = Ride.objects.get(pk=ride_id).rider.id
-    group_name = f"rider_{rider_id}"
+    group_name = f"ride_{ride_id}"
     channel_layer = get_channel_layer()
     try:
         async_to_sync(channel_layer.group_send)(
@@ -63,7 +63,7 @@ def notify_rider_of_status(ride_id, new_status):
         logger.error(f"[notify_rider_of_status] WebSocket send failed: {e}")
 
 def notify_rider_of_driver_loc(lat, lng, ride):
-    group_name = f"rider_{ride.rider.id}"
+    group_name = f"ride_{ride.id}"
     channel_layer = get_channel_layer()
     try:
         async_to_sync(channel_layer.group_send)(

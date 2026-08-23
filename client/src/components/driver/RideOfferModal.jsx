@@ -1,59 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { MapPin, Navigation, Clock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
-    const [timeLeft, setTimeLeft] = useState(15);
+    const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        if (!isOpen) {
-            setTimeLeft(15);
+        if (!isOpen || !offer) {
             return;
         }
 
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    onDecline(); // Auto-decline when time runs out
-                    return 0;
-                }
-                return prev - 1;
-            });
+        // Initialize local timer
+        let currentTimer = offer.timeout;
+        setTimeLeft(currentTimer);
+
+        const timerId = setInterval(() => {
+            currentTimer -= 1;
+            setTimeLeft(currentTimer);
+
+            if (currentTimer <= 0) {
+                clearInterval(timerId);
+                onDecline();
+            }
         }, 1000);
 
-        return () => clearInterval(timer);
-    }, [isOpen, onDecline]);
+        return () => clearInterval(timerId);
+    }, [isOpen, offer, onDecline]);
 
-    if (!offer) return null;
+    if (!offer || !offer.pickup_address) return null;
 
     return (
         <AnimatePresence>
             {isOpen && (
-                <>
+                <motion.div
+                    key="modal-container"
+                    className="absolute inset-0 z-40 pointer-events-none"
+                >
                     {/* Backdrop */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.5 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black z-40"
+                        className="absolute inset-0 bg-black pointer-events-auto"
                     />
 
                     {/* Modal */}
-                    <motion.div 
+                    <motion.div
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 overflow-hidden"
+                        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl overflow-hidden pointer-events-auto"
                     >
                         {/* Progress Bar Timer */}
                         <div className="w-full h-1.5 bg-gray-100">
-                            <motion.div 
+                            <motion.div
                                 className="h-full bg-black"
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
-                                transition={{ duration: 15, ease: "linear" }}
+                                transition={{ duration: offer.timeout || 15, ease: "linear" }}
                             />
                         </div>
 
@@ -76,7 +81,7 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                             {/* Route Info */}
                             <div className="relative pl-6 mb-8">
                                 <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-300"></div>
-                                
+
                                 <div className="relative mb-6">
                                     <div className="absolute -left-[27px] top-1 w-3.5 h-3.5 bg-black rounded-full border-2 border-white"></div>
                                     <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Pickup</h3>
@@ -92,13 +97,13 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
 
                             {/* Action Buttons */}
                             <div className="flex gap-4">
-                                <button 
+                                <button
                                     onClick={onDecline}
                                     className="flex-1 py-4 rounded-xl bg-gray-100 text-black font-bold text-lg hover:bg-gray-200 transition-colors"
                                 >
                                     Decline
                                 </button>
-                                <button 
+                                <button
                                     onClick={onAccept}
                                     className="flex-[2] py-4 rounded-xl bg-black text-white font-bold text-lg hover:bg-gray-800 transition-colors shadow-xl"
                                 >
@@ -107,7 +112,7 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                             </div>
                         </div>
                     </motion.div>
-                </>
+                </motion.div>
             )}
         </AnimatePresence>
     );

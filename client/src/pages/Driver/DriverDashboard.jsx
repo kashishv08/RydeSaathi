@@ -1,19 +1,24 @@
 import { toast } from '@heroui/react';
 import { Menu, Navigation, Power } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RideOfferModal from '../../components/driver/RideOfferModal';
 import Navbar from '../../components/shared/layout/Navbar';
 import { useDriverPing, useDriverToggle } from '../../hooks/driver';
+import { useRideAcceptDriver } from '../../hooks/rider';
+import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 import LocationSender from '../../utils/currentLocationHelper';
 
 export default function DriverDashboard() {
     const [isOnline, setIsOnline] = useState(false);
     const [showOffer, setShowOffer] = useState(false);
+    const [rideOffer, setRideOffer] = useState({});
     const navigate = useNavigate();
 
     const { mutate: driverToggle } = useDriverToggle();
-    const { mutate: driverLoc } = useDriverPing();
+    const { mutate: driverLoc, data: driverData } = useDriverPing();
+    const { mutate: rideAccept } = useRideAcceptDriver();
+    console.log(driverData);
 
     async function handleOnlineMode() {
         if (!isOnline) {
@@ -27,7 +32,6 @@ export default function DriverDashboard() {
                 }
                 driverToggle({ online: true });
                 driverLoc(data);
-
                 setIsOnline(true);
             }
             if (location.error) {
@@ -39,18 +43,38 @@ export default function DriverDashboard() {
         }
     }
 
-    // Dummy ride offer data
-    const dummyOffer = {
-        pickup_address: "123 Main St, Central Park",
-        drop_address: "456 Market St, Downtown",
-        distance_km: 4.2,
-        duration_min: 12,
-        amount: 245.50
-    };
+    useDriverLocationPing(isOnline);
+
+    useEffect(() => {
+        const wb = () => {
+            if (driverData?.data.driver_id) {
+                const socket = new WebSocket(`ws://localhost:8000/ws/driver/${driverData?.data.driver_id}/`)
+                socket.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    console.log(msg);
+
+                    if (msg.type === 'ride_offer') {
+                        setShowOffer(true);
+                        setRideOffer({
+                            pickup_address: msg.pickup_address,
+                            drop_address: msg.drop_address,
+                            distance_km: msg.route_distance_km,
+                            duration_min: msg.route_duration_min,
+                            amount: msg.amount,
+                            timeout: msg.timeout,
+                            ride_id: msg.ride_id
+                        });
+                    }
+                }
+            }
+        }
+        wb();
+    }, [isOnline, driverData])
 
     const handleAccept = () => {
         setShowOffer(false);
-        navigate('/driver/active');
+        rideAccept(rideOffer.ride_id)
+        navigate('/driver/active', { state: { ride_id: rideOffer.ride_id } });
     };
 
     const handleDecline = () => {
@@ -120,7 +144,7 @@ export default function DriverDashboard() {
                             <h2 className="text-2xl font-bold text-black">You're offline</h2>
                             <p className="text-gray-500 mt-2">Go online to start receiving ride requests.</p>
                             <button
-                                onClick={() => setIsOnline(true)}
+                                onClick={handleOnlineMode}
                                 className="w-full max-w-sm bg-black text-white font-bold py-4 rounded-xl mt-8 text-lg hover:bg-gray-800 transition-colors"
                             >
                                 GO
@@ -132,7 +156,7 @@ export default function DriverDashboard() {
                 {/* Ride Offer Modal */}
                 <RideOfferModal
                     isOpen={showOffer}
-                    offer={dummyOffer}
+                    offer={rideOffer}
                     onAccept={handleAccept}
                     onDecline={handleDecline}
                 />

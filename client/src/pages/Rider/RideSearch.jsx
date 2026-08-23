@@ -1,14 +1,14 @@
+import { toast } from "@heroui/react";
+import { ChevronDown, ChevronUp, Percent } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Navbar from "../../components/shared/layout/Navbar";
 import LocationInputGroup from '../../components/rider/LocationInputGroup';
-import { useFetchRoutePolyline, useRideSearch } from '../../hooks/rider';
-import { toast } from "@heroui/react";
 import NearDriver from '../../components/rider/NearDriver';
 import RequestingRideModal from '../../components/rider/RequestingRideModal';
 import RideListShimmer from '../../components/rider/RideListShimmer';
 import RideMap from '../../components/rider/RideMap';
-import { ChevronDown, ChevronUp, Percent } from 'lucide-react';
+import Navbar from "../../components/shared/layout/Navbar";
+import { useFetchRoutePolyline, useRideSearch } from '../../hooks/rider';
 
 export default function RideSearch() {
     const { state } = useLocation();
