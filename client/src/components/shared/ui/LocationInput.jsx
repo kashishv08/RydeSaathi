@@ -43,6 +43,7 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                 <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg">
                     <Virtualizer layout={ListLayout} layoutOptions={{ rowHeight: 50 }}>
                         <ListBox
+                            aria-label="Location suggestions"
                             className="max-h-[300px] overflow-y-auto"
                             items={data.data}
                             onAction={(key) => {

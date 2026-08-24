@@ -225,7 +225,12 @@ class RideSearchView(APIView):
 
 class CurrentRideView(APIView):
     def get(self, request):
-        active_ride = Ride.objects.filter(Q(rider=request.user) | Q(driver=request.user), status__in=[Ride.Status.REQUESTED, Ride.Status.ACCEPTED, Ride.Status.ARRIVED, Ride.Status.IN_PROGRESS]).order_by("-requested_at").first()
+        active_ride = Ride.objects.filter(
+            Q(rider=request.user) | Q(driver=request.user)
+        ).filter(
+            Q(status__in=[Ride.Status.REQUESTED, Ride.Status.ACCEPTED, Ride.Status.ARRIVED, Ride.Status.IN_PROGRESS]) |
+            Q(status=Ride.Status.COMPLETED, ride_payment__status="PENDING")
+        ).order_by("-requested_at").first()
         if active_ride:
             return Response(RideSerializer(active_ride).data)
         return Response(status=http_status.HTTP_204_NO_CONTENT)

@@ -1,3 +1,4 @@
+from .utils import generate_otp
 from .fare import cal_fare
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
@@ -40,6 +41,11 @@ def transition_ride(ride_id, new_status, cancel_reason=None):
             ride.save(update_fields=["status", ts])
         else:
             ride.save(update_fields=["status"])
+
+        if new_status == Ride.Status.ACCEPTED:
+            otp = generate_otp()
+            ride.ride_otp = otp
+            ride.save(update_fields=["ride_otp"])
 
         if new_status == Ride.Status.CANCELLED and cancel_reason:
             ride.cancel_reason =  cancel_reason

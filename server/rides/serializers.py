@@ -22,7 +22,7 @@ class RideSerializer(serializers.ModelSerializer):
             "amount", "city","pickup_address", "drop_address",
             "requested_at", "accepted_at", "arrived_at","vehicle_type",
             "started_at", "completed_at", "cancelled_at","route_geometry", "route_distance_km", "route_duration_min",
-            "payment", "driver_details", "driver_location"
+            "payment", "driver_details", "driver_location", "ride_otp"
         ]
 
     def get_payment(self, obj):

@@ -27,6 +27,7 @@ class Ride(models.Model):
     pickup_address = models.TextField(null=True, blank=True)
     drop_address = models.TextField(null=True, blank=True)
 
+    ride_otp = models.IntegerField(null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     city = models.CharField(max_length=255, db_index=True)
     route_geometry = models.JSONField(null=True, blank=True)

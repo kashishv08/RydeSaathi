@@ -29,6 +29,5 @@ export const useTransitionRide = () => {
         mutationFn: (ride) => transitionRide(ride),
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
     })
 }

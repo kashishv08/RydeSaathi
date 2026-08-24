@@ -50,15 +50,28 @@ def notify_driver_offer_cancelled(driver_id, ride_id, ride):
 def notify_rider_of_status(ride_id, new_status):
     group_name = f"ride_{ride_id}"
     channel_layer = get_channel_layer()
+    
     try:
         async_to_sync(channel_layer.group_send)(
-            group_name, 
+            group_name,  # rider grp
             {
                 "type": "sent_ride_status",
                 "ride_id": str(ride_id),
                 "ride_status": new_status
             }
         )
+        ride = Ride.objects.filter(id=ride_id).first()
+        if ride and ride.driver_id:
+            driver_group = f"driver_{ride.driver_id}"
+            async_to_sync(channel_layer.group_send)(
+                driver_group, 
+                {
+                    "type": "sent_ride_status",
+                    "ride_id": str(ride_id),
+                    "ride_status": new_status
+                }
+            )
+            
     except Exception as e:
         logger.error(f"[notify_rider_of_status] WebSocket send failed: {e}")
 

@@ -19,7 +19,7 @@ export function useDriverLocationPing(enabled = true) {
                 }
             }, 5000); // 5 seconds
         }
-        
+
         return () => {
             if (interval) clearInterval(interval);
         };

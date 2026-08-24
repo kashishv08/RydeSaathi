@@ -32,7 +32,8 @@ SECRET_KEY = config("SECRET_KEY")
 
 ALLOWED_HOSTS = [
     "feuilletonistic-rochelle-inconvincible.ngrok-free.dev",
-    "localhost"
+    "localhost",
+    "advocacy-technique-julian-television.trycloudflare.com"
 ]
 
 

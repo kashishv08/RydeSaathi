@@ -8,6 +8,8 @@ import DriverDashboard from "./pages/Driver/DriverDashboard"
 import DriverActiveRide from "./pages/Driver/DriverActiveRide"
 import DriverProfile from "./pages/Driver/DriverProfile"
 
+import { DriverWebSocketProvider } from "./contexts/DriverWebSocketContext"
+
 function App() {
   return (
     <div>
@@ -17,11 +19,17 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/ride/search" element={<RideSearch />} />
         <Route path="/ride/create" element={<RideCreate />} />
-        
+
         {/* Driver Routes */}
-        <Route path="/driver" element={<DriverDashboard />} />
-        <Route path="/driver/active" element={<DriverActiveRide />} />
-        <Route path="/driver/profile" element={<DriverProfile />} />
+        <Route path="/driver/*" element={
+          <DriverWebSocketProvider>
+            <Routes>
+              <Route path="" element={<DriverDashboard />} />
+              <Route path="active" element={<DriverActiveRide />} />
+              <Route path="profile" element={<DriverProfile />} />
+            </Routes>
+          </DriverWebSocketProvider>
+        } />
       </Routes>
     </div>
   )

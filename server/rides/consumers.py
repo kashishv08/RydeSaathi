@@ -41,6 +41,13 @@ class DriverConsumer(AsyncWebsocketConsumer):
             "amount": event.get("amount", 0.0)
         }))
 
+    async def sent_ride_status(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "status_update",
+            "ride_id": event["ride_id"],
+            "ride_status": event["ride_status"]
+        }))
+
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_name, self.channel_name)

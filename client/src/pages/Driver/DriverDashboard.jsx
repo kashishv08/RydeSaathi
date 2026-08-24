@@ -7,17 +7,20 @@ import Navbar from '../../components/shared/layout/Navbar';
 import { useDriverPing, useDriverToggle } from '../../hooks/driver';
 import { useRideAcceptDriver } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
+import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 import LocationSender from '../../utils/currentLocationHelper';
 
 export default function DriverDashboard() {
-    const [isOnline, setIsOnline] = useState(false);
+    const [isOnline, setIsOnline] = useState(() => {
+        return sessionStorage.getItem('driverIsOnline') === 'true';
+    });
     const [showOffer, setShowOffer] = useState(false);
     const [rideOffer, setRideOffer] = useState({});
     const navigate = useNavigate();
 
     const { mutate: driverToggle } = useDriverToggle();
     const { mutate: driverLoc, data: driverData } = useDriverPing();
-    const { mutate: rideAccept } = useRideAcceptDriver();
+    const { mutateAsync: rideAccept } = useRideAcceptDriver();
     console.log(driverData);
 
     async function handleOnlineMode() {
@@ -33,6 +36,7 @@ export default function DriverDashboard() {
                 driverToggle({ online: true });
                 driverLoc(data);
                 setIsOnline(true);
+                sessionStorage.setItem('driverIsOnline', 'true');
             }
             if (location.error) {
                 toast.error(location.error);
@@ -40,41 +44,45 @@ export default function DriverDashboard() {
         } else {
             driverToggle({ online: false });
             setIsOnline(false);
+            sessionStorage.setItem('driverIsOnline', 'false');
         }
     }
 
     useDriverLocationPing(isOnline);
 
+    const { lastMessage } = useDriverWebSocket();
+
     useEffect(() => {
-        const wb = () => {
-            if (driverData?.data.driver_id) {
-                const socket = new WebSocket(`ws://localhost:8000/ws/driver/${driverData?.data.driver_id}/`)
-                socket.onmessage = (event) => {
-                    const msg = JSON.parse(event.data);
-                    console.log(msg);
+        if (!lastMessage) return;
 
-                    if (msg.type === 'ride_offer') {
-                        setShowOffer(true);
-                        setRideOffer({
-                            pickup_address: msg.pickup_address,
-                            drop_address: msg.drop_address,
-                            distance_km: msg.route_distance_km,
-                            duration_min: msg.route_duration_min,
-                            amount: msg.amount,
-                            timeout: msg.timeout,
-                            ride_id: msg.ride_id
-                        });
-                    }
-                }
-            }
+        if (lastMessage.type === 'ride_offer') {
+            setShowOffer(true);
+            setRideOffer({
+                pickup_address: lastMessage.pickup_address,
+                drop_address: lastMessage.drop_address,
+                distance_km: lastMessage.route_distance_km,
+                duration_min: lastMessage.route_duration_min,
+                amount: lastMessage.amount,
+                timeout: lastMessage.timeout,
+                ride_id: lastMessage.ride_id
+            });
         }
-        wb();
-    }, [isOnline, driverData])
 
-    const handleAccept = () => {
+        if (lastMessage.type === 'cancel_ride_offer') {
+            setShowOffer(false);
+            setRideOffer(null);
+        }
+    }, [lastMessage]);
+
+    const handleAccept = async () => {
         setShowOffer(false);
-        rideAccept(rideOffer.ride_id)
-        navigate('/driver/active', { state: { ride_id: rideOffer.ride_id } });
+        try {
+            await rideAccept(rideOffer.ride_id);
+            navigate('/driver/active', { state: { ride_id: rideOffer.ride_id } });
+        } catch (error) {
+            console.error("Failed to accept ride", error);
+            toast.error("Failed to accept ride. Another driver may have taken it.");
+        }
     };
 
     const handleDecline = () => {

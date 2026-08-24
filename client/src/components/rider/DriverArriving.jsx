@@ -3,34 +3,44 @@ import { ChevronDown, ChevronUp, CreditCard, Info, MessageSquare, Phone, Star } 
 import { useRideDetails } from '../../hooks/rider';
 import { CancelRideModal } from './CancelRideModal';
 
-export default function DriverArriving({ onCancel }) {
+export default function DriverArriving({ onCancel, isInProgress = false, pickupEtaMins }) {
     const { data: rideDetail } = useRideDetails();
+    const otpArray = String(rideDetail?.data?.ride_otp).split('');
+
+    const destEtaMins = rideDetail?.data?.route_duration_min ? Math.ceil(rideDetail.data.route_duration_min) : null;
+    
+    const pickupText = pickupEtaMins ? `Pickup in ${pickupEtaMins} min${pickupEtaMins > 1 ? 's' : ''}` : "Driver arriving soon";
+    const dropoffText = destEtaMins ? `Drop-off in ${destEtaMins} min${destEtaMins > 1 ? 's' : ''}` : "Heading to Destination";
 
     return (
         <div className="border border-gray-200 rounded-xl shadow-sm bg-white flex flex-col h-full overflow-y-auto">
 
             {/* Header */}
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
-                <h2 className="text-2xl font-bold text-black mx-auto">Pickup in 10 mins</h2>
+                <h2 className="text-2xl font-bold text-black mx-auto">
+                    {isInProgress ? dropoffText : pickupText}
+                </h2>
                 <button className="text-gray-500 hover:bg-gray-100 p-1 rounded-full transition-colors absolute right-4">
                     <ChevronUp size={24} />
                 </button>
             </div>
 
-            {/* PIN Section */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-black">Share PIN with Driver</span>
-                    <Info size={16} className="text-black" />
+            {/* PIN Section - Only show when waiting for pickup */}
+            {!isInProgress && (
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-black">Share PIN with Driver</span>
+                        <Info size={16} className="text-black" />
+                    </div>
+                    <div className="flex gap-2">
+                        {otpArray.map((digit, index) => (
+                            <div key={index} className="w-8 h-10 bg-[#276ef1] text-white flex items-center justify-center font-bold text-lg rounded">
+                                {digit}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex gap-2">
-                    {[1, 0, 8, 1].map((digit, index) => (
-                        <div key={index} className="w-8 h-10 bg-[#276ef1] text-white flex items-center justify-center font-bold text-lg rounded">
-                            {digit}
-                        </div>
-                    ))}
-                </div>
-            </div>
+            )}
 
             {/* Driver Info */}
             <div className="p-4 border-b border-gray-100">

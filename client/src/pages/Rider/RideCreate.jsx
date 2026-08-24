@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DriverArriving from '../../components/rider/DriverArriving';
+import PaymentRider from '../../components/rider/PaymentRider';
 import FindingDriver from '../../components/rider/FindingDriver';
 import RideMap from '../../components/rider/RideMap';
 import Navbar from "../../components/shared/layout/Navbar";
@@ -9,12 +10,19 @@ import { RIDE_STATUS } from '../../constants';
 import { useActiveRideWebSocket } from '../../hooks/useActiveRideWebSocket';
 import { getConnectingTime } from '../../utils/vehicleHelpers';
 import { useTransitionRide } from '../../hooks/driver';
+import { toast } from '@heroui/react';
 
 export default function RideCreate() {
-    const { state } = useLocation();
+    const location = useLocation();
     const navigate = useNavigate();
 
-    const payload = state?.ridePayload;
+    const [payload] = useState(location.state?.ridePayload);
+
+    useEffect(() => {
+        if (location.state?.ridePayload) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, navigate]);
 
     const [driverloc, setDriverloc] = useState(null);
     const [initialDriverLoc, setInitialDriverLoc] = useState(null);
@@ -23,11 +31,10 @@ export default function RideCreate() {
     const [activeRideId, setActiveRideId] = useState(null);
 
     const { mutateAsync: rideCreateAsync } = useRideCreate();
-    const { data: rideDetail } = useRideDetails();
+    const { data: rideDetail, refetch: refetchRideDetails } = useRideDetails();
     const { mutate: transitionRide } = useTransitionRide();
 
     const ride = rideDetail?.data;
-    console.log(ride)
 
     const pickupCoords = ride ? {
         lat: parseFloat(ride.pickup_lat),
@@ -53,15 +60,15 @@ export default function RideCreate() {
         drop: pickupCoords ?? null,
         enabled: rideState === 'found' && !!initialDriverLoc && !!pickupCoords
     });
-    useActiveRideWebSocket(activeRideId, setRideState, setDriverloc, setInitialDriverLoc);
+    useActiveRideWebSocket(activeRideId, setRideState, setDriverloc, setInitialDriverLoc, refetchRideDetails);
 
     useEffect(() => {
         if (!payload || hasCreatedRide.current) return;
         hasCreatedRide.current = true;
+
         const createRide = async () => {
             try {
                 const res = await rideCreateAsync(payload);
-                console.log('[RideCreate] ride created:', res.data.id);
                 setActiveRideId(res.data.id);
             } catch (err) {
                 console.error('[RideCreate] failed:', err);
@@ -72,11 +79,21 @@ export default function RideCreate() {
     }, [payload, navigate, rideCreateAsync]);
 
     useEffect(() => {
+        if (!payload && rideDetail && !rideDetail.data && !activeRideId) {
+            navigate('/ride/search', { replace: true });
+        }
+    }, [payload, rideDetail, activeRideId, navigate]);
+
+    useEffect(() => {
         if (!ride) return;
 
         setActiveRideId(ride.id);
         if (ride.status === RIDE_STATUS.ACCEPTED || ride.status === RIDE_STATUS.ARRIVED) {
             setRideState('found');
+        } else if (ride.status === RIDE_STATUS.IN_PROGRESS) {
+            setRideState('in_progress');
+        } else if (ride.status === RIDE_STATUS.COMPLETED) {
+            setRideState('completed');
         }
 
         if (ride.driver_location) {
@@ -110,6 +127,13 @@ export default function RideCreate() {
         };
     }, [rideState]);
 
+    useEffect(() => {
+        if (rideState === 'paid') {
+            toast.success("Payment Successful! Ride completed.");
+            navigate('/ride/search');
+        }
+    }, [rideState, navigate]);
+
     const handleCancel = (reason = "other") => {
         const payload = {
             ride_id: activeRideId,
@@ -120,12 +144,12 @@ export default function RideCreate() {
         navigate('/ride/search')
     };
 
-    const mapPickup = (rideState === 'found' && initialDriverLoc)
+    const mapPickup = (rideState === 'in_progress' && initialDriverLoc)
         ? { ...initialDriverLoc, name: "Driver", isDriver: true }
         : pickupCoords;
 
-    const mapDrop = (rideState === 'found' && initialDriverLoc) ? pickupCoords : dropCoords;
-    const mapRoute = (rideState === 'found' && initialDriverLoc) ? driverRouteData : routeData;
+    const mapDrop = (rideState === 'in_progress' && initialDriverLoc) ? pickupCoords : dropCoords;
+    const mapRoute = (rideState === 'in_progress' && initialDriverLoc) ? driverRouteData : routeData;
 
     return (
         <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
@@ -161,7 +185,19 @@ export default function RideCreate() {
                         )}
 
                         {rideState === 'found' && (
-                            <DriverArriving onCancel={handleCancel} />
+                            <DriverArriving
+                                onCancel={handleCancel}
+                                isInProgress={false}
+                                pickupEtaMins={driverRouteData ? Math.ceil(driverRouteData.durationSeconds / 60) : null}
+                            />
+                        )}
+
+                        {rideState === 'in_progress' && (
+                            <DriverArriving onCancel={handleCancel} isInProgress={true} />
+                        )}
+
+                        {rideState === 'completed' && (
+                            <PaymentRider />
                         )}
 
                         {/* DEBUG BUTTONS - Remove before production */}

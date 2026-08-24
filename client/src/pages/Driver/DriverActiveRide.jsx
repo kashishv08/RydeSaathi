@@ -8,6 +8,7 @@ import { RIDE_STATUS } from '../../constants';
 import LocationSender from '../../utils/currentLocationHelper';
 import { getDistanceFromLatLonInKm } from '../../utils/geoHelpers';
 import { toast } from '@heroui/react';
+import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 
 export default function DriverActiveRide() {
     const navigate = useNavigate();
@@ -20,8 +21,8 @@ export default function DriverActiveRide() {
 
     const ride = rideDetailResponse?.data;
 
-    // Sync local rideStatus state with the DB status on load
     const [rideStatus, setRideStatus] = useState(ride?.status || RIDE_STATUS.ACCEPTED);
+    const [otpInput, setOtpInput] = useState('');
 
     useEffect(() => {
         if (ride?.status) {
@@ -29,30 +30,50 @@ export default function DriverActiveRide() {
         }
     }, [ride?.status]);
 
+    const { lastMessage } = useDriverWebSocket();
+
+    useEffect(() => {
+        if (!lastMessage) return;
+
+        if (lastMessage.type === "status_update") {
+            if (lastMessage.ride_status === "PAYMENT_SUCCESSFULL") {
+                toast.success("Payment received successfully!");
+                navigate('/driver');
+            } else if (lastMessage.ride_status === "CANCELLED") {
+                toast.error("The rider has cancelled the trip.");
+                navigate('/driver');
+            }
+        }
+    }, [lastMessage, navigate]);
+
     const handleAction = async () => {
         if (rideStatus === RIDE_STATUS.ACCEPTED) {
-            const currentLoc = await LocationSender();
-            if (currentLoc?.loc && ride?.pickup_lat) {
-                const distKm = getDistanceFromLatLonInKm(
-                    currentLoc.loc.lat, currentLoc.loc.lng,
-                    parseFloat(ride.pickup_lat), parseFloat(ride.pickup_lng)
-                );
+            // const currentLoc = await LocationSender();
+            // // if (currentLoc?.loc && ride?.pickup_lat) {
+            // //     const distKm = getDistanceFromLatLonInKm(
+            // //         currentLoc.loc.lat, currentLoc.loc.lng,
+            // //         parseFloat(ride.pickup_lat), parseFloat(ride.pickup_lng)
+            // //     );
 
-                if (distKm > 0.25) {
-                    toast.info(`You are still ${Math.round(distKm * 1000)} meters away from the pickup point. Get closer to mark as arrived.`);
-                    return;
-                }
-            }
+            // //     if (distKm > 0.25) {
+            // //         toast.info(`You are still ${Math.round(distKm * 1000)} meters away from the pickup point. Get closer to mark as arrived.`);
+            // //         return;
+            // //     }
+            // // }
 
             setRideStatus(RIDE_STATUS.ARRIVED);
             rideTransition({ ride_id: ride.id, status: RIDE_STATUS.ARRIVED });
         } else if (rideStatus === RIDE_STATUS.ARRIVED) {
+            console.log(otpInput, ride.ride_otp)
+            if (otpInput !== String(ride?.ride_otp)) {
+                toast.warning("Invalid OTP! Please ask the rider for the correct PIN.");
+                return;
+            }
             setRideStatus(RIDE_STATUS.IN_PROGRESS);
             rideTransition({ ride_id: ride.id, status: RIDE_STATUS.IN_PROGRESS });
         } else if (rideStatus === RIDE_STATUS.IN_PROGRESS) {
-            alert(`Ride Completed! Collected ₹${ride?.amount}`);
+            setRideStatus(RIDE_STATUS.COMPLETED);
             rideTransition({ ride_id: ride.id, status: RIDE_STATUS.COMPLETED });
-            navigate('/driver'); // Back to dashboard
         }
     };
 
@@ -61,6 +82,7 @@ export default function DriverActiveRide() {
             case RIDE_STATUS.ACCEPTED: return "Heading to Pickup";
             case RIDE_STATUS.ARRIVED: return "Arrived at Pickup";
             case RIDE_STATUS.IN_PROGRESS: return "Heading to Drop-off";
+            case RIDE_STATUS.COMPLETED: return "Waiting for Payment...";
             default: return "";
         }
     };
@@ -68,7 +90,7 @@ export default function DriverActiveRide() {
     const getActionText = () => {
         switch (rideStatus) {
             case RIDE_STATUS.ACCEPTED: return "Slide to Arrive";
-            case RIDE_STATUS.ARRIVED: return "Start Ride";
+            case RIDE_STATUS.ARRIVED: return "Verify OTP & Start";
             case RIDE_STATUS.IN_PROGRESS: return "Complete Ride";
             default: return "";
         }
@@ -146,15 +168,32 @@ export default function DriverActiveRide() {
                     </div>
                 </div>
 
+                {/* OTP Input for Arrived State */}
+                {rideStatus === RIDE_STATUS.ARRIVED && (
+                    <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p className="text-sm font-semibold text-black mb-2 text-center">Ask Rider for the 4-digit PIN</p>
+                        <input
+                            type="text"
+                            maxLength="4"
+                            value={otpInput}
+                            onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                            placeholder="0000"
+                            className="w-full text-center text-3xl font-bold tracking-[1em] py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                        />
+                    </div>
+                )}
+
                 {/* Main Action Button */}
-                <button
-                    onClick={handleAction}
-                    className="w-full bg-black text-white font-bold py-5 rounded-xl text-xl hover:bg-gray-800 transition-colors shadow-xl relative overflow-hidden group"
-                >
-                    <span className="relative z-10">{getActionText()}</span>
-                    {/* Simulated shine effect */}
-                    <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine" />
-                </button>
+                {rideStatus !== RIDE_STATUS.COMPLETED && (
+                    <button
+                        onClick={handleAction}
+                        className="w-full bg-black text-white font-bold py-5 rounded-xl text-xl hover:bg-gray-800 transition-colors shadow-xl relative overflow-hidden group"
+                    >
+                        <span className="relative z-10">{getActionText()}</span>
+                        {/* Simulated shine effect */}
+                        <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine" />
+                    </button>
+                )}
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { autoCompleteAddressApi, fetchRoutePolylineApi, rideCreateApi, rideDetailApi, rideSearchApi } from "../api/riderApi";
 import { rideAcceptDriver } from "../api/driverApi";
 
@@ -9,7 +9,7 @@ function useAutoCompleteAdd(search) {
         enabled: !!search && search.length > 2,
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+
     })
 }
 
@@ -20,7 +20,7 @@ export function useFetchRoutePolyline({ pickup, drop, enabled = true }) {
         enabled: enabled && !!pickup && !!drop,
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+
     })
 }
 
@@ -31,16 +31,17 @@ export function useRideSearch(loc) {
         enabled: (loc?.enabled !== false) && !!loc?.pickup && !!loc?.distance_km,
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
     })
 }
 
 export function useRideCreate() {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (ride) => rideCreateApi(ride),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["ride-detail"] });
+        },
         retry: false,
-        refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
     })
 }
 
@@ -49,7 +50,6 @@ export function useRideAcceptDriver() {
         mutationFn: (ride_id) => rideAcceptDriver(ride_id),
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
     })
 }
 
@@ -59,7 +59,6 @@ export function useRideDetails() {
         queryFn: rideDetailApi,
         retry: false,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
     })
 }
 
