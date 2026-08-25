@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useSendOtp, useVerifyOtp } from '../../hooks/auth';
 import { InputOTP } from "@heroui/react";
+import { toast } from "sonner";
 import { Link, useNavigate } from 'react-router-dom';
+import { Mail, ArrowRight, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 function Login() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
-    const [email, setemail] = useState()
+    const [email, setemail] = useState("")
     const [otp, setOtp] = useState("")
-    const { mutate: sendOtpMutate, error, isError } = useSendOtp()
-    const { mutate: verifyOtpMutate, error: verifyerror, isError: isVerifyError } = useVerifyOtp()
+    const { mutate: sendOtpMutate, error, isError, isPending: isSending } = useSendOtp()
+    const { mutate: verifyOtpMutate, error: verifyerror, isError: isVerifyError, isPending: isVerifying } = useVerifyOtp()
 
     function handleSendOtp(e) {
         e.preventDefault()
@@ -17,6 +19,9 @@ function Login() {
             onSuccess: () => {
                 setStep(2);
             },
+            onError: (err) => {
+                toast.error(err?.response?.data?.error || err?.response?.data?.email?.[0] || err?.message || "An error occurred");
+            }
         })
     }
 
@@ -26,102 +31,128 @@ function Login() {
             onSuccess: (res) => {
                 const role = res.data.role;
                 if (role === "DRIVER") {
-                    navigate("/");
+                    navigate("/driver");
                 } else {
-                    navigate("/");
+                    navigate("/ride/search");
                 }
+            },
+            onError: (err) => {
+                toast.error(err?.response?.data?.error || err?.response?.data?.otp?.[0] || err?.message || "Invalid OTP. Please try again.");
             }
         })
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-            <div className="card card--default w-[320px] max-w-full bg-white shadow-lg rounded-xl p-5 border border-gray-200">
-
-                <div className="card__header flex w-full items-center justify-center flex-col gap-2 relative">
-                    <span className="avatar avatar--md bg-gray-100 rounded-full p-2 mb-2">
-                        <span className="avatar__fallback avatar__fallback--default text-gray-600">
-                            <svg aria-hidden="true" height="24" role="img" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
-                                <path fill="currentColor" d="M8 8.5c3.85 0 7 2.5 7 4.5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2c0-2 3.15-4.5 7-4.5M8 10c-1.61 0-3.064.526-4.092 1.234C2.798 12.001 2.5 12.733 2.5 13a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5c0-.267-.297-1-1.408-1.766C11.064 10.526 9.609 10 8 10m0-9a3.5 3.5 0 1 1 0 7a3.5 3.5 0 0 1 0-7m0 1.5a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
-                            </svg>
-                        </span>
-                    </span>
-                    <h3 className="card__title font-bold text-xl text-gray-900">
-                        {step === 1 ? "Create an account" : "Verify Email"}
-                    </h3>
-
-                    <button className="close-button absolute -end-2 -top-2 p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
-                            <path clipRule="evenodd" d="M3.47 3.47a.75.75 0 0 1 1.06 0L8 6.94l3.47-3.47a.75.75 0 1 1 1.06 1.06L9.06 8l3.47 3.47a.75.75 0 1 1-1.06 1.06L8 9.06l-3.47 3.47a.75.75 0 0 1-1.06-1.06L6.94 8 3.47 4.53a.75.75 0 0 1 0-1.06Z" fill="currentColor" fillRule="evenodd"></path>
-                        </svg>
-                    </button>
+        <div className="flex min-h-screen bg-white font-sans">
+            {/* Left Image Section (Hidden on mobile) */}
+            <div className="hidden lg:block lg:w-1/2 relative bg-black">
+                <img 
+                    src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?q=80&w=2072&auto=format&fit=crop" 
+                    alt="Login" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-12 left-12 right-12 text-white">
+                    <h2 className="text-4xl font-bold mb-4">
+                        Welcome back to RydeSaathi.
+                    </h2>
+                    <p className="text-lg text-white/80 max-w-md">
+                        Sign in to continue your journey. Access your ride history, manage your profile, and hit the road.
+                    </p>
                 </div>
+            </div>
 
-                <div className="card__content w-full gap-3 flex flex-col mt-4">
+            {/* Right Form Section */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 xl:p-24 relative">
+                {/* Back to Home / Utility (Optional, leaving space if needed) */}
+                
+                <div className="w-full max-w-md">
+                    <div className="mb-10">
+                        <div className="w-12 h-12 bg-black text-white rounded-xl flex items-center justify-center mb-6 shadow-md shadow-black/10">
+                            {step === 1 ? <Mail className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
+                        </div>
+                        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+                            {step === 1 ? "Sign In" : "Verify Email"}
+                        </h2>
+                        <p className="text-gray-500 mt-2">
+                            {step === 1 
+                                ? "Enter your email to access your account" 
+                                : `We sent a 6-digit code to ${email}`
+                            }
+                        </p>
+                    </div>
+
                     {step === 1 ? (
-                        <>
-                            <p className="text-center text-sm font-medium text-gray-500 mb-2">
-                                Enter your email to receive a verification code.
-                            </p>
-                            <form action="" method="post" onSubmit={handleSendOtp}>
-                                <input
-                                    onChange={(e) => setemail(e.target.value)}
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
-                                />
-
-
-                                <button type='submit' className="button button--md button--primary w-full bg-black text-white py-2 rounded-md font-medium hover:bg-gray-800 transition-colors mt-1">
-                                    Send Code
-                                </button>
-                                {isError && (
-                                    <div className="mt-2 text-red-500 text-sm text-center font-medium">
-                                        <span>{error?.response?.data?.error || error?.response?.data?.email?.[0] || error?.message || "An error occurred"}</span>
+                        <form onSubmit={handleSendOtp} className="flex flex-col gap-5">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-gray-400" />
                                     </div>
-                                )}
+                                    <input
+                                        onChange={(e) => setemail(e.target.value)}
+                                        value={email}
+                                        type="email"
+                                        required
+                                        placeholder="name@example.com"
+                                        className="w-full pl-10 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all bg-gray-50 hover:bg-gray-100/50 focus:bg-white"
+                                    />
+                                </div>
+                            </div>
 
-                                <Link to={"/register"} className="text-center text-sm font-medium text-gray-500 hover:text-black mt-2 transition-colors">
-                                    Dont have Account? Register
+                            <button 
+                                type="submit" 
+                                disabled={isSending || !email}
+                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10 hover:shadow-lg hover:shadow-black/20"
+                            >
+                                {isSending ? "Sending code..." : "Continue"}
+                                {!isSending && <ArrowRight className="w-4 h-4" />}
+                            </button>
+
+                            <div className="text-center mt-6">
+                                <span className="text-sm text-gray-500">Don't have an account? </span>
+                                <Link to={"/register"} className="text-sm font-semibold text-black hover:underline transition-all">
+                                    Sign up
                                 </Link>
-
-                            </form>
-                        </>
+                            </div>
+                        </form>
                     ) : (
-                        <>
-                            <p className="text-center text-sm font-medium text-gray-500 mb-2">
-                                We sent a 6-digit code to your email.
-                            </p>
-
-                            <form action="" method="post" onSubmit={handleVerifyOtp} className="flex flex-col items-center gap-4 w-full">
-                                <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                        <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
+                            
+                            <div className="w-full py-2">
+                                <InputOTP maxLength={6} value={otp} onChange={setOtp} autoFocus>
                                     <InputOTP.Group>
-                                        <InputOTP.Slot index={0} />
-                                        <InputOTP.Slot index={1} />
-                                        <InputOTP.Slot index={2} />
+                                        <InputOTP.Slot index={0} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
+                                        <InputOTP.Slot index={1} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
+                                        <InputOTP.Slot index={2} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
                                     </InputOTP.Group>
-                                    <InputOTP.Separator />
+                                    <InputOTP.Separator className="text-gray-300" />
                                     <InputOTP.Group>
-                                        <InputOTP.Slot index={3} />
-                                        <InputOTP.Slot index={4} />
-                                        <InputOTP.Slot index={5} />
+                                        <InputOTP.Slot index={3} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
+                                        <InputOTP.Slot index={4} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
+                                        <InputOTP.Slot index={5} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
                                     </InputOTP.Group>
                                 </InputOTP>
+                            </div>
 
-                                <button type="submit" className="button button--md button--primary w-full bg-black text-white py-2 rounded-md font-medium hover:bg-gray-800 transition-colors mt-2">
-                                    Verify & Login
-                                </button>
-                                {isVerifyError && (
-                                    <div className="mt-2 text-red-500 text-sm text-center font-medium">
-                                        <span>{verifyerror?.response?.data?.error || verifyerror?.response?.data?.otp?.[0] || verifyerror?.message || "Invalid OTP. Please try again."}</span>
-                                    </div>
-                                )}
-                            </form>
+                            <button 
+                                type="submit" 
+                                disabled={isVerifying || otp.length < 6}
+                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10"
+                            >
+                                {isVerifying ? "Verifying..." : "Verify & Sign In"}
+                            </button>
 
-                            <button onClick={() => setStep(1)} className="text-center text-sm font-medium text-gray-500 hover:text-black mt-2 transition-colors">
+                            <button 
+                                type="button"
+                                onClick={() => setStep(1)} 
+                                className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-black transition-colors justify-center w-full mt-2"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
                                 Wrong email? Go back
                             </button>
-                        </>
+                        </form>
                     )}
                 </div>
             </div>

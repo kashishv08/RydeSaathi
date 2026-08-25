@@ -44,14 +44,12 @@ export default function RideSearch() {
     const distance_km = routeData?.distanceMeters ? routeData.distanceMeters / 1000 : null;
     const duration_min = routeData?.durationSeconds ? routeData.durationSeconds / 60 : null;
 
-    console.log("[Ride Search route data]**********************", routeData)
     const { data: rideData, error: rideError, isFetching: isRideFetching } = useRideSearch({
         pickup: pickupCoords,
         distance_km,
         duration_min,
         enabled: searchTriggered && !!routeData && !error
     });
-    console.log("======================", rideData, rideError)
 
     useEffect(() => {
         if (rideData?.data?.options) {
@@ -87,11 +85,6 @@ export default function RideSearch() {
                                 // SEARCH MODE (Screenshots 1 & 2)
                                 <>
                                     <h2 className="text-3xl font-bold mb-6 text-black">Get a ride</h2>
-
-                                    <div className="bg-[#e6f4ea] text-[#137333] px-3 py-2 rounded-lg text-sm font-medium flex items-center mb-4">
-                                        <Percent size={14} className="mr-2" />
-                                        9% off your next ride. Up to ₹1,000 per ride.
-                                    </div>
 
                                     <LocationInputGroup
                                         extraClasses="mb-6"
@@ -146,10 +139,6 @@ export default function RideSearch() {
                                                 <ChevronDown className="shrink-0 text-black mt-1" size={20} />
                                             </div>
                                             <div className="text-sm text-gray-500 mb-3">Leave Now</div>
-                                            <div className="bg-[#e6f4ea] text-[#137333] px-3 py-2 rounded-lg text-sm font-medium flex items-center">
-                                                <Percent size={14} className="mr-2" />
-                                                9% off your next ride. Up to ₹1,000 per ride.
-                                            </div>
                                         </div>
                                     ) : (
                                         // EXPANDED (Screenshot 4)
@@ -159,11 +148,6 @@ export default function RideSearch() {
                                                 <div className="p-1 hover:bg-gray-100 rounded-full cursor-pointer transition-colors" onClick={() => setIsRouteExpanded(false)}>
                                                     <ChevronUp size={20} className="text-black" />
                                                 </div>
-                                            </div>
-
-                                            <div className="bg-[#e6f4ea] text-[#137333] px-3 py-2 rounded-lg text-sm font-medium flex items-center mb-4">
-                                                <Percent size={14} className="mr-2" />
-                                                9% off your next ride. Up to ₹1,000 per ride.
                                             </div>
 
                                             <LocationInputGroup

@@ -8,7 +8,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { ToastProvider } from '@heroui/react'
+import { Toaster } from 'sonner'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ToastProvider placement="bottom-center" toastProps={{ classNames: { base: "max-sm:!top-4 max-sm:!bottom-auto" } }} />
+    <Toaster position="bottom-center" richColors />
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App />
