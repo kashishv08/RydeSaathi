@@ -3,14 +3,15 @@ import { ChevronDown, ChevronUp, CreditCard, Info, MessageSquare, Phone, Star } 
 import { useRideDetails } from '../../hooks/rider';
 import { CancelRideModal } from './CancelRideModal';
 
-export default function DriverArriving({ onCancel, isInProgress = false, pickupEtaMins }) {
+export default function DriverArriving({ onCancel, isInProgress = false, pickupEtaMins, destEtaMins }) {
     const { data: rideDetail } = useRideDetails();
     const otpArray = String(rideDetail?.data?.ride_otp).split('');
 
-    const destEtaMins = rideDetail?.data?.route_duration_min ? Math.ceil(rideDetail.data.route_duration_min) : null;
+    const fallbackDestEta = rideDetail?.data?.route_duration_min ? Math.ceil(rideDetail.data.route_duration_min) : null;
+    const finalDestEta = destEtaMins || fallbackDestEta;
     
     const pickupText = pickupEtaMins ? `Pickup in ${pickupEtaMins} min${pickupEtaMins > 1 ? 's' : ''}` : "Driver arriving soon";
-    const dropoffText = destEtaMins ? `Drop-off in ${destEtaMins} min${destEtaMins > 1 ? 's' : ''}` : "Heading to Destination";
+    const dropoffText = finalDestEta ? `Drop-off in ${finalDestEta} min${finalDestEta > 1 ? 's' : ''}` : "Heading to Destination";
 
     return (
         <div className="border border-gray-200 rounded-xl shadow-sm bg-white flex flex-col h-full overflow-y-auto">

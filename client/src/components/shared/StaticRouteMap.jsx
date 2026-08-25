@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const LOCATIONIQ_KEY = import.meta.env.VITE_LOCATIONIQ_KEY;
 
-export default function StaticRouteMap({ pickup, drop, routeData }) {
+export default function StaticRouteMap({ pickup, drop, routeData, isOnline }) {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef([]);
@@ -52,17 +52,40 @@ export default function StaticRouteMap({ pickup, drop, routeData }) {
             if (!pickup) return;
 
             if (!drop) {
-                // If only pickup is provided, draw a simple black marker (used for Driver Dashboard)
-                const popup = new window.maplibregl.Popup({
-                    offset: 25,
-                    closeButton: false,
-                    closeOnClick: false
-                }).setText('Hello, You are here!');
+                // If only pickup is provided, draw a custom marker (used for Driver Dashboard)
+                const el = document.createElement('div');
+                el.className = 'relative flex flex-col items-center justify-center -top-6';
+                
+                let radarHtml = '';
+                if (isOnline) {
+                    radarHtml = `
+                        <div class="absolute top-[45px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-black/15 rounded-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite] pointer-events-none"></div>
+                        <div class="absolute top-[45px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black/20 rounded-full animate-pulse pointer-events-none"></div>
+                    `;
+                }
 
-                const startMarker = new window.maplibregl.Marker({ color: "#000000" })
+                el.innerHTML = `
+                    <div class="relative z-10 flex flex-col items-center drop-shadow-xl">
+                        <svg width="34" height="50" viewBox="0 0 27 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.5 0C6.04416 0 0 6.04416 0 13.5C0 23.625 13.5 41 13.5 41C13.5 41 27 23.625 27 13.5C27 6.04416 20.9558 0 13.5 0Z" fill="black"/>
+                            <circle cx="13.5" cy="13.5" r="5" fill="white"/>
+                        </svg>
+                    </div>
+                    ${radarHtml}
+                `;
+
+                const popup = new window.maplibregl.Popup({
+                    offset: [0, -40],
+                    closeButton: false,
+                    closeOnClick: false,
+                    className: 'custom-popup-class'
+                }).setHTML('<div class="font-bold text-sm px-2 py-1 text-center">Hello, You are here!</div>');
+
+                const startMarker = new window.maplibregl.Marker({ element: el })
                     .setLngLat([pickup.lon, pickup.lat])
                     .setPopup(popup)
                     .addTo(map);
+
                 markersRef.current = [startMarker];
                 map.panTo([pickup.lon, pickup.lat]);
                 startMarker.togglePopup();
@@ -135,7 +158,7 @@ export default function StaticRouteMap({ pickup, drop, routeData }) {
         };
         updateMap();
 
-    }, [pickup, drop, routeData, isMapLoaded]);
+    }, [pickup, drop, routeData, isMapLoaded, isOnline]);
 
     return (
         <div ref={mapContainerRef} className="absolute inset-0 w-full h-full"></div>

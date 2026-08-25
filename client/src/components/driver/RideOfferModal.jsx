@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clock } from 'lucide-react';
+import { Clock, Navigation, Navigation2, Wallet, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
@@ -46,16 +46,16 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
 
                     {/* Modal */}
                     <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
+                        initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: "100%", opacity: 0, scale: 0.95 }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl overflow-hidden pointer-events-auto"
+                        className="absolute bottom-4 left-4 right-4 bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] overflow-hidden pointer-events-auto border border-gray-100/50 backdrop-blur-xl"
                     >
-                        {/* Progress Bar Timer */}
+                        {/* Progress Line */}
                         <div className="w-full h-1.5 bg-gray-100">
                             <motion.div
-                                className="h-full bg-black"
+                                className="h-full bg-black shadow-[0_0_12px_rgba(0,0,0,0.8)] rounded-r-full"
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
                                 transition={{ duration: offer.timeout || 15, ease: "linear" }}
@@ -63,51 +63,76 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                         </div>
 
                         <div className="p-6">
-                            <div className="flex justify-between items-start mb-6">
-                                <div>
-                                    <h2 className="text-3xl font-bold text-black">₹ {offer.amount}</h2>
-                                    <div className="flex items-center gap-2 text-gray-500 font-medium mt-1">
-                                        <Clock className="w-4 h-4" />
-                                        <span>{offer.duration_min} min</span>
-                                        <span>•</span>
-                                        <span>{offer.distance_km} km</span>
-                                    </div>
+                            {/* Header: Title & Timer */}
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                                    <span className="text-xs font-semibold tracking-wider uppercase text-gray-500">New Request</span>
                                 </div>
-                                <div className="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl">
+                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-bold text-sm">
                                     {timeLeft}
                                 </div>
                             </div>
 
-                            {/* Route Info */}
-                            <div className="relative pl-6 mb-8">
-                                <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-300"></div>
-
-                                <div className="relative mb-6">
-                                    <div className="absolute -left-[27px] top-1 w-3.5 h-3.5 bg-black rounded-full border-2 border-white"></div>
-                                    <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Pickup</h3>
-                                    <p className="text-lg font-semibold text-black leading-tight">{offer.pickup_address}</p>
+                            {/* Fare & Stats */}
+                            <div className="mb-5">
+                                <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">
+                                    ₹{offer.amount}
+                                </h2>
+                                
+                                <div className="flex flex-wrap gap-2">
+                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-md">
+                                        <Clock className="w-3.5 h-3.5 text-gray-500" />
+                                        <span className="text-xs font-semibold text-gray-700">{offer.duration_min} min</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-md">
+                                        <Navigation className="w-3.5 h-3.5 text-gray-500" />
+                                        <span className="text-xs font-semibold text-gray-700">{offer.distance_km} km</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-md">
+                                        <Wallet className="w-3.5 h-3.5 text-gray-500" />
+                                        <span className="text-xs font-semibold text-gray-700">Cash</span>
+                                    </div>
                                 </div>
+                            </div>
 
-                                <div className="relative">
-                                    <div className="absolute -left-[27px] top-1 w-3.5 h-3.5 bg-white border-[3px] border-black rounded-sm"></div>
-                                    <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Drop-off</h3>
-                                    <p className="text-lg font-semibold text-black leading-tight">{offer.drop_address}</p>
+                            {/* Route Info Card */}
+                            <div className="mb-6">
+                                <div className="flex gap-3 relative">
+                                    {/* Timeline graphic */}
+                                    <div className="flex flex-col items-center mt-1">
+                                        <div className="w-2 h-2 rounded-full bg-black shrink-0"></div>
+                                        <div className="w-[1.5px] h-8 bg-gray-200 my-1"></div>
+                                        <div className="w-2 h-2 rounded-sm bg-black shrink-0"></div>
+                                    </div>
+
+                                    <div className="flex-1 flex flex-col justify-between py-0.5 space-y-4">
+                                        <div>
+                                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Pickup</p>
+                                            <p className="text-sm font-medium text-gray-900 leading-snug line-clamp-2">{offer.pickup_address}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Drop-off</p>
+                                            <p className="text-sm font-medium text-gray-900 leading-snug line-clamp-2">{offer.drop_address}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex gap-4">
+                            <div className="flex gap-2">
                                 <button
                                     onClick={onDecline}
-                                    className="flex-1 py-4 rounded-xl bg-gray-100 text-black font-bold text-lg hover:bg-gray-200 transition-colors"
+                                    className="w-14 h-12 shrink-0 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all cursor-pointer"
                                 >
-                                    Decline
+                                    <X className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={onAccept}
-                                    className="flex-[2] py-4 rounded-xl bg-black text-white font-bold text-lg hover:bg-gray-800 transition-colors shadow-xl"
+                                    className="flex-1 h-12 rounded-xl bg-black text-white font-semibold text-base hover:bg-gray-900 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
                                 >
-                                    Tap to Accept
+                                    <span>Accept Ride</span>
+                                    <Navigation2 className="w-4 h-4 text-white transform rotate-90" />
                                 </button>
                             </div>
                         </div>

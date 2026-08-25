@@ -225,9 +225,9 @@ function Register() {
                                 {isVerifying ? "Verifying..." : "Verify & Complete"}
                             </button>
 
-                            <button 
+                            <button
                                 type="button"
-                                onClick={() => setStep(1)} 
+                                onClick={() => setStep(1)}
                                 className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-black transition-colors justify-center w-full mt-2"
                             >
                                 <ArrowLeft className="w-4 h-4" />

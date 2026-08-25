@@ -1,6 +1,6 @@
 import { CreditCard } from 'lucide-react';
 import { useRideDetails } from '../../hooks/rider';
-import { toast } from '@heroui/react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY
 
@@ -24,8 +24,7 @@ export default function PaymentRider() {
             "order_id": ride.payment.razorpay_order_id,
             "handler": function (response) {
                 console.log("Payment Success locally!", response);
-                toast.success("Payment Success :)")
-                navigate("/ride/search");
+                toast.success("Payment processing... Please wait.")
             },
             "prefill": {
                 "name": ride.rider_email?.split('@')[0] || "Rider",

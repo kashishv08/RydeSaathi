@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import RideOfferModal from '../../components/driver/RideOfferModal';
 import Navbar from '../../components/shared/layout/Navbar';
 import { useDriverPing, useDriverToggle } from '../../hooks/driver';
-import { useRideAcceptDriver } from '../../hooks/rider';
+import { useRideAcceptDriver, useRideDetails } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 import LocationSender from '../../utils/currentLocationHelper';
@@ -22,13 +22,26 @@ export default function DriverDashboard() {
     const { mutate: driverToggle } = useDriverToggle();
     const { mutate: driverLoc, data: driverData } = useDriverPing();
     const { mutateAsync: rideAccept } = useRideAcceptDriver();
-    console.log(driverData);
+    const { data: activeRideResp } = useRideDetails();
+    
+    const activeRide = activeRideResp?.data;
 
     async function handleOnlineMode() {
         if (!isOnline) {
+            // Optimistic update for instant UI feedback
+            setIsOnline(true);
+            sessionStorage.setItem('driverIsOnline', 'true');
+
             const location = await LocationSender();
-            if (!location) return;
-            console.log(location)
+            
+            if (!location || location.error) {
+                // Revert if failed
+                setIsOnline(false);
+                sessionStorage.setItem('driverIsOnline', 'false');
+                if (location?.error) toast.error(location.error);
+                return;
+            }
+            
             if (location?.loc) {
                 const data = {
                     "lat": location.loc.lat,
@@ -36,16 +49,12 @@ export default function DriverDashboard() {
                 }
                 driverToggle({ online: true });
                 driverLoc(data);
-                setIsOnline(true);
-                sessionStorage.setItem('driverIsOnline', 'true');
-            }
-            if (location.error) {
-                toast.error(location.error);
             }
         } else {
-            driverToggle({ online: false });
+            // Instant offline
             setIsOnline(false);
             sessionStorage.setItem('driverIsOnline', 'false');
+            driverToggle({ online: false });
         }
     }
 
@@ -92,59 +101,94 @@ export default function DriverDashboard() {
     return (
         <>
             <Navbar />
-            <div className="h-screen w-full flex flex-col bg-gray-50 relative overflow-hidden">
-                {/* Top Navigation / Status Bar */}
-                <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-6 flex justify-between items-center pointer-events-none">
-                    <button className="bg-white p-3 rounded-full shadow-lg pointer-events-auto" onClick={() => navigate('/driver/profile')}>
+            <div className="fixed inset-0 top-[60px] flex flex-col bg-gray-50 overflow-hidden">
+                {/* Top Navigation / Floating Actions */}
+                <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-6 flex justify-between items-start pointer-events-none">
+                    <button className="bg-white p-3 rounded-full shadow-lg shadow-black/5 pointer-events-auto hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate('/driver/profile')}>
                         <Menu className="w-6 h-6 text-black" />
                     </button>
 
-                    <div className="pointer-events-auto">
-                        <div className="bg-white rounded-full p-1 pl-4 pr-1 flex items-center gap-3 shadow-lg cursor-pointer" onClick={handleOnlineMode}>
-                            <span className={`text-sm font-semibold ${isOnline ? 'text-black' : 'text-gray-500'}`}>
-                                {isOnline ? 'Online' : 'Offline'}
+                    {!activeRide && (
+                        <button 
+                            onClick={handleOnlineMode}
+                            className={`pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg shadow-black/5 transition-all cursor-pointer ${isOnline ? 'bg-black text-white' : 'bg-white text-black'}`}
+                        >
+                            <span className="text-sm font-bold tracking-wide uppercase">
+                                {isOnline ? 'GO OFFLINE' : 'GO ONLINE'}
                             </span>
-                            <div className={`p-2 rounded-full transition-colors ${isOnline ? 'bg-black' : 'bg-gray-200'}`}>
-                                <Power className={`w-5 h-5 ${isOnline ? 'text-white' : 'text-gray-500'}`} />
+                            <Power className={`w-4 h-4 ${isOnline ? 'text-white' : 'text-gray-400'}`} />
+                        </button>
+                    )}
+                </div>
+
+                {/* Map Area */}
+                <div className="flex-1 relative z-0">
+                    <StaticRouteMap pickup={driverLocation} isOnline={isOnline && !activeRide} />
+
+                    {/* Gradient overlay for smooth transition to bottom sheet */}
+                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/5 to-transparent pointer-events-none z-10"></div>
+                </div>
+
+                {/* Compact Bottom Sheet */}
+                <div className="bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.08)] p-5 z-20 relative shrink-0">
+                    <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4"></div>
+
+                    {activeRide ? (
+                        <div className="flex items-center justify-between py-2 px-2">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center shadow-md">
+                                    <Navigation className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-900 tracking-tight">Active Ride</h2>
+                                    <p className="text-gray-500 text-sm font-medium">You have an ongoing trip.</p>
+                                </div>
                             </div>
+
+                            <button
+                                onClick={() => navigate('/driver/active')}
+                                className="bg-black text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-gray-900 shadow-md active:scale-95 transition-all cursor-pointer"
+                            >
+                                VIEW
+                            </button>
                         </div>
-                    </div>
-
-                    <div className="bg-white p-2 px-4 rounded-full shadow-lg pointer-events-auto font-bold text-lg">
-                        ₹ 1,250
-                    </div>
-                </div>
-
-                {/* Map Area (Dummy Background for now) */}
-                <div className="flex-1 bg-gray-200 relative">
-                    <StaticRouteMap pickup={driverLocation} />
-                </div>
-
-                {/* Bottom Status Sheet */}
-                <div className="bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] p-6 z-20 relative">
-                    <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
-
-                    {isOnline ? (
-                        <div className="flex flex-col items-center justify-center py-6">
-                            <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
-                            <h2 className="text-2xl font-bold text-black">Finding rides...</h2>
-                            <p className="text-gray-500 mt-2">You're in a busy area.</p>
-
-                            {/* DEBUG BUTTON */}
-                            <button onClick={() => setShowOffer(true)} className="mt-8 text-xs underline text-gray-400">
-                                Simulate Ride Offer
+                    ) : isOnline ? (
+                        <div className="flex items-center justify-between py-2 px-2">
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-black/10 rounded-full animate-ping"></div>
+                                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center relative z-10 border-2 border-white shadow-sm">
+                                        <Navigation className="w-5 h-5 text-black animate-pulse" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-900 tracking-tight">Finding rides...</h2>
+                                    <p className="text-gray-500 text-sm font-medium">You're in a busy area.</p>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={handleOnlineMode}
+                                className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
+                            >
+                                <Power className="w-5 h-5 text-gray-600" />
                             </button>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-6">
-                            <div className="bg-gray-100 p-4 rounded-full mb-4">
-                                <Power className="w-8 h-8 text-gray-400" />
+                        <div className="flex items-center justify-between py-2 px-2">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center shadow-inner border border-gray-100">
+                                    <Power className="w-5 h-5 text-gray-300" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-900 tracking-tight">You're offline</h2>
+                                    <p className="text-gray-500 text-sm font-medium">Tap to start receiving requests.</p>
+                                </div>
                             </div>
-                            <h2 className="text-2xl font-bold text-black">You're offline</h2>
-                            <p className="text-gray-500 mt-2">Go online to start receiving ride requests.</p>
+
                             <button
                                 onClick={handleOnlineMode}
-                                className="w-full max-w-sm bg-black text-white font-bold py-4 rounded-xl mt-8 text-lg hover:bg-gray-800 transition-colors"
+                                className="bg-black text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-gray-900 shadow-md active:scale-95 transition-all cursor-pointer"
                             >
                                 GO
                             </button>

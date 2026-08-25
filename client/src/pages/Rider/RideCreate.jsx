@@ -11,7 +11,9 @@ import { RIDE_STATUS } from '../../constants';
 import { useActiveRideWebSocket } from '../../hooks/useActiveRideWebSocket';
 import { getConnectingTime } from '../../utils/vehicleHelpers';
 import { useTransitionRide } from '../../hooks/driver';
-import { toast } from '@heroui/react';
+import { toast } from 'sonner';
+import { getDynamicEtaMins } from '../../utils/geoHelpers';
+import RideRating from '../../components/shared/RideRating';
 
 export default function RideCreate() {
     const location = useLocation();
@@ -32,10 +34,17 @@ export default function RideCreate() {
     const [activeRideId, setActiveRideId] = useState(null);
 
     const { mutateAsync: rideCreateAsync } = useRideCreate();
-    const { data: rideDetail, refetch: refetchRideDetails } = useRideDetails();
+    const { data: rideDetailResponse, refetch: refetchRideDetails } = useRideDetails();
+    
+    const [ride, setRide] = useState(rideDetailResponse?.data || null);
+    
+    useEffect(() => {
+        if (rideDetailResponse?.data) {
+            setRide(rideDetailResponse.data);
+        }
+    }, [rideDetailResponse?.data]);
+    
     const { mutate: transitionRide } = useTransitionRide();
-
-    const ride = rideDetail?.data;
 
     const pickupCoords = ride ? {
         lat: parseFloat(ride.pickup_lat),
@@ -84,10 +93,10 @@ export default function RideCreate() {
     }, [payload, navigate, rideCreateAsync]);
 
     useEffect(() => {
-        if (!payload && rideDetail && !rideDetail.data && !activeRideId) {
+        if (!payload && rideDetailResponse && !rideDetailResponse.data && !activeRideId) {
             navigate('/ride/search', { replace: true });
         }
-    }, [payload, rideDetail, activeRideId, navigate]);
+    }, [payload, rideDetailResponse, activeRideId, navigate]);
 
     useEffect(() => {
         if (!ride) return;
@@ -133,11 +142,19 @@ export default function RideCreate() {
     }, [rideState]);
 
     useEffect(() => {
-        if (rideState === 'paid') {
-            toast.success("Payment Successful! Ride completed.");
-            navigate('/ride/search');
-        }
-    }, [rideState, navigate]);
+        if (!activeRideId) return;
+        const interval = setInterval(() => {
+            if (rideState === 'in_progress') {
+                refetchRideDetails();
+            }
+        }, 30000); // Poll every 30s as a fallback
+        return () => clearInterval(interval);
+    }, [activeRideId, rideState, refetchRideDetails]);
+
+    const handleRatingComplete = () => {
+        toast.success("Ride completed successfully!");
+        navigate('/ride/search', { replace: true });
+    };
 
     const handleCancel = (reason = "other") => {
         const payload = {
@@ -186,12 +203,16 @@ export default function RideCreate() {
                             <DriverArriving
                                 onCancel={handleCancel}
                                 isInProgress={false}
-                                pickupEtaMins={driverRouteData ? Math.ceil(driverRouteData.durationSeconds / 60) : null}
+                                pickupEtaMins={driverloc && driverRouteData && pickupCoords ? getDynamicEtaMins(driverloc, pickupCoords, driverRouteData.durationSeconds) : null}
                             />
                         )}
 
                         {rideState === 'in_progress' && (
-                            <DriverArriving onCancel={handleCancel} isInProgress={true} />
+                            <DriverArriving 
+                                onCancel={handleCancel} 
+                                isInProgress={true} 
+                                destEtaMins={driverloc && driverRouteData && dropCoords ? getDynamicEtaMins(driverloc, dropCoords, driverRouteData.durationSeconds) : null}
+                            />
                         )}
 
                         {rideState === 'completed' && (
@@ -218,6 +239,7 @@ export default function RideCreate() {
                                 routeData={driverRouteData}
                                 driverLocation={driverloc}
                                 role="RIDER"
+                                showEtaBadge={true}
                             />
                         )}
 
@@ -232,9 +254,20 @@ export default function RideCreate() {
                                 isCompleted={rideState === 'completed' || rideState === 'paid'}
                             />
                         )}
+
                     </div>
                 </div>
             </div>
+
+            {rideState === 'paid' && (
+                <RideRating 
+                    rideId={activeRideId}
+                    role="RIDER"
+                    personName={ride?.driver?.first_name || ride?.driver?.user?.first_name}
+                    personRole="Driver"
+                    onComplete={handleRatingComplete}
+                />
+            )}
         </div>
     );
 }

@@ -27,14 +27,14 @@ export default function DriverProfile() {
             {/* Premium Header */}
             <div className="bg-black text-white px-6 pt-12 pb-24 relative overflow-hidden">
                 {/* Abstract background elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+                <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
 
                 <div className="relative z-10 flex items-center justify-between mb-8">
-                    <button onClick={() => navigate('/driver')} className="hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer">
-                        <ArrowLeft className="w-6 h-6" />
+                    <button onClick={() => navigate('/driver')} className="hover:bg-white/10 p-2.5 rounded-full transition-colors cursor-pointer group">
+                        <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                     </button>
-                    <span className="font-semibold text-lg tracking-wide">Driver Profile</span>
+                    <span className="font-bold text-lg tracking-wide uppercase text-white/90">Driver Profile</span>
                     <div className="w-10"></div> {/* Spacer */}
                 </div>
             </div>
@@ -54,9 +54,11 @@ export default function DriverProfile() {
                                 </div>
                             </div>
 
-                            <h2 className="text-2xl font-bold text-gray-900 mb-1">{user?.email || "Driver"}</h2>
-                            <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
-                                <span className="font-medium bg-gray-100 px-2.5 py-0.5 rounded-full text-black">{user?.rating_avg || "4.9"} ⭐</span>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">{user?.email || "Driver"}</h2>
+                            <div className="flex items-center gap-2 text-gray-500 text-sm mb-5 font-medium">
+                                <span className="bg-gray-100 px-3 py-1 rounded-full text-black flex items-center gap-1">
+                                    <Star className="w-3.5 h-3.5 fill-black" /> {user?.rating_avg || "4.9"}
+                                </span>
                                 <span>•</span>
                                 <span>2,140 trips</span>
                             </div>
@@ -111,36 +113,36 @@ export default function DriverProfile() {
 
                 <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="flex flex-col">
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
+                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <Shield className="w-5 h-5 text-gray-700" />
+                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
+                                    <Shield className="w-5 h-5 text-gray-700 group-hover:text-black" />
                                 </div>
-                                <span className="font-medium text-gray-900">Insurance & Docs</span>
+                                <span className="font-semibold text-gray-900">Insurance & Docs</span>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
+                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
                         </button>
-                        <hr className="border-t border-gray-100/80 mx-4 my-0" />
+                        <hr className="border-t border-gray-100 mx-4 my-0" />
 
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
+                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <Star className="w-5 h-5 text-gray-700" />
+                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
+                                    <Star className="w-5 h-5 text-gray-700 group-hover:text-black" />
                                 </div>
-                                <span className="font-medium text-gray-900">Ratings & Feedback</span>
+                                <span className="font-semibold text-gray-900">Ratings & Feedback</span>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
+                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
                         </button>
-                        <hr className="border-t border-gray-100/80 mx-4 my-0" />
+                        <hr className="border-t border-gray-100 mx-4 my-0" />
 
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
+                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <HelpCircle className="w-5 h-5 text-gray-700" />
+                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
+                                    <HelpCircle className="w-5 h-5 text-gray-700 group-hover:text-black" />
                                 </div>
-                                <span className="font-medium text-gray-900">Help & Support</span>
+                                <span className="font-semibold text-gray-900">Help & Support</span>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
+                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
                         </button>
                     </div>
                 </Card>

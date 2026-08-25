@@ -92,7 +92,7 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
 
             const durationMins = Math.ceil(routeData.durationSeconds / 60);
 
-            if (role === 'DRIVER' || showEtaBadge) {
+            if (role === 'DRIVER') {
                 // Driver View: Show ETA badge on the destination, no start marker
                 const endEl = document.createElement('div');
                 endEl.className = 'flex items-center bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden cursor-pointer z-10';
@@ -113,16 +113,30 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
 
                 markersRef.current = [endMarker];
             } else {
-                // Rider View: Show normal dots for start and end, NO driver UI badges!
+                // Rider View: Show normal dots for start and end, AND driver UI badges if enabled
                 const startEl = document.createElement('div');
                 startEl.className = 'w-4 h-4 bg-black rounded-full border-4 border-white shadow-md z-10';
                 const startMarker = new window.maplibregl.Marker({ element: startEl })
                     .setLngLat([startPoint.lon, startPoint.lat])
                     .addTo(map);
 
-                const endEl = document.createElement('div');
-                endEl.className = 'w-4 h-4 bg-white border-4 border-black rounded-sm shadow-md z-10';
-                const endMarker = new window.maplibregl.Marker({ element: endEl })
+                let endEl = document.createElement('div');
+                if (showEtaBadge) {
+                    endEl.className = 'flex items-center bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden cursor-pointer z-20';
+                    endEl.innerHTML = `
+                        <div id="dynamic-eta-badge" class="bg-blue-600 text-white px-3 py-2 text-center text-sm font-bold leading-tight">
+                            ${durationMins}<br/>min
+                        </div>
+                        <div class="px-4 py-2 font-semibold text-black whitespace-nowrap">
+                            ${endPoint.name || 'Destination'}
+                        </div>
+                    `;
+                    etaBadgeRef.current = endEl.querySelector('#dynamic-eta-badge');
+                } else {
+                    endEl.className = 'w-4 h-4 bg-white border-4 border-black rounded-sm shadow-md z-10';
+                }
+
+                const endMarker = new window.maplibregl.Marker({ element: endEl, offset: showEtaBadge ? [0, -20] : [0, 0] })
                     .setLngLat([endPoint.lon, endPoint.lat])
                     .addTo(map);
 
@@ -137,12 +151,12 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
         
         map.fitBounds(bounds, { padding: 50 });
 
-    }, [startPoint, endPoint, routeData, isMapLoaded, role, isCompleted]);
+    }, [startPoint, endPoint, routeData, isMapLoaded, role, showEtaBadge, isCompleted]);
 
     // Handle moving driver marker
     useEffect(() => {
         const map = mapRef.current;
-        if (!map || !driverLocation) return;
+        if (!map || !isMapLoaded || !driverLocation) return;
 
         if (isCompleted) {
             if (driverMarkerRef.current) {
