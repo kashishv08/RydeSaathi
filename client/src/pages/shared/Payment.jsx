@@ -1,3 +1,4 @@
+import { toast } from "@heroui/react";
 
 function Payment() {
 
@@ -12,7 +13,7 @@ function Payment() {
             "order_id": "order_TQmBhJpjGIsGNh",
             "handler": async function (response) {
                 console.log("Payment Success!", response);
-                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                toast.success("Payment successful! Payment ID: " + response.razorpay_payment_id);
             },
             "prefill": {
                 "name": "testrider@test.com",
@@ -26,7 +27,7 @@ function Payment() {
         var rzp1 = new window.Razorpay(options);
         rzp1.on('payment.failed', function (response) {
             console.error("Payment Failed", response.error);
-            alert("Payment failed: " + response.error.description);
+            toast.warning("Payment failed: " + response.error.description);
         });
         rzp1.open();
     }

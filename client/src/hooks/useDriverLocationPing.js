@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LocationSender from '../utils/currentLocationHelper';
 import { useDriverPing } from './driver';
 
 export function useDriverLocationPing(enabled = true) {
     const { mutate: driverLoc } = useDriverPing();
+    const [driverLocation, setDriverLocation] = useState()
 
     useEffect(() => {
         let interval;
@@ -16,6 +17,7 @@ export function useDriverLocationPing(enabled = true) {
                         "lng": location.loc.lng
                     }
                     driverLoc(data);
+                    setDriverLocation({ "lat": data.lat, "lon": data.lng });
                 }
             }, 5000); // 5 seconds
         }
@@ -24,4 +26,6 @@ export function useDriverLocationPing(enabled = true) {
             if (interval) clearInterval(interval);
         };
     }, [enabled, driverLoc]);
+
+    return driverLocation;
 }

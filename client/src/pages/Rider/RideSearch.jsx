@@ -6,7 +6,7 @@ import LocationInputGroup from '../../components/rider/LocationInputGroup';
 import NearDriver from '../../components/rider/NearDriver';
 import RequestingRideModal from '../../components/rider/RequestingRideModal';
 import RideListShimmer from '../../components/rider/RideListShimmer';
-import RideMap from '../../components/rider/RideMap';
+import StaticRouteMap from '../../components/shared/StaticRouteMap';
 import Navbar from "../../components/shared/layout/Navbar";
 import { useFetchRoutePolyline, useRideSearch } from '../../hooks/rider';
 
@@ -44,13 +44,14 @@ export default function RideSearch() {
     const distance_km = routeData?.distanceMeters ? routeData.distanceMeters / 1000 : null;
     const duration_min = routeData?.durationSeconds ? routeData.durationSeconds / 60 : null;
 
+    console.log("[Ride Search route data]**********************", routeData)
     const { data: rideData, error: rideError, isFetching: isRideFetching } = useRideSearch({
         pickup: pickupCoords,
         distance_km,
         duration_min,
         enabled: searchTriggered && !!routeData && !error
     });
-    console.log(rideData, rideError)
+    console.log("======================", rideData, rideError)
 
     useEffect(() => {
         if (rideData?.data?.options) {
@@ -108,6 +109,10 @@ export default function RideSearch() {
                                         onClick={() => {
                                             if (!pickupCoords || !dropCoords) {
                                                 toast.warning("Please select both pickup and dropoff locations.");
+                                                return;
+                                            }
+                                            if (pickupCoords.lat === dropCoords.lat && pickupCoords.lon === dropCoords.lon) {
+                                                toast.warning("Pickup and drop-off locations cannot be the same.");
                                                 return;
                                             }
                                             setCachedOptions(null);
@@ -209,10 +214,9 @@ export default function RideSearch() {
                         </div>
                     </div>
 
-                    {/* Right Map - Fixed */}
                     <div className="flex-1 relative bg-white min-h-0 overflow-hidden p-6">
                         <div className="w-full h-full relative rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.1)]">
-                            <RideMap pickup={pickupCoords} drop={dropCoords} routeData={routeData} />
+                            <StaticRouteMap pickup={pickupCoords} drop={dropCoords} routeData={routeData} />
                         </div>
                     </div>
                 </div>

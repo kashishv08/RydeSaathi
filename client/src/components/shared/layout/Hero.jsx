@@ -3,7 +3,7 @@ import { useState } from 'react';
 import LocationInput from '../ui/LocationInput';
 import { useNavigate } from 'react-router-dom';
 
-
+import { toast } from '@heroui/react';
 
 function Hero() {
     const [pickupCoords, setPickupCoords] = useState({});
@@ -12,6 +12,10 @@ function Hero() {
 
     function handleSearchClick() {
         if (pickupCoords?.lat && dropCoords?.lat) {
+            if (pickupCoords.lat === dropCoords.lat && pickupCoords.lon === dropCoords.lon) {
+                toast.warning("Pickup and drop-off locations cannot be the same.");
+                return;
+            }
             navigate('/ride/search', { state: { pickup: pickupCoords, drop: dropCoords } })
         }
         else navigate("/ride/search")

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { autoCompleteAddressApi, fetchRoutePolylineApi, rideCreateApi, rideDetailApi, rideSearchApi } from "../api/riderApi";
+import { rideCreateApi, rideDetailApi, rideSearchApi } from "../api/riderApi";
+import { autoCompleteAddressApi, fetchRoutePolylineApi } from "../api/mapApi";
 import { rideAcceptDriver } from "../api/driverApi";
 
 function useAutoCompleteAdd(search) {

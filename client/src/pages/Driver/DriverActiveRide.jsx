@@ -1,28 +1,43 @@
-import { MessageSquare, Navigation, Phone } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
-import { useTransitionRide } from '../../hooks/driver';
-import { useRideDetails } from '../../hooks/rider';
-import { RIDE_STATUS } from '../../constants';
-import LocationSender from '../../utils/currentLocationHelper';
-import { getDistanceFromLatLonInKm } from '../../utils/geoHelpers';
 import { toast } from '@heroui/react';
+import { MessageSquare, Navigation, Phone } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ActiveTrackingMap from '../../components/shared/ActiveTrackingMap';
+import { RIDE_STATUS } from '../../constants';
 import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
+import { useTransitionRide } from '../../hooks/driver';
+import { useFetchRoutePolyline, useRideDetails } from '../../hooks/rider';
+import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 
 export default function DriverActiveRide() {
     const navigate = useNavigate();
-    const { state } = useLocation();
 
-    useDriverLocationPing(true);
-
+    const driverloc = useDriverLocationPing(true);
     const { mutate: rideTransition } = useTransitionRide();
     const { data: rideDetailResponse } = useRideDetails();
 
     const ride = rideDetailResponse?.data;
+    console.log(ride);
 
     const [rideStatus, setRideStatus] = useState(ride?.status || RIDE_STATUS.ACCEPTED);
     const [otpInput, setOtpInput] = useState('');
+
+    const isHeadingToDropoff = rideStatus === "IN_PROGRESS" || rideStatus === "COMPLETED";
+
+    const routeStartPoint = driverloc ? {
+        "lat": driverloc.lat,
+        "lon": driverloc.lon
+    } : null;
+
+    const routeEndPoint = isHeadingToDropoff
+        ? { "lat": ride?.drop_lat, "lon": ride?.drop_lng, "name": ride?.drop_address }
+        : { "lat": ride?.pickup_lat, "lon": ride?.pickup_lng, "name": ride?.pickup_address };
+
+    const { data: routeData } = useFetchRoutePolyline({
+        pickup: routeStartPoint,
+        drop: routeEndPoint,
+        enabled: !!(routeStartPoint && routeEndPoint)
+    });
 
     useEffect(() => {
         if (ride?.status) {
@@ -38,7 +53,7 @@ export default function DriverActiveRide() {
         if (lastMessage.type === "status_update") {
             if (lastMessage.ride_status === "PAYMENT_SUCCESSFULL") {
                 toast.success("Payment received successfully!");
-                navigate('/driver');
+                navigate('/driver/profile');
             } else if (lastMessage.ride_status === "CANCELLED") {
                 toast.error("The rider has cancelled the trip.");
                 navigate('/driver');
@@ -48,19 +63,6 @@ export default function DriverActiveRide() {
 
     const handleAction = async () => {
         if (rideStatus === RIDE_STATUS.ACCEPTED) {
-            // const currentLoc = await LocationSender();
-            // // if (currentLoc?.loc && ride?.pickup_lat) {
-            // //     const distKm = getDistanceFromLatLonInKm(
-            // //         currentLoc.loc.lat, currentLoc.loc.lng,
-            // //         parseFloat(ride.pickup_lat), parseFloat(ride.pickup_lng)
-            // //     );
-
-            // //     if (distKm > 0.25) {
-            // //         toast.info(`You are still ${Math.round(distKm * 1000)} meters away from the pickup point. Get closer to mark as arrived.`);
-            // //         return;
-            // //     }
-            // // }
-
             setRideStatus(RIDE_STATUS.ARRIVED);
             rideTransition({ ride_id: ride.id, status: RIDE_STATUS.ARRIVED });
         } else if (rideStatus === RIDE_STATUS.ARRIVED) {
@@ -91,7 +93,7 @@ export default function DriverActiveRide() {
         switch (rideStatus) {
             case RIDE_STATUS.ACCEPTED: return "Slide to Arrive";
             case RIDE_STATUS.ARRIVED: return "Verify OTP & Start";
-            case RIDE_STATUS.IN_PROGRESS: return "Complete Ride";
+            case RIDE_STATUS.IN_PROGRESS: return "Heading to Dropoff";
             default: return "";
         }
     };
@@ -107,17 +109,22 @@ export default function DriverActiveRide() {
                 </div>
                 <div className="text-center">
                     <h2 className="text-lg font-bold text-black">{getStatusText()}</h2>
-                    {rideStatus === RIDE_STATUS.ACCEPTED && <p className="text-blue-600 font-semibold text-sm">3 min away</p>}
+                    {rideStatus === RIDE_STATUS.ACCEPTED && <p className="text-blue-600 font-semibold text-sm">Heading to rider</p>}
+                    {rideStatus === RIDE_STATUS.IN_PROGRESS && <p className="text-blue-600 font-semibold text-sm">ETA: {routeData ? Math.ceil(routeData.durationSeconds / 60) : '...'} min</p>}
                 </div>
                 <div className="w-10 h-10"></div>
             </div>
 
-            {/* Map Area (Simulation) */}
-            <div className="flex-1 bg-gray-200 relative pt-32">
-                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
-
-                {/* Route Polyline Simulation */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-l-4 border-t-4 border-black rounded-tl-3xl opacity-50 pointer-events-none"></div>
+            {/* Map Area */}
+            <div className="flex-1 bg-gray-200 relative">
+                <ActiveTrackingMap 
+                    startPoint={routeStartPoint}
+                    endPoint={routeEndPoint}
+                    routeData={routeData}
+                    driverLocation={driverloc}
+                    role="DRIVER" 
+                    isCompleted={rideStatus === RIDE_STATUS.COMPLETED}
+                />
             </div>
 
             {/* Bottom Sheet */}

@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ToastProvider />
+    <ToastProvider placement="bottom-center" toastProps={{ classNames: { base: "max-sm:!top-4 max-sm:!bottom-auto" } }} />
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App />

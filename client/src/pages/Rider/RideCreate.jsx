@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import DriverArriving from '../../components/rider/DriverArriving';
 import PaymentRider from '../../components/rider/PaymentRider';
 import FindingDriver from '../../components/rider/FindingDriver';
-import RideMap from '../../components/rider/RideMap';
+import StaticRouteMap from '../../components/shared/StaticRouteMap';
+import ActiveTrackingMap from '../../components/shared/ActiveTrackingMap';
 import Navbar from "../../components/shared/layout/Navbar";
 import { useFetchRoutePolyline, useRideCreate, useRideDetails } from '../../hooks/rider';
 import { RIDE_STATUS } from '../../constants';
@@ -55,11 +56,15 @@ export default function RideCreate() {
     } : null;
 
     const hasCreatedRide = useRef(false);
+    
+    // Dynamically fetch the route from the driver's current location to their destination
+    const driverDest = rideState === 'found' ? pickupCoords : dropCoords;
     const { data: driverRouteData } = useFetchRoutePolyline({
-        pickup: initialDriverLoc ?? null,
-        drop: pickupCoords ?? null,
-        enabled: rideState === 'found' && !!initialDriverLoc && !!pickupCoords
+        pickup: driverloc ?? null,
+        drop: driverDest ?? null,
+        enabled: (rideState === 'found' || rideState === 'in_progress') && !!driverloc && !!driverDest
     });
+
     useActiveRideWebSocket(activeRideId, setRideState, setDriverloc, setInitialDriverLoc, refetchRideDetails);
 
     useEffect(() => {
@@ -144,13 +149,6 @@ export default function RideCreate() {
         navigate('/ride/search')
     };
 
-    const mapPickup = (rideState === 'in_progress' && initialDriverLoc)
-        ? { ...initialDriverLoc, name: "Driver", isDriver: true }
-        : pickupCoords;
-
-    const mapDrop = (rideState === 'in_progress' && initialDriverLoc) ? pickupCoords : dropCoords;
-    const mapRoute = (rideState === 'in_progress' && initialDriverLoc) ? driverRouteData : routeData;
-
     return (
         <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
             <Navbar />
@@ -199,25 +197,41 @@ export default function RideCreate() {
                         {rideState === 'completed' && (
                             <PaymentRider />
                         )}
-
-                        {/* DEBUG BUTTONS - Remove before production */}
-                        <div className="mt-auto pt-4 flex gap-2 overflow-x-auto text-xs">
-                            <button onClick={() => setRideState('finding')} className="bg-gray-200 px-2 py-1 rounded">Test: Finding</button>
-                            <button onClick={() => setRideState('timeout')} className="bg-gray-200 px-2 py-1 rounded">Test: Timeout</button>
-                            <button onClick={() => setRideState('found')} className="bg-gray-200 px-2 py-1 rounded">Test: Found</button>
-                        </div>
                     </div>
                 </div>
 
                 {/* Right Map */}
                 <div className="flex-1 relative min-h-0 overflow-hidden md:p-6 md:pl-0 pt-0 absolute inset-0 md:static">
                     <div className="w-full h-full relative md:rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.1)]">
-                        <RideMap
-                            pickup={mapPickup}
-                            drop={mapDrop}
-                            routeData={mapRoute}
-                            driverLocation={driverloc}
-                        />
+                        {(rideState === 'finding' || rideState === 'timeout') && (
+                            <StaticRouteMap
+                                pickup={pickupCoords}
+                                drop={dropCoords}
+                                routeData={routeData}
+                            />
+                        )}
+
+                        {rideState === 'found' && (
+                            <ActiveTrackingMap
+                                startPoint={initialDriverLoc}
+                                endPoint={pickupCoords}
+                                routeData={driverRouteData}
+                                driverLocation={driverloc}
+                                role="RIDER"
+                            />
+                        )}
+
+                        {(rideState === 'in_progress' || rideState === 'completed' || rideState === 'paid') && (
+                            <ActiveTrackingMap
+                                startPoint={pickupCoords}
+                                endPoint={dropCoords}
+                                routeData={driverRouteData}
+                                driverLocation={driverloc}
+                                role="RIDER"
+                                showEtaBadge={true}
+                                isCompleted={rideState === 'completed' || rideState === 'paid'}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

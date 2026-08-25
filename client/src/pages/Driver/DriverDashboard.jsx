@@ -9,6 +9,7 @@ import { useRideAcceptDriver } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 import LocationSender from '../../utils/currentLocationHelper';
+import StaticRouteMap from '../../components/shared/StaticRouteMap';
 
 export default function DriverDashboard() {
     const [isOnline, setIsOnline] = useState(() => {
@@ -48,8 +49,7 @@ export default function DriverDashboard() {
         }
     }
 
-    useDriverLocationPing(isOnline);
-
+    const driverLocation = useDriverLocationPing(isOnline);
     const { lastMessage } = useDriverWebSocket();
 
     useEffect(() => {
@@ -117,16 +117,7 @@ export default function DriverDashboard() {
 
                 {/* Map Area (Dummy Background for now) */}
                 <div className="flex-1 bg-gray-200 relative">
-                    {/* Simulated Map Background */}
-                    <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
-
-                    {/* Center Map Pin */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
-                        <div className="bg-black text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg mb-1 whitespace-nowrap">
-                            You are here
-                        </div>
-                        <Navigation className="w-10 h-10 text-black fill-black -mt-1 transform rotate-45" />
-                    </div>
+                    <StaticRouteMap pickup={driverLocation} />
                 </div>
 
                 {/* Bottom Status Sheet */}

@@ -12,7 +12,7 @@ export default function PaymentRider() {
 
     const handlePayment = () => {
         if (!ride?.payment?.razorpay_order_id) {
-            alert("No Razorpay order ID found for this ride.");
+            toast.warning("No Razorpay order ID found for this ride.");
             return;
         }
 
@@ -39,7 +39,7 @@ export default function PaymentRider() {
         var rzp1 = new window.Razorpay(options);
         rzp1.on('payment.failed', function (response) {
             console.error("Payment Failed", response.error);
-            alert("Payment failed: " + response.error.description);
+            toast.warning("Payment failed: " + response.error.description);
         });
         rzp1.open();
     };
