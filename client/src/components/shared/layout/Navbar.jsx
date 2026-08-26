@@ -13,13 +13,17 @@ function Navbar() {
         logoutRequest();
     }
 
+    const isDriver = data?.data?.role === "DRIVER";
+
     function handleMenuAction(key) {
         if (key === "dashboard") {
-            navigate(data?.data?.role === "DRIVER" ? "/driver" : "/ride/search");
+            navigate(isDriver ? "/driver" : "/ride/search");
         } else if (key === "profile") {
-            navigate(data?.data?.role === "DRIVER" ? "/driver/profile" : "/ride/profile");
-        } else if (key === "driver_profile") {
-            navigate("/driver/profile");
+            navigate(isDriver ? "/driver/profile" : "/ride/profile");
+        } else if (key === "switch_role") {
+            navigate(isDriver ? "/ride/search" : "/driver");
+        } else if (key === "logout") {
+            handleLogout();
         }
     }
 
@@ -72,20 +76,20 @@ function Navbar() {
                                         </div>
                                     </div>
                                     <Dropdown.Menu onAction={handleMenuAction}>
-                                        <Dropdown.Item key="dashboard" textValue="Dashboard">
-                                            <Label className="cursor-pointer">Dashboard</Label>
+                                        <Dropdown.Item key="dashboard" textValue="Dashboard" onPress={() => handleMenuAction("dashboard")}>
+                                            <div className="cursor-pointer">{isDriver ? "Driver Dashboard" : "Ride Dashboard"}</div>
                                         </Dropdown.Item>
-                                        <Dropdown.Item key="profile" textValue="Profile">
-                                            <Label className="cursor-pointer">Profile</Label>
+                                        <Dropdown.Item key="profile" textValue="Profile" onPress={() => handleMenuAction("profile")}>
+                                            <div className="cursor-pointer">Profile</div>
                                         </Dropdown.Item>
-                                        <Dropdown.Item key="driver_profile" textValue="Switch to Driver">
-                                            <Label className="cursor-pointer">Switch to Driver</Label>
+                                        <Dropdown.Item key="switch_role" textValue={isDriver ? "Switch to Rider" : "Switch to Driver"} onPress={() => handleMenuAction("switch_role")}>
+                                            <div className="cursor-pointer">{isDriver ? "Switch to Rider" : "Switch to Driver"}</div>
                                         </Dropdown.Item>
-                                        <Dropdown.Item key="logout" textValue="Logout" variant="danger">
-                                            <button onClick={handleLogout} className="flex w-full items-center justify-between gap-2 cursor-pointer">
-                                                <Label className="cursor-pointer">Log Out</Label>
+                                        <Dropdown.Item key="logout" textValue="Logout" variant="danger" onPress={() => handleMenuAction("logout")}>
+                                            <div className="flex w-full items-center justify-between gap-2 cursor-pointer">
+                                                <div className="cursor-pointer">Log Out</div>
                                                 <ArrowUpRightFromSquare className="size-3.5 text-danger" />
-                                            </button>
+                                            </div>
                                         </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown.Popover>
