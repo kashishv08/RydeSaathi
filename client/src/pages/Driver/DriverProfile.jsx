@@ -1,21 +1,59 @@
-import { Avatar, Button, Card, ProgressBar } from "@heroui/react";
+
+import { Avatar, ProgressBar } from "@heroui/react";
 import { ArrowLeft, Car, ChevronRight, Clock, HelpCircle, LogOut, Shield, Star, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logoutRequest } from '../../api/authApi';
 import { useUserProfile } from '../../hooks/auth';
+import { motion } from 'framer-motion';
+
+const FONT_DISPLAY = "'Sora', sans-serif";
+const FONT_MONO = "'IBM Plex Mono', monospace";
+const EMERALD = "#22C55E";
+const PAGE_BG = "#0A0A0F";
+
+function RouteRow({ icon, label, isLast }) {
+    return (
+        <button className="group flex w-full items-stretch gap-4 text-left cursor-pointer">
+            <div className="flex w-8 flex-col items-center pt-4">
+                <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full ring-4"
+                    style={{ background: EMERALD, "--tw-ring-color": "rgba(34,197,94,0.12)" }}
+                />
+                {!isLast && (
+                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed rgba(255,255,255,0.14)" }} />
+                )}
+            </div>
+            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-3">
+                    {icon}
+                    <span className="font-semibold text-gray-200 transition-colors group-hover:text-white">{label}</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-600 transition-colors group-hover:text-gray-400" />
+            </div>
+        </button>
+    );
+}
+
+function StatCard({ label, value, icon, tint }) {
+    return (
+        <div className="relative overflow-hidden rounded-2xl border p-4" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+            <div className="absolute -right-2 -top-2 opacity-10" style={{ color: tint }}>{icon}</div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{label}</p>
+            <p className="mt-1.5 text-2xl font-semibold text-white" style={{ fontFamily: FONT_MONO }}>{value}</p>
+        </div>
+    );
+}
 
 export default function DriverProfile() {
     const navigate = useNavigate();
     const { data, isLoading } = useUserProfile();
 
-    const handleLogout = () => {
-        logoutRequest();
-    };
+    const handleLogout = () => logoutRequest();
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md" />
+            <div className="flex min-h-screen items-center justify-center bg-[#0A0A0F]">
+                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md text-violet-400" />
             </div>
         );
     }
@@ -23,138 +61,107 @@ export default function DriverProfile() {
     const user = data?.data;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-            {/* Premium Header */}
-            <div className="bg-black text-white px-6 pt-12 pb-24 relative overflow-hidden">
-                {/* Abstract background elements */}
-                <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+        <div className="min-h-screen bg-[#0A0A0F] font-sans">
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-6 pt-8 pb-2">
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/driver')}
+                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
+                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </motion.button>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Driver Profile</span>
+                <div className="w-10" />
+            </div>
 
-                <div className="relative z-10 flex items-center justify-between mb-8">
-                    <button onClick={() => navigate('/driver')} className="hover:bg-white/10 p-2.5 rounded-full transition-colors cursor-pointer group">
-                        <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+            {/* Hero */}
+            <div className="relative overflow-hidden px-6 pb-8 pt-6 text-center">
+                <svg className="pointer-events-none absolute left-1/2 top-2 -z-0 -translate-x-1/2 opacity-30" width="340" height="140" viewBox="0 0 340 140" fill="none">
+                    <path d="M10 120 C 90 10, 250 10, 330 120" stroke={EMERALD} strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
+                </svg>
+
+                <div className="relative">
+                    <Avatar
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Driver"
+                        className="mx-auto h-24 w-24 border-4 text-large shadow-lg"
+                        style={{ borderColor: "rgba(34,197,94,0.35)" }}
+                    />
+                    <div className="absolute bottom-0 right-1/2 translate-x-[38px] rounded-full border-2 p-1.5" style={{ background: EMERALD, borderColor: PAGE_BG }}>
+                        <Star className="h-3.5 w-3.5 fill-white text-white" />
+                    </div>
+                </div>
+
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
+                    {user?.email ? user.email.split('@')[0] : "Driver"}
+                </h2>
+                <div className="mt-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-400">
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}>
+                        <span style={{ fontFamily: FONT_MONO, color: "#F5B942" }}>{user?.rating_avg || "4.9"}</span>
+                        <Star className="h-3 w-3" style={{ fill: "#F5B942", color: "#F5B942" }} />
+                    </span>
+                    <span className="text-gray-600">•</span>
+                    <span>2,140 trips</span>
+                </div>
+
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="mt-5 rounded-full px-6 py-2.5 text-sm font-semibold text-white cursor-pointer"
+                    style={{ background: `linear-gradient(135deg, ${EMERALD}, #15803D)`, boxShadow: "0 8px 20px -6px rgba(34,197,94,0.45)" }}
+                >
+                    Manage Vehicles
+                </motion.button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3 px-6">
+                <StatCard label="Today's Earnings" value="₹1,250" icon={<TrendingUp className="h-16 w-16" />} tint={EMERALD} />
+                <StatCard label="Online Time" value="4h 30m" icon={<Clock className="h-16 w-16" />} tint="#8B5CF6" />
+            </div>
+
+            {/* Vehicle — boarding pass */}
+            <div className="mt-6 px-6">
+                <div className="relative flex overflow-hidden rounded-3xl border" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+                    <div className="flex w-24 shrink-0 flex-col items-center justify-center border-r-2" style={{ borderColor: "rgba(34,197,94,0.3)", borderStyle: "dashed" }}>
+                        <Car className="h-7 w-7" style={{ color: EMERALD }} />
+                    </div>
+                    <span className="absolute -top-3 left-24 h-6 w-6 -translate-x-1/2 rounded-full" style={{ background: PAGE_BG }} />
+                    <span className="absolute -bottom-3 left-24 h-6 w-6 -translate-x-1/2 rounded-full" style={{ background: PAGE_BG }} />
+                    <button className="flex flex-1 cursor-pointer items-center justify-between p-4 pl-5">
+                        <div>
+                            <h3 className="text-left font-semibold text-white">Toyota Prius</h3>
+                            <p className="text-sm font-medium text-gray-500" style={{ fontFamily: FONT_MONO }}>MH 01 AB 1234 · White</p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-gray-500" />
                     </button>
-                    <span className="font-bold text-lg tracking-wide uppercase text-white/90">Driver Profile</span>
-                    <div className="w-10"></div> {/* Spacer */}
                 </div>
             </div>
 
-            {/* Profile Info Card (Overlapping) */}
-            <div className="px-6 -mt-16 relative z-20">
-                <Card className="w-full shadow-lg border-none bg-white rounded-3xl">
-                    <div className="p-6">
-                        <div className="flex flex-col items-center text-center">
-                            <div className="relative mb-4 group">
-                                <Avatar
-                                    src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                                    className="w-24 h-24 text-large border-4 border-white shadow-md transition-transform group-hover:scale-105"
-                                />
-                                <div className="absolute bottom-0 right-0 bg-black text-white p-1.5 rounded-full shadow-sm border-2 border-white">
-                                    <Star className="w-4 h-4 fill-white" />
-                                </div>
-                            </div>
-
-                            <h2 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">{user?.email || "Driver"}</h2>
-                            <div className="flex items-center gap-2 text-gray-500 text-sm mb-5 font-medium">
-                                <span className="bg-gray-100 px-3 py-1 rounded-full text-black flex items-center gap-1">
-                                    <Star className="w-3.5 h-3.5 fill-black" /> {user?.rating_avg || "4.9"}
-                                </span>
-                                <span>•</span>
-                                <span>2,140 trips</span>
-                            </div>
-
-                            <div className="flex w-full gap-4 pt-2">
-                                <Button className="flex-1 bg-black text-white font-medium shadow-md hover:shadow-lg transition-all" radius="full">
-                                    Manage Vehicles
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
+            {/* Account — route list */}
+            <div className="mt-10 px-6">
+                <h3 className="mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">Account</h3>
+                <div className="flex flex-col">
+                    <RouteRow icon={<Shield className="h-[18px] w-[18px] text-gray-400" />} label="Insurance & Docs" />
+                    <RouteRow icon={<Star className="h-[18px] w-[18px] text-gray-400" />} label="Ratings & Feedback" />
+                    <RouteRow icon={<HelpCircle className="h-[18px] w-[18px] text-gray-400" />} label="Help & Support" isLast />
+                </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 p-6">
-                <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-gray-200 transition-colors">
-                    <div className="p-4 flex flex-col justify-center relative overflow-hidden">
-                        <TrendingUp className="absolute -right-2 -top-2 w-16 h-16 text-gray-50/50" />
-                        <h3 className="text-gray-500 text-sm font-medium mb-1">Today's Earnings</h3>
-                        <p className="text-2xl font-bold text-black tracking-tight">₹ 1,250</p>
-                    </div>
-                </Card>
-                <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-gray-200 transition-colors">
-                    <div className="p-4 flex flex-col justify-center relative overflow-hidden">
-                        <Clock className="absolute -right-2 -top-2 w-16 h-16 text-gray-50/50" />
-                        <h3 className="text-gray-500 text-sm font-medium mb-1">Online Time</h3>
-                        <p className="text-2xl font-bold text-black tracking-tight">4h 30m</p>
-                    </div>
-                </Card>
-            </div>
-
-            {/* Vehicle Info */}
-            <div className="px-6 mb-6">
-                <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl">
-                    <div className="p-4 flex flex-row items-center gap-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                        <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 shadow-sm">
-                            <Car className="w-7 h-7 text-gray-800" />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-gray-900 text-lg">Toyota Prius</h3>
-                            <p className="text-gray-500 text-sm font-medium">MH 01 AB 1234 • White</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </div>
-                </Card>
-            </div>
-
-            {/* Menu Options */}
-            <div className="flex-1 px-6 pb-12">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">Account</h3>
-
-                <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="flex flex-col">
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
-                                    <Shield className="w-5 h-5 text-gray-700 group-hover:text-black" />
-                                </div>
-                                <span className="font-semibold text-gray-900">Insurance & Docs</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
-                        </button>
-                        <hr className="border-t border-gray-100 mx-4 my-0" />
-
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
-                                    <Star className="w-5 h-5 text-gray-700 group-hover:text-black" />
-                                </div>
-                                <span className="font-semibold text-gray-900">Ratings & Feedback</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
-                        </button>
-                        <hr className="border-t border-gray-100 mx-4 my-0" />
-
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-all group cursor-pointer active:bg-gray-100">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm">
-                                    <HelpCircle className="w-5 h-5 text-gray-700 group-hover:text-black" />
-                                </div>
-                                <span className="font-semibold text-gray-900">Help & Support</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors" />
-                        </button>
-                    </div>
-                </Card>
-
-                <Button
-                    className="w-full mt-8 bg-red-50 text-red-600 font-bold py-6 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-100 transition-colors shadow-none border border-red-100"
-                    onPress={handleLogout}
-                    radius="md"
+            {/* Logout */}
+            <div className="px-6 pb-14 pt-10">
+                <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleLogout}
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border py-4 font-semibold transition-colors"
+                    style={{ background: "rgba(248,113,113,0.08)", borderColor: "rgba(248,113,113,0.18)", color: "#F87171" }}
                 >
-                    <LogOut className="w-5 h-5" />
-                    Logout
-                </Button>
+                    <LogOut className="h-[18px] w-[18px]" />
+                    Log Out
+                </motion.button>
             </div>
         </div>
     );

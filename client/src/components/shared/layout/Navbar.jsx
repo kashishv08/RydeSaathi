@@ -1,18 +1,23 @@
+
 import { Avatar, Dropdown } from "@heroui/react";
-import { ArrowUpRightFromSquare, Car } from "lucide-react";
+import { LogOut, Car, LayoutDashboard, User, RefreshCw } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutRequest } from "../../../api/authApi";
 import { useUserProfile } from "../../../hooks/auth";
+
+const FONT_DISPLAY = "'Sora', sans-serif";
 
 export default function Navbar() {
     const { data, isError } = useUserProfile();
     const navigate = useNavigate();
 
+    const user = data?.data;
+    const isDriver = user?.role === "DRIVER";
+    const roleColor = isDriver ? "#22C55E" : "#8B5CF6";
+
     function handleLogout() {
         logoutRequest();
     }
-
-    const isDriver = data?.data?.role === "DRIVER";
 
     function handleMenuAction(key) {
         if (key === "dashboard") navigate(isDriver ? "/driver" : "/ride/search");
@@ -22,83 +27,152 @@ export default function Navbar() {
     }
 
     return (
-        <header className="bg-black/90 backdrop-blur-md border-b border-white/10 text-white px-6 py-4 flex items-center justify-between sticky top-0 z-50 transition-all">
-            <div className="flex items-center gap-8">
-                <Link to="/" className="text-2xl font-black tracking-tight flex items-center gap-2">
-                    <span className="bg-white text-black p-1 rounded">
-                        <Car className="w-5 h-5" />
-                    </span>
-                    <span>Ryde<span className="text-gray-400">Saathi</span></span>
-                </Link>
-                <nav className="hidden md:flex gap-8 font-medium text-sm text-gray-300">
-                    <Link to="/ride/search" className="hover:text-white transition-colors">Ride</Link>
-                    <Link to="/driver" className="hover:text-white transition-colors">Drive</Link>
-                    <a href="#" className="hover:text-white transition-colors">Business</a>
-                    <a href="#" className="hover:text-white transition-colors">About</a>
-                </nav>
-            </div>
-            <div className="flex items-center gap-4 text-sm font-medium">
-                {isError || !data ? (
-                    <>
-                        <Link to="/login" className="hidden md:block text-gray-300 hover:text-white transition-colors">
-                            Log in
+        <header
+            className="sticky top-0 z-50 w-full border-b px-6 py-3.5 backdrop-blur-xl"
+            style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(10,10,15,0.82)" }}
+        >
+            <div className="mx-auto flex max-w-7xl items-center justify-between">
+
+                {/* Brand & Main Nav */}
+                <div className="flex items-center gap-10">
+                    <Link to="/" className="group flex items-center gap-2.5">
+                        <span
+                            className="flex h-9 w-9 items-center justify-center rounded-xl text-white transition-transform duration-300 group-hover:scale-105"
+                            style={{
+                                background: "linear-gradient(135deg,#8B5CF6,#5B21B6)",
+                                boxShadow: "0 6px 16px -4px rgba(139,92,246,0.45)",
+                            }}
+                        >
+                            <Car className="h-5 w-5" />
+                        </span>
+                        <span className="text-xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
+                            Ryde<span style={{ color: "#A78BFA" }}>Saathi</span>
+                        </span>
+                    </Link>
+
+                    <nav className="hidden items-center gap-7 text-sm font-medium text-gray-400 md:flex">
+                        <Link
+                            to="/ride/search"
+                            className="relative py-1 transition-colors hover:text-white after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-400 after:transition-all after:duration-300 hover:after:w-full"
+                        >
+                            Ride
                         </Link>
                         <Link
-                            to="/register"
-                            className="bg-white text-black px-5 py-2 rounded-full font-semibold hover:bg-gray-200 hover:scale-105 transition-all shadow-lg"
+                            to="/driver"
+                            className="relative py-1 transition-colors hover:text-white after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-emerald-400 after:transition-all after:duration-300 hover:after:w-full"
                         >
-                            Sign up
+                            Drive
                         </Link>
-                    </>
-                ) : (
-                    <span className="hidden md:block text-gray-300">
-                        <Dropdown>
-                            <Dropdown.Trigger className="rounded-full cursor-pointer hover:opacity-80 transition-opacity">
-                                <Avatar className="ring-2 ring-white/20">
-                                    <Avatar.Image
-                                        alt={data?.data?.email || "User"}
-                                        src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                                    />
-                                    <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
-                                </Avatar>
+                        <a href="#" className="py-1 text-gray-500 transition-colors hover:text-white">
+                            Business
+                        </a>
+                        <a href="#" className="py-1 text-gray-500 transition-colors hover:text-white">
+                            About
+                        </a>
+                    </nav>
+                </div>
+
+                {/* Right Action / Profile */}
+                <div className="flex items-center gap-4">
+                    {isError || !user ? (
+                        <div className="flex items-center gap-3">
+                            <Link
+                                to="/login"
+                                className="hidden text-sm font-medium text-gray-300 transition-colors hover:text-white md:block"
+                            >
+                                Log in
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="rounded-full px-5 py-2 text-sm font-semibold text-white transition-all hover:brightness-110"
+                                style={{
+                                    background: "linear-gradient(135deg,#8B5CF6,#6D28D9)",
+                                    boxShadow: "0 8px 20px -6px rgba(139,92,246,0.55)",
+                                }}
+                            >
+                                Sign up
+                            </Link>
+                        </div>
+                    ) : (
+                        <Dropdown placement="bottom-end">
+                            <Dropdown.Trigger className="rounded-full outline-none">
+                                <Avatar
+                                    as="button"
+                                    className="h-10 w-10 cursor-pointer ring-2 transition-all"
+                                    style={{ "--tw-ring-color": `${roleColor}55` }}
+                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                                    fallback={user?.email?.slice(0, 2).toUpperCase() || "U"}
+                                />
                             </Dropdown.Trigger>
-                            <Dropdown.Popover>
-                                <div className="px-3 pt-3 pb-1">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar size="sm">
-                                            <Avatar.Image
-                                                alt="User"
-                                                src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                                            />
-                                            <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
-                                        </Avatar>
-                                        <div className="flex flex-col gap-0">
-                                            <p className="text-sm leading-5 font-medium">{data.data.email}</p>
-                                            <p className="text-xs leading-none text-muted">{data.data.role}</p>
-                                        </div>
+                            <Dropdown.Popover
+                                className="min-w-[250px] rounded-2xl border p-1.5 shadow-2xl backdrop-blur-2xl"
+                                style={{ borderColor: "rgba(255,255,255,0.08)", background: "#101016" }}
+                            >
+                                {/* User Header Info */}
+                                <div className="flex items-center gap-3 border-b px-3.5 py-3" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                                    <Avatar
+                                        className="h-9 w-9 ring-1"
+                                        style={{ "--tw-ring-color": `${roleColor}66` }}
+                                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                                        fallback={user?.email?.slice(0, 2).toUpperCase() || "U"}
+                                    />
+                                    <div className="flex flex-col truncate">
+                                        <p className="truncate text-sm font-semibold text-white">{user.email}</p>
+                                        <span
+                                            className="mt-0.5 w-fit rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                                            style={{ color: roleColor, background: `${roleColor}1A` }}
+                                        >
+                                            {user.role}
+                                        </span>
                                     </div>
                                 </div>
-                                <Dropdown.Menu onAction={handleMenuAction}>
-                                    <Dropdown.Item key="dashboard" textValue="Dashboard" onPress={() => handleMenuAction("dashboard")}>
-                                        <div className="cursor-pointer">{isDriver ? "Driver Dashboard" : "Ride Dashboard"}</div>
+
+                                {/* Dropdown Actions */}
+                                <Dropdown.Menu
+                                    onAction={handleMenuAction}
+                                    aria-label="Profile Actions"
+                                    className="mt-1"
+                                    itemClasses={{
+                                        base: "rounded-xl py-2 px-3 text-sm text-gray-300 transition-colors data-[hover=true]:bg-white/[0.06] data-[hover=true]:text-white outline-none cursor-pointer",
+                                    }}
+                                >
+                                    <Dropdown.Item key="dashboard">
+                                        <div className="flex items-center gap-3">
+                                            <LayoutDashboard className="h-4 w-4 text-gray-500" />
+                                            <span>{isDriver ? "Driver Dashboard" : "Ride Dashboard"}</span>
+                                        </div>
                                     </Dropdown.Item>
-                                    <Dropdown.Item key="profile" textValue="Profile" onPress={() => handleMenuAction("profile")}>
-                                        <div className="cursor-pointer">Profile</div>
+
+                                    <Dropdown.Item key="profile">
+                                        <div className="flex items-center gap-3">
+                                            <User className="h-4 w-4 text-gray-500" />
+                                            <span>Profile</span>
+                                        </div>
                                     </Dropdown.Item>
-                                    <Dropdown.Item key="switch_role" textValue={isDriver ? "Switch to Rider" : "Switch to Driver"} onPress={() => handleMenuAction("switch_role")}>
-                                        <div className="cursor-pointer">{isDriver ? "Switch to Rider" : "Switch to Driver"}</div>
+
+                                    <Dropdown.Item key="switch_role">
+                                        <div className="flex items-center gap-3" style={{ color: "#34D399" }}>
+                                            <RefreshCw className="h-4 w-4" />
+                                            <span>{isDriver ? "Switch to Rider" : "Switch to Driver"}</span>
+                                        </div>
                                     </Dropdown.Item>
-                                    <Dropdown.Item key="logout" textValue="Logout" variant="danger" onPress={() => handleMenuAction("logout")}>
-                                        <div className="flex w-full items-center justify-between gap-2 cursor-pointer">
-                                            <div className="cursor-pointer">Log Out</div>
-                                            <ArrowUpRightFromSquare className="size-3.5 text-danger" />
+
+                                    <Dropdown.Item
+                                        key="logout"
+                                        className="mt-1 border-t pt-2.5 text-red-400 data-[hover=true]:bg-red-500/10 data-[hover=true]:text-red-400"
+                                        style={{ borderColor: "rgba(255,255,255,0.08)" }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <LogOut className="h-4 w-4" />
+                                            <span>Log Out</span>
                                         </div>
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown.Popover>
                         </Dropdown>
-                    </span>
-                )}
+                    )}
+                </div>
+
             </div>
         </header>
     );

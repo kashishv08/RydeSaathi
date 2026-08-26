@@ -17,7 +17,7 @@ export default function LandingPage() {
                 {loading && <Preloader onComplete={() => setLoading(false)} />}
             </AnimatePresence>
 
-            <div className="min-h-screen bg-white text-gray-900 selection:bg-black selection:text-white">
+            <div className="min-h-screen bg-[#0A0A0F] text-white selection:bg-[#8B5CF6]/40 selection:text-white">
                 <Navbar />
                 <Hero />
                 <HowItWorks />

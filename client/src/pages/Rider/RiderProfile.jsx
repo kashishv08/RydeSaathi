@@ -1,21 +1,58 @@
-import { Avatar, Button, Card, ProgressBar } from "@heroui/react";
-import { ArrowLeft, ChevronRight, Clock, CreditCard, LogOut, MapPin, Star } from 'lucide-react';
+
+import { Avatar, ProgressBar } from "@heroui/react";
+import { ArrowLeft, ChevronRight, Clock, CreditCard, LogOut, MapPin, Pencil, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logoutRequest } from '../../api/authApi';
 import { useUserProfile } from '../../hooks/auth';
+import { motion } from 'framer-motion';
+
+const FONT_DISPLAY = "'Sora', sans-serif";
+const FONT_MONO = "'IBM Plex Mono', monospace";
+const VIOLET = "#8B5CF6";
+
+// A single "stop" on the settings route — a node dot + dashed segment down to the next stop
+function RouteRow({ icon, label, onClick, isLast }) {
+    return (
+        <button onClick={onClick} className="group flex w-full items-stretch gap-4 text-left cursor-pointer">
+            <div className="flex w-8 flex-col items-center pt-4">
+                <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full ring-4 transition-colors"
+                    style={{ background: VIOLET, "--tw-ring-color": "rgba(139,92,246,0.12)" }}
+                />
+                {!isLast && (
+                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed rgba(255,255,255,0.14)" }} />
+                )}
+            </div>
+            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-3">
+                    {icon}
+                    <span className="font-semibold text-gray-200 transition-colors group-hover:text-white">{label}</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-600 transition-colors group-hover:text-gray-400" />
+            </div>
+        </button>
+    );
+}
+
+function StatCard({ label, value }) {
+    return (
+        <div className="rounded-2xl border p-4" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{label}</p>
+            <p className="mt-1.5 text-2xl font-semibold text-white" style={{ fontFamily: FONT_MONO }}>{value}</p>
+        </div>
+    );
+}
 
 export default function RiderProfile() {
     const navigate = useNavigate();
     const { data, isLoading } = useUserProfile();
 
-    const handleLogout = () => {
-        logoutRequest();
-    };
+    const handleLogout = () => logoutRequest();
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md" />
+            <div className="flex min-h-screen items-center justify-center bg-[#0A0A0F]">
+                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md text-violet-400" />
             </div>
         );
     }
@@ -23,120 +60,99 @@ export default function RiderProfile() {
     const user = data?.data;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-            {/* Premium Header */}
-            <div className="bg-black text-white px-6 pt-12 pb-24 relative overflow-hidden">
-                {/* Abstract background blobs */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
-
-                <div className="relative z-10 flex items-center justify-between mb-8">
-                    <button onClick={() => navigate('/ride/search')} className="hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer">
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <span className="font-semibold text-lg tracking-wide">Profile</span>
-                    <div className="w-10"></div> {/* Spacer for centering */}
-                </div>
-            </div>
-
-            {/* Profile Info Card (Overlapping header) */}
-            <div className="px-6 -mt-16 relative z-20">
-                <Card className="w-full shadow-lg border-none bg-white rounded-3xl">
-                    <div className="p-6">
-                        <div className="flex flex-col items-center text-center">
-                            <div className="relative mb-4 group">
-                                <Avatar
-                                    src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                                    className="w-24 h-24 text-large border-4 border-white shadow-md transition-transform group-hover:scale-105"
-                                />
-                                <div className="absolute bottom-0 right-0 bg-black text-white p-1.5 rounded-full shadow-sm border-2 border-white">
-                                    <Star className="w-4 h-4 fill-white" />
-                                </div>
-                            </div>
-
-                            <h2 className="text-2xl font-bold text-gray-900 mb-1">{user?.email || "Rider"}</h2>
-                            <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
-                                <span className="font-medium bg-gray-100 px-2.5 py-0.5 rounded-full text-black">{user?.rating_avg || "5.0"} ⭐</span>
-                                <span>•</span>
-                                <span>{user?.phone || "No phone added"}</span>
-                            </div>
-
-                            <div className="flex w-full gap-4 pt-2">
-                                <Button className="flex-1 bg-black text-white font-medium shadow-md hover:shadow-lg transition-all" radius="full">
-                                    Edit Profile
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </div>
-
-            {/* Stats / Quick Info */}
-            <div className="px-6 mt-6">
-                <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-gray-200 transition-colors">
-                        <div className="p-4 flex flex-col justify-center">
-                            <h3 className="text-gray-500 text-sm font-medium mb-1">Total Rides</h3>
-                            <p className="text-3xl font-bold text-black tracking-tight">42</p>
-                        </div>
-                    </Card>
-                    <Card className="bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-gray-200 transition-colors">
-                        <div className="p-4 flex flex-col justify-center">
-                            <h3 className="text-gray-500 text-sm font-medium mb-1">Member Since</h3>
-                            <p className="text-lg font-bold text-black tracking-tight">2023</p>
-                        </div>
-                    </Card>
-                </div>
-            </div>
-
-            {/* Account Settings Menu */}
-            <div className="flex-1 px-6 mt-8 mb-12">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">Settings</h3>
-
-                <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="flex flex-col">
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <MapPin className="w-5 h-5 text-gray-700" />
-                                </div>
-                                <span className="font-medium text-gray-900">Saved Places</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
-                        </button>
-                        <hr className="border-t border-gray-100/80 mx-4 my-0" />
-
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <CreditCard className="w-5 h-5 text-gray-700" />
-                                </div>
-                                <span className="font-medium text-gray-900">Payment Methods</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
-                        </button>
-                        <hr className="border-t border-gray-100/80 mx-4 my-0" />
-
-                        <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group cursor-pointer">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black/5 transition-colors">
-                                    <Clock className="w-5 h-5 text-gray-700" />
-                                </div>
-                                <span className="font-medium text-gray-900">Ride History</span>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-300" />
-                        </button>
-                    </div>
-                </Card>
-
-                <Button
-                    className="w-full mt-8 bg-red-50 text-red-600 font-bold py-6 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-100 transition-colors shadow-none border border-red-100"
-                    onPress={handleLogout}
-                    radius="md"
+        <div className="min-h-screen bg-[#0A0A0F] font-sans">
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-6 pt-8 pb-2">
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/ride/search')}
+                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
+                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
                 >
-                    <LogOut className="w-5 h-5" />
+                    <ArrowLeft className="h-5 w-5" />
+                </motion.button>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500">Profile</span>
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
+                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                >
+                    <Pencil className="h-4 w-4" />
+                </motion.button>
+            </div>
+
+            {/* Hero */}
+            <div className="relative overflow-hidden px-6 pb-8 pt-6 text-center">
+                {/* faint dashed route arcing behind the avatar — signature motif, not a blob */}
+                <svg className="pointer-events-none absolute left-1/2 top-2 -z-0 -translate-x-1/2 opacity-30" width="340" height="140" viewBox="0 0 340 140" fill="none">
+                    <path d="M10 120 C 90 10, 250 10, 330 120" stroke="#8B5CF6" strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
+                </svg>
+
+                <div className="relative">
+                    <Avatar
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rider"
+                        className="mx-auto h-24 w-24 border-4 text-large shadow-lg"
+                        style={{ borderColor: "rgba(139,92,246,0.35)" }}
+                    />
+                    <div className="absolute bottom-0 right-1/2 translate-x-[38px] rounded-full border-2 p-1.5" style={{ background: VIOLET, borderColor: "#0A0A0F" }}>
+                        <Star className="h-3.5 w-3.5 fill-white text-white" />
+                    </div>
+                </div>
+
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
+                    {user?.email ? user.email.split('@')[0] : "Rider"}
+                </h2>
+                <div className="mt-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-400">
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}>
+                        <span style={{ fontFamily: FONT_MONO, color: "#F5B942" }}>{user?.rating_avg || "5.0"}</span>
+                        <Star className="h-3 w-3" style={{ fill: "#F5B942", color: "#F5B942" }} />
+                    </span>
+                    <span className="text-gray-600">•</span>
+                    <span>{user?.phone || "No phone added"}</span>
+                </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-3 px-6">
+                <StatCard label="Rides" value="42" />
+                <StatCard label="Rating" value={user?.rating_avg || "5.0"} />
+                <StatCard label="Since" value="2023" />
+            </div>
+
+            {/* Settings — route list */}
+            <div className="mt-10 px-6">
+                <h3 className="mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">Your route</h3>
+                <div className="flex flex-col">
+                    <RouteRow
+                        icon={<MapPin className="h-[18px] w-[18px] text-gray-400" />}
+                        label="Saved Places"
+                    />
+                    <RouteRow
+                        icon={<CreditCard className="h-[18px] w-[18px] text-gray-400" />}
+                        label="Payment Methods"
+                    />
+                    <RouteRow
+                        icon={<Clock className="h-[18px] w-[18px] text-gray-400" />}
+                        label="Ride History"
+                        isLast
+                    />
+                </div>
+            </div>
+
+            {/* Logout */}
+            <div className="px-6 pb-14 pt-10">
+                <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleLogout}
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border py-4 font-semibold transition-colors"
+                    style={{ background: "rgba(248,113,113,0.08)", borderColor: "rgba(248,113,113,0.18)", color: "#F87171" }}
+                >
+                    <LogOut className="h-[18px] w-[18px]" />
                     Log Out
-                </Button>
+                </motion.button>
             </div>
         </div>
     );
