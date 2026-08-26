@@ -1,44 +1,84 @@
 import React from 'react';
 
+// Shimmer base color tokens
+const CARD_BG = 'rgba(255,255,255,0.03)';
+const CARD_BORDER = '1.5px solid rgba(255,255,255,0.07)';
+const SLAB_BASE = 'rgba(255,255,255,0.06)';
+const SLAB_HIGHLIGHT = 'rgba(139,92,246,0.12)';
+
+function ShimmerSlab({ w = 'w-full', h = 'h-4', rounded = 'rounded-lg' }) {
+    return (
+        <div
+            className={`${w} ${h} ${rounded} overflow-hidden relative`}
+            style={{ background: SLAB_BASE }}
+        >
+            <div
+                className="absolute inset-0"
+                style={{
+                    background: `linear-gradient(90deg, transparent 0%, ${SLAB_HIGHLIGHT} 50%, transparent 100%)`,
+                    backgroundSize: '200% 100%',
+                    animation: 'shimmer-sweep 1.6s ease-in-out infinite',
+                }}
+            />
+        </div>
+    );
+}
+
 export default function RideListShimmer() {
     return (
-        <div className="flex flex-col mt-4 flex-1 animate-pulse">
-            {/* Shimmer for the heading */}
-            <div className="w-48 h-8 bg-gray-200 rounded-md mb-6"></div>
+        <>
+            <style>{`
+                @keyframes shimmer-sweep {
+                    0%   { background-position: -200% 0; }
+                    100% { background-position:  200% 0; }
+                }
+            `}</style>
 
-            <div className="flex flex-col space-y-3 mb-4">
-                {[1, 2, 3].map((item) => (
+            <div className="flex flex-col flex-1 gap-2">
+                {/* Label slab */}
+                <ShimmerSlab w="w-28" h="h-2.5" rounded="rounded-full" />
+
+                {/* Three ride-card shimmers */}
+                {[0, 1, 2].map((i) => (
                     <div
-                        key={item}
-                        className="flex items-center justify-between p-3 rounded-2xl border-[3px] border-transparent"
+                        key={i}
+                        className="flex items-center gap-3 p-3.5 rounded-2xl"
+                        style={{
+                            background: CARD_BG,
+                            border: CARD_BORDER,
+                            opacity: 1 - i * 0.15,
+                        }}
                     >
-                        <div className="flex items-center space-x-3 w-[70%]">
-                            {/* Car image shimmer */}
-                            <div className="w-20 h-12 bg-gray-200 rounded-md shrink-0"></div>
+                        {/* Vehicle image slab */}
+                        <ShimmerSlab w="w-20" h="h-12" rounded="rounded-xl" />
 
-                            <div className="flex flex-col flex-1 space-y-2">
-                                {/* Title and icons shimmer */}
-                                <div className="w-32 h-5 bg-gray-200 rounded-md"></div>
-                                {/* ETA shimmer */}
-                                <div className="w-24 h-4 bg-gray-200 rounded-md"></div>
-                                {/* Description shimmer */}
-                                <div className="w-40 h-3 bg-gray-200 rounded-md"></div>
+                        {/* Info slabs */}
+                        <div className="flex flex-col gap-2 flex-1">
+                            <div className="flex items-center gap-2">
+                                <ShimmerSlab w="w-24" h="h-4" rounded="rounded-md" />
+                                <ShimmerSlab w="w-10" h="h-4" rounded="rounded-full" />
                             </div>
+                            <ShimmerSlab w="w-32" h="h-3" rounded="rounded-md" />
+                            <ShimmerSlab w="w-40" h="h-2.5" rounded="rounded-md" />
                         </div>
 
-                        {/* Price shimmer */}
-                        <div className="w-16 h-6 bg-gray-200 rounded-md text-right shrink-0"></div>
+                        {/* Fare slab */}
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                            <ShimmerSlab w="w-14" h="h-5" rounded="rounded-md" />
+                            <ShimmerSlab w="w-10" h="h-2.5" rounded="rounded-md" />
+                        </div>
                     </div>
                 ))}
-            </div>
 
-            {/* Bottom action bar shimmer */}
-            <div className="sticky bottom-0 bg-white pt-2 pb-2 mt-auto z-10">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="w-1/3 h-14 bg-gray-200 rounded-xl"></div>
-                    <div className="flex-1 h-14 bg-gray-200 rounded-xl"></div>
+                {/* Bottom CTA bar shimmer */}
+                <div
+                    className="mt-3 pt-3 flex items-center gap-3 border-t"
+                    style={{ borderColor: 'rgba(139,92,246,0.15)' }}
+                >
+                    <ShimmerSlab w="w-24" h="h-12" rounded="rounded-xl" />
+                    <ShimmerSlab w="w-full" h="h-12" rounded="rounded-xl" />
                 </div>
             </div>
-        </div>
+        </>
     );
 }

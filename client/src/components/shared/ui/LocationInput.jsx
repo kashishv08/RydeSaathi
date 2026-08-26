@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Description, Label, ListBox, ListLayout, Virtualizer } from "@heroui/react";
+import { MapPin } from 'lucide-react';
 import useAutoCompleteAdd from "../../../hooks/rider";
 
-export default function LocationInput({ placeholder, onSelectLocation, initialValue = "", isActive = true, onFocus }) {
+export default function LocationInput({ placeholder, onSelectLocation, initialValue = "", isActive = true, onFocus, icon }) {
     const [inputValue, setInputValue] = useState(initialValue);
     const [debouncedValue, setDebouncedValue] = useState("");
     const timerRef = useRef(null);
@@ -22,47 +23,90 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
         return () => clearTimeout(timerRef.current);
     }, [inputValue]);
 
-
     return (
         <div className="relative w-full">
-            <div className="relative">
+            <div className="relative group">
+                {/* Leading icon */}
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 z-10">
+                    {icon}
+                </div>
+
                 <input
                     type="text"
                     placeholder={placeholder}
-                    className="w-full bg-gray-100 border-none rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-black outline-none font-medium"
+                    style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        color: '#fff',
+                        outline: 'none',
+                        transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
+                    }}
+                    className="w-full rounded-xl py-3 pl-10 pr-4 text-sm font-medium placeholder-gray-600 focus:placeholder-gray-500"
                     value={inputValue}
                     onChange={(e) => {
                         userTyped.current = true;
                         setInputValue(e.target.value);
                     }}
-                    onFocus={onFocus}
+                    onFocus={(e) => {
+                        e.target.style.borderColor = 'rgba(139,92,246,0.5)';
+                        e.target.style.background = 'rgba(139,92,246,0.06)';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.08)';
+                        onFocus?.();
+                    }}
+                    onBlur={(e) => {
+                        e.target.style.borderColor = 'rgba(255,255,255,0.09)';
+                        e.target.style.background = 'rgba(255,255,255,0.05)';
+                        e.target.style.boxShadow = 'none';
+                    }}
                 />
             </div>
 
+            {/* Autocomplete dropdown */}
             {isActive && data?.data?.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg">
-                    <Virtualizer layout={ListLayout} layoutOptions={{ rowHeight: 50 }}>
+                <div
+                    className="absolute z-50 w-full mt-1.5 rounded-xl overflow-hidden"
+                    style={{
+                        background: '#1a1a2e',
+                        border: '1px solid rgba(139,92,246,0.2)',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+                    }}
+                >
+                    <Virtualizer layout={ListLayout} layoutOptions={{ rowHeight: 56 }}>
                         <ListBox
                             aria-label="Location suggestions"
-                            className="max-h-[300px] overflow-y-auto"
+                            className="max-h-[280px] overflow-y-auto custom-scrollbar"
                             items={data.data}
                             onAction={(key) => {
                                 clearTimeout(timerRef.current);
-                                let val = data.data.find((x) => x.place_id == key)
-
+                                const val = data.data.find((x) => x.place_id == key);
                                 setInputValue(val.display_name);
-
                                 const name = val.display_place || val.display_name.split(',')[0];
-                                onSelectLocation({ lat: val.lat, lon: val.lon, name: name });
-
+                                onSelectLocation({ lat: val.lat, lon: val.lon, name });
                                 setDebouncedValue("");
                             }}
                         >
                             {(address) => (
-                                <ListBox.Item id={`${address.place_id}`} textValue={address.display_name}>
-                                    <div className="flex flex-col">
-                                        <Label>{address.display_place || address.display_name.split(',')[0]}</Label>
-                                        <Description>{address.display_address || address.display_name}</Description>
+                                <ListBox.Item
+                                    id={`${address.place_id}`}
+                                    textValue={address.display_name}
+                                    style={{
+                                        background: 'transparent',
+                                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                        cursor: 'pointer',
+                                        padding: '10px 14px',
+                                    }}
+                                    className="hover:bg-[rgba(139,92,246,0.08)] transition-colors"
+                                >
+                                    <div className="flex items-start gap-2.5">
+                                        <MapPin className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
+                                        <div className="flex flex-col min-w-0">
+                                            <Label className="text-sm font-semibold text-gray-200 truncate block">
+                                                {address.display_place || address.display_name.split(',')[0]}
+                                            </Label>
+                                            <Description className="text-xs text-gray-600 truncate block">
+                                                {address.display_address || address.display_name}
+                                            </Description>
+                                        </div>
                                     </div>
                                 </ListBox.Item>
                             )}

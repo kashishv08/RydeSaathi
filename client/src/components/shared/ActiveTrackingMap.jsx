@@ -15,6 +15,20 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
     const etaBadgeRef = useRef(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
 
+    // Re-measure the map canvas whenever the container is resized
+    // (e.g. after a Framer Motion opacity animation reveals the container)
+    useEffect(() => {
+        if (!mapContainerRef.current) return;
+        const ro = new ResizeObserver(() => {
+            if (mapRef.current) {
+                mapRef.current.resize();
+            }
+        });
+        ro.observe(mapContainerRef.current);
+        return () => ro.disconnect();
+    }, []);
+
+
     useEffect(() => {
         if (mapRef.current) return;
         if (!window.locationiq) return;

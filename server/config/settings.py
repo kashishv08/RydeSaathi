@@ -33,7 +33,7 @@ SECRET_KEY = config("SECRET_KEY")
 ALLOWED_HOSTS = [
     "feuilletonistic-rochelle-inconvincible.ngrok-free.dev",
     "localhost",
-    "https://nokia-loves-restaurants-thoughts.trycloudflare.com"
+    "nokia-loves-restaurants-thoughts.trycloudflare.com"
 ]
 
 

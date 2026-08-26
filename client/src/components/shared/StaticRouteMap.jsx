@@ -8,26 +8,52 @@ export default function StaticRouteMap({ pickup, drop, routeData, isOnline }) {
     const markersRef = useRef([]);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
 
+    // Re-measure the map canvas whenever the container is resized
+    // (e.g. after a Framer Motion opacity animation reveals the container)
+    useEffect(() => {
+        if (!mapContainerRef.current) return;
+        const ro = new ResizeObserver(() => {
+            if (mapRef.current) {
+                mapRef.current.resize();
+            }
+        });
+        ro.observe(mapContainerRef.current);
+        return () => ro.disconnect();
+    }, []);
+
     useEffect(() => {
         if (mapRef.current) return;
-        if (!window.locationiq) return;
 
-        window.locationiq.key = LOCATIONIQ_KEY;
+        let initInterval;
 
-        const map = new window.maplibregl.Map({
-            container: mapContainerRef.current,
-            style: window.locationiq.getLayer("Streets"),
-            zoom: 13,
-            center: pickup ? [pickup.lon, pickup.lat] : [77.2090, 28.6139]
-        });
+        const initMap = () => {
+            if (!window.locationiq || !window.maplibregl) return false;
 
-        map.on('load', () => {
-            setIsMapLoaded(true);
-        });
+            window.locationiq.key = LOCATIONIQ_KEY;
 
-        mapRef.current = map;
+            const map = new window.maplibregl.Map({
+                container: mapContainerRef.current,
+                style: window.locationiq.getLayer("Streets"),
+                zoom: 13,
+                center: pickup ? [pickup.lon, pickup.lat] : [77.2090, 28.6139]
+            });
+
+            map.on('load', () => {
+                setIsMapLoaded(true);
+            });
+
+            mapRef.current = map;
+            return true;
+        };
+
+        if (!initMap()) {
+            initInterval = setInterval(() => {
+                if (initMap()) clearInterval(initInterval);
+            }, 100);
+        }
 
         return () => {
+            if (initInterval) clearInterval(initInterval);
             if (mapRef.current) {
                 mapRef.current.remove();
                 mapRef.current = null;
@@ -161,6 +187,16 @@ export default function StaticRouteMap({ pickup, drop, routeData, isOnline }) {
     }, [pickup, drop, routeData, isMapLoaded, isOnline]);
 
     return (
-        <div ref={mapContainerRef} className="absolute inset-0 w-full h-full"></div>
+        <div className="absolute inset-0 w-full h-full">
+            <div ref={mapContainerRef} className="absolute inset-0 w-full h-full"></div>
+            {!isMapLoaded && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center" style={{ background: '#0d0d12' }}>
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-9 h-9 rounded-full border-[3px] border-t-violet-400 animate-spin" style={{ borderColor: 'rgba(139,92,246,0.2)', borderTopColor: '#8b5cf6' }} />
+                        <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'rgba(139,92,246,0.7)' }}>Loading Map</span>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

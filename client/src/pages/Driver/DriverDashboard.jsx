@@ -122,8 +122,21 @@ export default function DriverDashboard() {
                 </div>
 
                 {/* Map Area */}
-                <div className="flex-1 relative z-0">
-                    <StaticRouteMap pickup={driverLocation} isOnline={isOnline && !activeRide} />
+                <div className="flex-1 relative z-0 flex items-center justify-center bg-gray-50">
+                    {(!isOnline && !activeRide) ? (
+                        <div className="flex flex-col items-center justify-center p-8 text-center animate-in zoom-in-95 fade-in duration-500 z-10">
+                            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6 shadow-inner relative overflow-hidden">
+                                <div className="absolute inset-0 border-4 border-gray-300 rounded-full animate-ping opacity-20"></div>
+                                <Power className="w-10 h-10 text-gray-400" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Nothing on the radar yet</h2>
+                            <p className="text-gray-500 font-medium max-w-[280px] leading-relaxed">
+                                Go online to see nearby ride requests and make your next trip count.
+                            </p>
+                        </div>
+                    ) : (
+                        <StaticRouteMap pickup={driverLocation} isOnline={isOnline && !activeRide} />
+                    )}
 
                     {/* Gradient overlay for smooth transition to bottom sheet */}
                     <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/5 to-transparent pointer-events-none z-10"></div>
