@@ -73,11 +73,11 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
             const radarEl = document.createElement('div');
             radarEl.className = 'relative flex justify-center items-center';
             radarEl.innerHTML = `
-                <div class="absolute w-32 h-32 bg-blue-500 rounded-full animate-ping opacity-50"></div>
-                <div class="relative w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center z-10">
+                <div class="absolute w-32 h-32 rounded-full animate-ping opacity-50" style="background: var(--clr-primary)"></div>
+                <div class="relative w-8 h-8 rounded-full border-4 border-white shadow-xl flex items-center justify-center z-10" style="background: var(--clr-primary)">
                     <div class="w-2 h-2 bg-white rounded-full"></div>
                 </div>
-                <div class="absolute top-10 bg-black text-white px-4 py-2 rounded-lg font-bold text-sm shadow-xl whitespace-nowrap z-20">
+                <div class="absolute top-10 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-xl whitespace-nowrap z-20" style="background: var(--clr-foreground)">
                     Reached at ${endPoint.name || 'location'}
                 </div>
             `;
@@ -101,7 +101,7 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
                 'type': 'line',
                 'source': 'route',
                 'layout': { 'line-join': 'round', 'line-cap': 'round' },
-                'paint': { 'line-color': '#000000', 'line-width': 4 }
+                'paint': { 'line-color': 'hsl(186, 45%, 16%)', 'line-width': 4 }
             });
 
             const durationMins = Math.ceil(routeData.durationSeconds / 60);
@@ -111,7 +111,7 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
                 const endEl = document.createElement('div');
                 endEl.className = 'flex items-center bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden cursor-pointer z-10';
                 endEl.innerHTML = `
-                    <div id="dynamic-eta-badge" class="bg-blue-600 text-white px-3 py-2 text-center text-sm font-bold leading-tight">
+                    <div id="dynamic-eta-badge" class="text-white px-3 py-2 text-center text-sm font-bold leading-tight" style="background: var(--clr-primary)">
                         ${durationMins}<br/>min
                     </div>
                     <div class="px-4 py-2 font-semibold text-black whitespace-nowrap">
@@ -129,7 +129,8 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
             } else {
                 // Rider View: Show normal dots for start and end, AND driver UI badges if enabled
                 const startEl = document.createElement('div');
-                startEl.className = 'w-4 h-4 bg-black rounded-full border-4 border-white shadow-md z-10';
+                startEl.className = 'w-4 h-4 rounded-full border-4 border-white shadow-md z-10';
+                startEl.style.background = 'var(--clr-foreground)';
                 const startMarker = new window.maplibregl.Marker({ element: startEl })
                     .setLngLat([startPoint.lon, startPoint.lat])
                     .addTo(map);
@@ -138,7 +139,7 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
                 if (showEtaBadge) {
                     endEl.className = 'flex items-center bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden cursor-pointer z-20';
                     endEl.innerHTML = `
-                        <div id="dynamic-eta-badge" class="bg-blue-600 text-white px-3 py-2 text-center text-sm font-bold leading-tight">
+                        <div id="dynamic-eta-badge" class="text-white px-3 py-2 text-center text-sm font-bold leading-tight" style="background: var(--clr-primary)">
                             ${durationMins}<br/>min
                         </div>
                         <div class="px-4 py-2 font-semibold text-black whitespace-nowrap">
@@ -147,7 +148,8 @@ export default function ActiveTrackingMap({ startPoint, endPoint, routeData, dri
                     `;
                     etaBadgeRef.current = endEl.querySelector('#dynamic-eta-badge');
                 } else {
-                    endEl.className = 'w-4 h-4 bg-white border-4 border-black rounded-sm shadow-md z-10';
+                    endEl.className = 'w-4 h-4 bg-white border-4 rounded-sm shadow-md z-10';
+                    endEl.style.borderColor = 'var(--clr-foreground)';
                 }
 
                 const endMarker = new window.maplibregl.Marker({ element: endEl, offset: showEtaBadge ? [0, -20] : [0, 0] })

@@ -35,9 +35,9 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                     type="text"
                     placeholder={placeholder}
                     style={{
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.09)',
-                        color: '#fff',
+                        background: 'var(--clr-card)',
+                        border: '1px solid var(--clr-border)',
+                        color: 'var(--clr-foreground)',
                         outline: 'none',
                         transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
                     }}
@@ -48,14 +48,14 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                         setInputValue(e.target.value);
                     }}
                     onFocus={(e) => {
-                        e.target.style.borderColor = 'rgba(139,92,246,0.5)';
-                        e.target.style.background = 'rgba(139,92,246,0.06)';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.08)';
+                        e.target.style.borderColor = 'hsl(169,59%,31%,0.5)';
+                        e.target.style.background = 'hsl(169,59%,31%,0.06)';
+                        e.target.style.boxShadow = '0 0 0 3px var(--clr-primary-subtle)';
                         onFocus?.();
                     }}
                     onBlur={(e) => {
-                        e.target.style.borderColor = 'rgba(255,255,255,0.09)';
-                        e.target.style.background = 'rgba(255,255,255,0.05)';
+                        e.target.style.borderColor = 'var(--clr-border)';
+                        e.target.style.background = 'var(--clr-card)';
                         e.target.style.boxShadow = 'none';
                     }}
                 />
@@ -66,9 +66,9 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                 <div
                     className="absolute z-50 w-full mt-1.5 rounded-xl overflow-hidden"
                     style={{
-                        background: '#1a1a2e',
-                        border: '1px solid rgba(139,92,246,0.2)',
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+                        background: 'var(--clr-card)',
+                        border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                        boxShadow: '0 12px 40px rgba(27,54,58,0.1)',
                     }}
                 >
                     <Virtualizer layout={ListLayout} layoutOptions={{ rowHeight: 56 }}>
@@ -91,16 +91,16 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                                     textValue={address.display_name}
                                     style={{
                                         background: 'transparent',
-                                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                        borderBottom: '1px solid var(--clr-border)',
                                         cursor: 'pointer',
                                         padding: '10px 14px',
                                     }}
-                                    className="hover:bg-[rgba(139,92,246,0.08)] transition-colors"
+                                    className="hover:bg-[var(--clr-primary-subtle)] transition-colors"
                                 >
                                     <div className="flex items-start gap-2.5">
-                                        <MapPin className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
+                                        <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: 'var(--clr-primary)' }} />
                                         <div className="flex flex-col min-w-0">
-                                            <Label className="text-sm font-semibold text-gray-200 truncate block">
+                                            <Label className="text-sm font-semibold truncate block" style={{ color: 'var(--clr-foreground)' }}>
                                                 {address.display_place || address.display_name.split(',')[0]}
                                             </Label>
                                             <Description className="text-xs text-gray-600 truncate block">

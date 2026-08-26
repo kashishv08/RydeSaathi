@@ -4,6 +4,15 @@ import { Banknote, ChevronDown, Users, Clock, Zap } from 'lucide-react';
 import { vehicleDetails } from '../../constants/vehicleImages';
 import { getArrivalTime } from '../../utils/vehicleHelpers';
 
+const PRIMARY = 'hsl(169, 59%, 31%)';
+const ACCENT = 'hsl(14, 83%, 62%)';
+const FG = 'hsl(193, 43%, 15%)';
+const MUTED = 'hsl(193, 15%, 45%)';
+const CARD_BG = 'hsl(44, 44%, 99%)';
+const CARD_SEL = 'hsl(169, 59%, 31%, 0.06)';
+const BORDER = 'hsl(38, 24%, 86%)';
+const BORDER_SEL = 'hsl(169, 59%, 31%, 0.4)';
+
 export default function NearDriver({ options = [], onRequest }) {
     const [selected, setSelected] = useState(options[0]?.vehicle_type || null);
 
@@ -14,7 +23,7 @@ export default function NearDriver({ options = [], onRequest }) {
     return (
         <div className="flex flex-col flex-1 min-h-0">
             {/* Section label */}
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(139,92,246,0.7)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: PRIMARY }}>
                 Available Rides
             </p>
 
@@ -36,15 +45,11 @@ export default function NearDriver({ options = [], onRequest }) {
                             onClick={() => setSelected(option.vehicle_type)}
                             className="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden"
                             style={{
-                                background: isSelected
-                                    ? 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(91,33,182,0.06) 100%)'
-                                    : 'rgba(255,255,255,0.03)',
-                                border: isSelected
-                                    ? '1.5px solid rgba(139,92,246,0.45)'
-                                    : '1.5px solid rgba(255,255,255,0.07)',
-                                boxShadow: isSelected ? '0 0 20px rgba(139,92,246,0.12)' : 'none',
+                                background: isSelected ? CARD_SEL : CARD_BG,
+                                border: `1.5px solid ${isSelected ? BORDER_SEL : BORDER}`,
+                                boxShadow: isSelected ? '0 0 20px hsl(169,59%,31%,0.1)' : 'none',
                             }}
-                            whileHover={{ scale: 1.01, borderColor: 'rgba(139,92,246,0.3)' }}
+                            whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                         >
                             {/* Selected indicator bar */}
@@ -52,7 +57,7 @@ export default function NearDriver({ options = [], onRequest }) {
                                 <motion.div
                                     layoutId="selected-bar"
                                     className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
-                                    style={{ background: 'linear-gradient(to bottom, #8b5cf6, #5b21b6)' }}
+                                    style={{ background: `linear-gradient(to bottom, ${PRIMARY}, hsl(169,59%,20%))` }}
                                 />
                             )}
 
@@ -62,20 +67,17 @@ export default function NearDriver({ options = [], onRequest }) {
                                     src={details.image}
                                     alt={details.name}
                                     className="w-full h-auto object-contain drop-shadow-lg"
-                                    style={{ filter: isSelected ? 'drop-shadow(0 0 8px rgba(139,92,246,0.4))' : 'none' }}
+                                    style={{ filter: isSelected ? `drop-shadow(0 0 8px hsl(169,59%,31%,0.35))` : 'none' }}
                                 />
                             </div>
 
                             {/* Info block */}
                             <div className="flex-1 min-w-0 ml-3">
                                 <div className="flex items-center gap-2 mb-0.5">
-                                    <span className="font-bold text-base text-white">{details.name}</span>
+                                    <span className="font-bold text-base" style={{ color: FG }}>{details.name}</span>
                                     <span
                                         className="flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                                        style={{
-                                            background: 'rgba(255,255,255,0.07)',
-                                            color: 'rgba(255,255,255,0.5)',
-                                        }}
+                                        style={{ background: 'hsl(38,24%,90%)', color: MUTED }}
                                     >
                                         <Users className="w-2.5 h-2.5" />
                                         {details.capacity}
@@ -85,13 +87,14 @@ export default function NearDriver({ options = [], onRequest }) {
                                         <span
                                             className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
                                             style={{
-                                                background: 'rgba(16,185,129,0.12)',
-                                                border: '1px solid rgba(16,185,129,0.25)',
-                                                color: '#34d399',
+                                                background: 'hsl(169,59%,31%,0.1)',
+                                                border: '1px solid hsl(169,59%,31%,0.25)',
+                                                color: PRIMARY,
                                             }}
                                         >
                                             <motion.div
-                                                className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+                                                className="w-1.5 h-1.5 rounded-full"
+                                                style={{ background: PRIMARY }}
                                                 animate={{ opacity: [1, 0.3, 1] }}
                                                 transition={{ duration: 1.2, repeat: Infinity }}
                                             />
@@ -100,24 +103,24 @@ export default function NearDriver({ options = [], onRequest }) {
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                                <div className="flex items-center gap-1.5 text-xs" style={{ color: MUTED }}>
                                     <Clock className="w-3 h-3 shrink-0" />
-                                    <span className="font-semibold text-gray-300">
+                                    <span className="font-semibold" style={{ color: FG }}>
                                         {Math.ceil(option.pickup_eta)} {Math.ceil(option.pickup_eta) === 1 ? 'min' : 'mins'}
                                     </span>
                                     <span>·</span>
                                     <span>{getArrivalTime(option.pickup_eta)}</span>
                                 </div>
 
-                                <p className="text-[11px] text-gray-600 mt-0.5 truncate">{details.description}</p>
+                                <p className="text-[11px] mt-0.5 truncate" style={{ color: MUTED }}>{details.description}</p>
                             </div>
 
                             {/* Fare */}
                             <div className="text-right shrink-0 ml-3">
-                                <p className="text-lg font-black text-white tracking-tight">
+                                <p className="text-lg font-black tracking-tight" style={{ color: FG }}>
                                     ₹{option.fare.toFixed(0)}
                                 </p>
-                                <p className="text-[10px] text-gray-600 font-medium">estimated</p>
+                                <p className="text-[10px] font-medium" style={{ color: MUTED }}>estimated</p>
                             </div>
                         </motion.div>
                     );
@@ -133,20 +136,20 @@ export default function NearDriver({ options = [], onRequest }) {
                         exit={{ opacity: 0, y: 16 }}
                         transition={{ type: 'spring', stiffness: 280, damping: 22 }}
                         className="mt-3 pt-3 border-t"
-                        style={{ borderColor: 'rgba(139,92,246,0.15)' }}
+                        style={{ borderColor: 'hsl(169,59%,31%,0.15)' }}
                     >
                         <div className="flex items-center gap-3">
                             {/* Payment pill */}
                             <div
                                 className="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all shrink-0"
                                 style={{
-                                    background: 'rgba(16,185,129,0.08)',
-                                    border: '1px solid rgba(16,185,129,0.2)',
+                                    background: 'var(--clr-primary-subtle)',
+                                    border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
                                 }}
                             >
-                                <Banknote className="w-4 h-4 text-emerald-400" />
-                                <span className="font-bold text-sm text-gray-200">Cash</span>
-                                <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+                                <Banknote className="w-4 h-4" style={{ color: PRIMARY }} />
+                                <span className="font-bold text-sm" style={{ color: FG }}>Cash</span>
+                                <ChevronDown className="w-3.5 h-3.5" style={{ color: MUTED }} />
                             </div>
 
                             {/* Request button */}
@@ -154,10 +157,11 @@ export default function NearDriver({ options = [], onRequest }) {
                                 whileHover={{ scale: 1.02, y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => onRequest(selectedOption)}
-                                className="flex-1 flex items-center justify-center gap-2 text-white font-bold text-sm py-3.5 rounded-xl transition-all"
+                                className="flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-xl transition-all"
                                 style={{
-                                    background: 'linear-gradient(135deg,#7c3aed,#5b21b6)',
-                                    boxShadow: '0 6px 24px rgba(124,58,237,0.4)',
+                                    background: `linear-gradient(135deg, ${PRIMARY}, hsl(169,59%,20%))`,
+                                    boxShadow: '0 6px 24px hsl(169,59%,31%,0.35)',
+                                    color: 'var(--clr-card)',
                                 }}
                             >
                                 <Zap className="w-4 h-4" />
@@ -169,4 +173,4 @@ export default function NearDriver({ options = [], onRequest }) {
             </AnimatePresence>
         </div>
     );
-}
+}

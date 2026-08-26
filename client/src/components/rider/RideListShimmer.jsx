@@ -1,10 +1,9 @@
 import React from 'react';
 
-// Shimmer base color tokens
-const CARD_BG = 'rgba(255,255,255,0.03)';
-const CARD_BORDER = '1.5px solid rgba(255,255,255,0.07)';
-const SLAB_BASE = 'rgba(255,255,255,0.06)';
-const SLAB_HIGHLIGHT = 'rgba(139,92,246,0.12)';
+const CARD_BG = 'hsl(44, 44%, 99%)';
+const CARD_BORDER = '1.5px solid hsl(38, 24%, 86%)';
+const SLAB_BASE = 'hsl(38, 24%, 90%)';
+const SLAB_HIGHLIGHT = 'color-mix(in srgb, var(--clr-primary) 12%, transparent)';
 
 function ShimmerSlab({ w = 'w-full', h = 'h-4', rounded = 'rounded-lg' }) {
     return (
@@ -27,13 +26,6 @@ function ShimmerSlab({ w = 'w-full', h = 'h-4', rounded = 'rounded-lg' }) {
 export default function RideListShimmer() {
     return (
         <>
-            <style>{`
-                @keyframes shimmer-sweep {
-                    0%   { background-position: -200% 0; }
-                    100% { background-position:  200% 0; }
-                }
-            `}</style>
-
             <div className="flex flex-col flex-1 gap-2">
                 {/* Label slab */}
                 <ShimmerSlab w="w-28" h="h-2.5" rounded="rounded-full" />
@@ -73,7 +65,7 @@ export default function RideListShimmer() {
                 {/* Bottom CTA bar shimmer */}
                 <div
                     className="mt-3 pt-3 flex items-center gap-3 border-t"
-                    style={{ borderColor: 'rgba(139,92,246,0.15)' }}
+                    style={{ borderColor: 'hsl(169,59%,31%,0.15)' }}
                 >
                     <ShimmerSlab w="w-24" h="h-12" rounded="rounded-xl" />
                     <ShimmerSlab w="w-full" h="h-12" rounded="rounded-xl" />

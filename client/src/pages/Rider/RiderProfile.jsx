@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 const FONT_DISPLAY = "'Sora', sans-serif";
 const FONT_MONO = "'IBM Plex Mono', monospace";
-const VIOLET = "#8B5CF6";
+const VIOLET = "var(--clr-primary)";
 
 // A single "stop" on the settings route — a node dot + dashed segment down to the next stop
 function RouteRow({ icon, label, onClick, isLast }) {
@@ -17,16 +17,16 @@ function RouteRow({ icon, label, onClick, isLast }) {
             <div className="flex w-8 flex-col items-center pt-4">
                 <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full ring-4 transition-colors"
-                    style={{ background: VIOLET, "--tw-ring-color": "rgba(139,92,246,0.12)" }}
+                    style={{ background: VIOLET, "--tw-ring-color": "color-mix(in srgb, var(--clr-primary) 12%, transparent)" }}
                 />
                 {!isLast && (
-                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed rgba(255,255,255,0.14)" }} />
+                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed var(--clr-border)" }} />
                 )}
             </div>
-            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "rgba(255,255,255,0.06)" }}>
+            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "var(--clr-border)" }}>
                 <div className="flex items-center gap-3">
                     {icon}
-                    <span className="font-semibold text-gray-200 transition-colors group-hover:text-white">{label}</span>
+                    <span className="font-semibold transition-colors" style={{ color: 'var(--clr-foreground)' }}>{label}</span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-600 transition-colors group-hover:text-gray-400" />
             </div>
@@ -36,9 +36,9 @@ function RouteRow({ icon, label, onClick, isLast }) {
 
 function StatCard({ label, value }) {
     return (
-        <div className="rounded-2xl border p-4" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+        <div className="rounded-2xl border p-4" style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}>
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{label}</p>
-            <p className="mt-1.5 text-2xl font-semibold text-white" style={{ fontFamily: FONT_MONO }}>{value}</p>
+            <p className="mt-1.5 text-2xl font-semibold" style={{ fontFamily: FONT_MONO, color: 'var(--clr-foreground)' }}>{value}</p>
         </div>
     );
 }
@@ -51,8 +51,8 @@ export default function RiderProfile() {
 
     if (isLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#0A0A0F]">
-                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md text-violet-400" />
+            <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--clr-bg)' }}>
+                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." style={{ color: 'var(--clr-primary)' }} className="max-w-md" />
             </div>
         );
     }
@@ -60,15 +60,15 @@ export default function RiderProfile() {
     const user = data?.data;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0F] font-sans">
+        <div className="min-h-screen font-sans" style={{ background: 'var(--clr-bg)' }}>
             {/* Top bar */}
             <div className="flex items-center justify-between px-6 pt-8 pb-2">
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/ride/search')}
-                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                    className="rounded-full border p-2.5 text-gray-600 cursor-pointer"
+                    style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </motion.button>
@@ -76,8 +76,8 @@ export default function RiderProfile() {
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                    className="rounded-full border p-2.5 text-gray-600 cursor-pointer"
+                    style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}
                 >
                     <Pencil className="h-4 w-4" />
                 </motion.button>
@@ -87,25 +87,25 @@ export default function RiderProfile() {
             <div className="relative overflow-hidden px-6 pb-8 pt-6 text-center">
                 {/* faint dashed route arcing behind the avatar — signature motif, not a blob */}
                 <svg className="pointer-events-none absolute left-1/2 top-2 -z-0 -translate-x-1/2 opacity-30" width="340" height="140" viewBox="0 0 340 140" fill="none">
-                    <path d="M10 120 C 90 10, 250 10, 330 120" stroke="#8B5CF6" strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
+                    <path d="M10 120 C 90 10, 250 10, 330 120" stroke="var(--clr-primary)" strokeWidth="2" strokeDasharray="1 10" strokeLinecap="round" />
                 </svg>
 
                 <div className="relative">
                     <Avatar
                         src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rider"
                         className="mx-auto h-24 w-24 border-4 text-large shadow-lg"
-                        style={{ borderColor: "rgba(139,92,246,0.35)" }}
+                        style={{ borderColor: "hsl(169,59%,31%,0.35)" }}
                     />
-                    <div className="absolute bottom-0 right-1/2 translate-x-[38px] rounded-full border-2 p-1.5" style={{ background: VIOLET, borderColor: "#0A0A0F" }}>
+                    <div className="absolute bottom-0 right-1/2 translate-x-[38px] rounded-full border-2 p-1.5" style={{ background: VIOLET, borderColor: "var(--clr-bg)" }}>
                         <Star className="h-3.5 w-3.5 fill-white text-white" />
                     </div>
                 </div>
 
-                <h2 className="mt-4 text-2xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight" style={{ fontFamily: FONT_DISPLAY, color: 'var(--clr-foreground)' }}>
                     {user?.email ? user.email.split('@')[0] : "Rider"}
                 </h2>
                 <div className="mt-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-400">
-                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}>
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "var(--clr-border)", background: "var(--clr-card)" }}>
                         <span style={{ fontFamily: FONT_MONO, color: "#F5B942" }}>{user?.rating_avg || "5.0"}</span>
                         <Star className="h-3 w-3" style={{ fill: "#F5B942", color: "#F5B942" }} />
                     </span>

@@ -5,7 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { logoutRequest } from "../../../api/authApi";
 import { useUserProfile } from "../../../hooks/auth";
 
-const FONT_DISPLAY = "'Sora', sans-serif";
+const FONT_DISPLAY = "'Manrope', sans-serif";
+const PRIMARY = "var(--clr-primary)";
+const ACCENT = "var(--clr-accent)";
 
 export default function Navbar() {
     const { data, isError } = useUserProfile();
@@ -13,7 +15,7 @@ export default function Navbar() {
 
     const user = data?.data;
     const isDriver = user?.role === "DRIVER";
-    const roleColor = isDriver ? "#22C55E" : "#8B5CF6";
+    const roleColor = isDriver ? PRIMARY : ACCENT;
 
     function handleLogout() {
         logoutRequest();
@@ -29,7 +31,10 @@ export default function Navbar() {
     return (
         <header
             className="sticky top-0 z-50 w-full border-b px-6 py-3.5 backdrop-blur-xl"
-            style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(10,10,15,0.82)" }}
+            style={{
+                borderColor: "hsl(38, 24%, 86%)",
+                background: "rgba(253, 250, 242, 0.92)",
+            }}
         >
             <div className="mx-auto flex max-w-7xl items-center justify-between">
 
@@ -37,36 +42,39 @@ export default function Navbar() {
                 <div className="flex items-center gap-10">
                     <Link to="/" className="group flex items-center gap-2.5">
                         <span
-                            className="flex h-9 w-9 items-center justify-center rounded-xl text-white transition-transform duration-300 group-hover:scale-105"
+                            className="flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105"
                             style={{
-                                background: "linear-gradient(135deg,#8B5CF6,#5B21B6)",
-                                boxShadow: "0 6px 16px -4px rgba(139,92,246,0.45)",
+                                background: `linear-gradient(135deg, ${PRIMARY}, hsl(169, 59%, 22%))`,
+                                boxShadow: "0 6px 16px -4px hsl(169, 59%, 31%, 0.45)",
+                                color: "hsl(44, 44%, 99%)",
                             }}
                         >
                             <Car className="h-5 w-5" />
                         </span>
-                        <span className="text-xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
-                            Ryde<span style={{ color: "#A78BFA" }}>Saathi</span>
+                        <span className="text-xl font-bold tracking-tight" style={{ fontFamily: FONT_DISPLAY, color: "hsl(193, 43%, 15%)" }}>
+                            Ryde<span style={{ color: PRIMARY }}>Saathi</span>
                         </span>
                     </Link>
 
-                    <nav className="hidden items-center gap-7 text-sm font-medium text-gray-400 md:flex">
+                    <nav className="hidden items-center gap-7 text-sm font-medium md:flex" style={{ color: "hsl(193, 15%, 45%)" }}>
                         <Link
                             to="/ride/search"
-                            className="relative py-1 transition-colors hover:text-white after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-400 after:transition-all after:duration-300 hover:after:w-full"
+                            className="relative py-1 transition-colors hover:opacity-100"
+                            style={{ color: "hsl(193, 15%, 45%)" }}
                         >
                             Ride
                         </Link>
                         <Link
                             to="/driver"
-                            className="relative py-1 transition-colors hover:text-white after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-emerald-400 after:transition-all after:duration-300 hover:after:w-full"
+                            className="relative py-1 transition-colors"
+                            style={{ color: "hsl(193, 15%, 45%)" }}
                         >
                             Drive
                         </Link>
-                        <a href="#" className="py-1 text-gray-500 transition-colors hover:text-white">
+                        <a href="#" className="py-1 transition-colors" style={{ color: "hsl(193, 15%, 55%)" }}>
                             Business
                         </a>
-                        <a href="#" className="py-1 text-gray-500 transition-colors hover:text-white">
+                        <a href="#" className="py-1 transition-colors" style={{ color: "hsl(193, 15%, 55%)" }}>
                             About
                         </a>
                     </nav>
@@ -78,16 +86,18 @@ export default function Navbar() {
                         <div className="flex items-center gap-3">
                             <Link
                                 to="/login"
-                                className="hidden text-sm font-medium text-gray-300 transition-colors hover:text-white md:block"
+                                className="hidden text-sm font-medium transition-colors md:block"
+                                style={{ color: "hsl(193, 15%, 45%)" }}
                             >
                                 Log in
                             </Link>
                             <Link
                                 to="/register"
-                                className="rounded-full px-5 py-2 text-sm font-semibold text-white transition-all hover:brightness-110"
+                                className="rounded-full px-5 py-2 text-sm font-semibold transition-all hover:brightness-110"
                                 style={{
-                                    background: "linear-gradient(135deg,#8B5CF6,#6D28D9)",
-                                    boxShadow: "0 8px 20px -6px rgba(139,92,246,0.55)",
+                                    background: `var(--clr-primary)`,
+                                    boxShadow: "0 8px 24px -6px color-mix(in srgb, var(--clr-primary) 50%, transparent)",
+                                    color: "var(--clr-card)",
                                 }}
                             >
                                 Sign up
@@ -106,10 +116,10 @@ export default function Navbar() {
                             </Dropdown.Trigger>
                             <Dropdown.Popover
                                 className="min-w-[250px] rounded-2xl border p-1.5 shadow-2xl backdrop-blur-2xl"
-                                style={{ borderColor: "rgba(255,255,255,0.08)", background: "#101016" }}
+                                style={{ borderColor: "hsl(38, 24%, 86%)", background: "hsl(44, 44%, 99%)" }}
                             >
                                 {/* User Header Info */}
-                                <div className="flex items-center gap-3 border-b px-3.5 py-3" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                                <div className="flex items-center gap-3 border-b px-3.5 py-3" style={{ borderColor: "hsl(38, 24%, 86%)" }}>
                                     <Avatar
                                         className="h-9 w-9 ring-1"
                                         style={{ "--tw-ring-color": `${roleColor}66` }}
@@ -117,7 +127,7 @@ export default function Navbar() {
                                         fallback={user?.email?.slice(0, 2).toUpperCase() || "U"}
                                     />
                                     <div className="flex flex-col truncate">
-                                        <p className="truncate text-sm font-semibold text-white">{user.email}</p>
+                                        <p className="truncate text-sm font-semibold" style={{ color: "hsl(193, 43%, 15%)" }}>{user.email}</p>
                                         <span
                                             className="mt-0.5 w-fit rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
                                             style={{ color: roleColor, background: `${roleColor}1A` }}
@@ -133,25 +143,25 @@ export default function Navbar() {
                                     aria-label="Profile Actions"
                                     className="mt-1"
                                     itemClasses={{
-                                        base: "rounded-xl py-2 px-3 text-sm text-gray-300 transition-colors data-[hover=true]:bg-white/[0.06] data-[hover=true]:text-white outline-none cursor-pointer",
+                                        base: "rounded-xl py-2 px-3 text-sm transition-colors outline-none cursor-pointer",
                                     }}
                                 >
                                     <Dropdown.Item key="dashboard">
-                                        <div className="flex items-center gap-3">
-                                            <LayoutDashboard className="h-4 w-4 text-gray-500" />
-                                            <span>{isDriver ? "Driver Dashboard" : "Ride Dashboard"}</span>
+                                        <div className="flex items-center gap-3" style={{ color: "hsl(193, 15%, 45%)" }}>
+                                            <LayoutDashboard className="h-4 w-4" />
+                                            <span style={{ color: "hsl(193, 43%, 15%)" }}>{isDriver ? "Driver Dashboard" : "Ride Dashboard"}</span>
                                         </div>
                                     </Dropdown.Item>
 
                                     <Dropdown.Item key="profile">
-                                        <div className="flex items-center gap-3">
-                                            <User className="h-4 w-4 text-gray-500" />
-                                            <span>Profile</span>
+                                        <div className="flex items-center gap-3" style={{ color: "hsl(193, 15%, 45%)" }}>
+                                            <User className="h-4 w-4" />
+                                            <span style={{ color: "hsl(193, 43%, 15%)" }}>Profile</span>
                                         </div>
                                     </Dropdown.Item>
 
                                     <Dropdown.Item key="switch_role">
-                                        <div className="flex items-center gap-3" style={{ color: "#34D399" }}>
+                                        <div className="flex items-center gap-3" style={{ color: PRIMARY }}>
                                             <RefreshCw className="h-4 w-4" />
                                             <span>{isDriver ? "Switch to Rider" : "Switch to Driver"}</span>
                                         </div>
@@ -159,8 +169,8 @@ export default function Navbar() {
 
                                     <Dropdown.Item
                                         key="logout"
-                                        className="mt-1 border-t pt-2.5 text-red-400 data-[hover=true]:bg-red-500/10 data-[hover=true]:text-red-400"
-                                        style={{ borderColor: "rgba(255,255,255,0.08)" }}
+                                        className="mt-1 border-t pt-2.5"
+                                        style={{ borderColor: "hsl(38, 24%, 86%)", color: "hsl(1, 72%, 52%)" }}
                                     >
                                         <div className="flex items-center gap-3">
                                             <LogOut className="h-4 w-4" />

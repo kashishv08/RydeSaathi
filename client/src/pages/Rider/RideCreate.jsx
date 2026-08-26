@@ -32,8 +32,8 @@ import { getConnectingTime } from "../../utils/vehicleHelpers";
 // ── Pulse ring for sonar effect during search ────────────────────────────────
 const PulseRing = ({ delay = 0 }) => (
     <motion.div
-        className="absolute rounded-full border border-violet-400/25"
-        style={{ width: 72, height: 72 }}
+        className="absolute rounded-full border"
+        style={{ width: 72, height: 72, borderColor: "hsl(169,59%,31%,0.25)" }}
         initial={{ scale: 0.5, opacity: 0.7 }}
         animate={{ scale: 2.8, opacity: 0 }}
         transition={{ duration: 2.4, delay, repeat: Infinity, ease: "easeOut" }}
@@ -66,10 +66,10 @@ function StepProgress({ rideState }) {
                                 animate={{
                                     scale: isActive ? [1, 1.2, 1] : 1,
                                     backgroundColor: isCompleted
-                                        ? "#10b981"
+                                        ? "var(--clr-primary)"
                                         : isActive
-                                        ? "#8b5cf6"
-                                        : "#374151",
+                                        ? "var(--clr-primary)"
+                                        : "var(--clr-border)",
                                 }}
                                 transition={{
                                     duration: 0.4,
@@ -79,13 +79,10 @@ function StepProgress({ rideState }) {
                                 className="w-3 h-3 rounded-full"
                             />
                             <span
-                                className={`text-[9px] font-semibold uppercase tracking-wide whitespace-nowrap ${
-                                    isActive
-                                        ? "text-violet-400"
-                                        : isCompleted
-                                        ? "text-emerald-400"
-                                        : "text-gray-600"
-                                }`}
+                                className={`text-[9px] font-semibold uppercase tracking-wide whitespace-nowrap`}
+                                style={{
+                                    color: isActive || isCompleted ? "var(--clr-primary)" : "var(--clr-muted)"
+                                }}
                             >
                                 {step.label}
                             </span>
@@ -93,7 +90,8 @@ function StepProgress({ rideState }) {
                         {i < STEPS.length - 1 && (
                             <div className="flex-1 h-[2px] mx-1 rounded-full overflow-hidden bg-gray-700 mb-4">
                                 <motion.div
-                                    className="h-full bg-emerald-500 rounded-full"
+                                    className="h-full rounded-full"
+                                    style={{ background: "var(--clr-primary)" }}
                                     initial={{ width: "0%" }}
                                     animate={{
                                         width: isCompleted ? "100%" : isActive ? "50%" : "0%",
@@ -311,7 +309,7 @@ export default function RideCreate() {
     return (
         <div
             className="h-screen flex flex-col overflow-hidden"
-            style={{ background: "linear-gradient(135deg,#0f0f14 0%,#13131a 60%,#0d0d12 100%)" }}
+            style={{ background: "var(--clr-bg)" }}
         >
             <Navbar />
 
@@ -324,8 +322,8 @@ export default function RideCreate() {
                     transition={{ duration: 0.48, ease: "easeOut" }}
                     className="w-full md:w-[460px] shrink-0 z-20 flex flex-col h-full min-h-0 relative border-r"
                     style={{
-                        background: "linear-gradient(180deg,#13131f 0%,#0f0f1a 100%)",
-                        borderColor: "rgba(139,92,246,0.12)",
+                        background: "var(--clr-card)",
+                        borderColor: "var(--clr-border)",
                     }}
                 >
                     <div className="p-5 overflow-y-auto overflow-x-hidden flex-1 flex flex-col gap-5 custom-scrollbar">
@@ -334,16 +332,16 @@ export default function RideCreate() {
                         <div
                             className="flex items-center justify-between px-4 py-3 rounded-2xl"
                             style={{
-                                background: "rgba(139,92,246,0.06)",
-                                border: "1px solid rgba(139,92,246,0.14)",
+                                background: "color-mix(in srgb, var(--clr-primary) 6%, transparent)",
+                                border: "1px solid color-mix(in srgb, var(--clr-primary) 14%, transparent)",
                             }}
                         >
                             <div className="flex items-center gap-2.5">
                                 <div
                                     className="w-8 h-8 rounded-xl flex items-center justify-center"
-                                    style={{ background: "rgba(16,185,129,0.12)" }}
+                                    style={{ background: "color-mix(in srgb, var(--clr-primary) 12%, transparent)" }}
                                 >
-                                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                                    <ShieldCheck className="w-4 h-4" style={{ color: "var(--clr-primary)" }} />
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
@@ -351,11 +349,12 @@ export default function RideCreate() {
                                     </p>
                                     <div className="flex items-center gap-1 mt-0.5">
                                         <motion.div
-                                            className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+                                            className="w-1.5 h-1.5 rounded-full"
+                                            style={{ background: "var(--clr-primary)" }}
                                             animate={{ opacity: [1, 0.25, 1] }}
                                             transition={{ duration: 1.4, repeat: Infinity }}
                                         />
-                                        <span className="text-[10px] text-emerald-400 font-semibold">Tracked</span>
+                                        <span className="text-[10px] font-semibold" style={{ color: "var(--clr-primary)" }}>Tracked</span>
                                     </div>
                                 </div>
                             </div>
@@ -399,9 +398,9 @@ export default function RideCreate() {
                                 <div className="flex items-center gap-2.5">
                                     <div
                                         className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                                        style={{ background: "rgba(139,92,246,0.18)" }}
+                                        style={{ background: 'color-mix(in srgb, var(--clr-primary) 15%, transparent)', border: `1px solid color-mix(in srgb, var(--clr-primary) 35%, transparent)` }}
                                     >
-                                        <div className="w-2 h-2 rounded-full bg-violet-400" />
+                                        <div className="w-2 h-2 rounded-full" style={{ background: "var(--clr-primary)" }} />
                                     </div>
                                     <p className="text-xs text-gray-400 truncate leading-tight">
                                         {pickupCoords.name}
@@ -411,15 +410,15 @@ export default function RideCreate() {
                                     className="ml-[9px] w-[2px] h-4 rounded-full"
                                     style={{
                                         background:
-                                            "linear-gradient(to bottom,rgba(139,92,246,0.5),rgba(16,185,129,0.5))",
+                                            "linear-gradient(to bottom,hsl(169,59%,31%,0.6),hsl(14,83%,62%,0.6))",
                                     }}
                                 />
                                 <div className="flex items-center gap-2.5">
                                     <div
                                         className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0"
-                                        style={{ background: "rgba(16,185,129,0.18)" }}
+                                        style={{ background: 'color-mix(in srgb, var(--clr-accent) 15%, transparent)', border: `1px solid color-mix(in srgb, var(--clr-accent) 30%, transparent)` }}
                                     >
-                                        <MapPin className="w-3 h-3 text-emerald-400" />
+                                        <MapPin className="w-3 h-3" style={{ color: "var(--clr-accent)" }} />
                                     </div>
                                     <p className="text-xs text-gray-400 truncate leading-tight">
                                         {dropCoords.name}
@@ -459,21 +458,21 @@ export default function RideCreate() {
                                     className="rounded-3xl p-8 flex flex-col items-center text-center my-auto"
                                     style={{
                                         background:
-                                            "linear-gradient(135deg,rgba(251,191,36,0.07) 0%,rgba(245,158,11,0.03) 100%)",
-                                        border: "1px solid rgba(251,191,36,0.14)",
+                                            "var(--clr-card)",
+                                        border: "1px solid var(--clr-border)",
                                     }}
                                 >
                                     <div className="relative mb-6">
                                         <motion.div
                                             className="w-20 h-20 rounded-2xl flex items-center justify-center relative z-10"
                                             style={{
-                                                background: "rgba(251,191,36,0.1)",
-                                                border: "1px solid rgba(251,191,36,0.22)",
+                                                background: "color-mix(in srgb, var(--clr-warning) 10%, transparent)",
+                                                border: "1px solid color-mix(in srgb, var(--clr-warning) 22%, transparent)",
                                             }}
                                             animate={{ y: [0, -5, 0] }}
                                             transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
                                         >
-                                            <AlertCircle className="w-9 h-9 text-amber-400" />
+                                            <AlertCircle className="w-9 h-9" style={{ color: "var(--clr-warning)" }} />
                                         </motion.div>
                                         <motion.div
                                             className="absolute inset-0 rounded-2xl"
@@ -483,7 +482,7 @@ export default function RideCreate() {
                                         />
                                     </div>
 
-                                    <h2 className="text-2xl font-black text-white mb-2">
+                                    <h2 className="text-2xl font-black mb-2" style={{ color: "var(--clr-foreground)" }}>
                                         High Demand in Area
                                     </h2>
                                     <p className="text-gray-500 text-sm mb-8 leading-relaxed max-w-xs">
@@ -496,8 +495,8 @@ export default function RideCreate() {
                                         onClick={() => handleCancel("timeout")}
                                         className="w-full flex items-center justify-center gap-2.5 text-white font-bold text-sm py-4 rounded-2xl transition-all"
                                         style={{
-                                            background: "linear-gradient(135deg,#7c3aed,#5b21b6)",
-                                            boxShadow: "0 4px 22px rgba(124,58,237,0.35)",
+                                            background: "var(--clr-primary)",
+                                            boxShadow: "0 4px 22px color-mix(in srgb, var(--clr-primary) 35%, transparent)",
                                         }}
                                     >
                                         <ArrowLeft className="w-4 h-4" />
@@ -563,7 +562,7 @@ export default function RideCreate() {
                     {/* Ambient violet bottom glow */}
                     <div
                         className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none rounded-b-none"
-                        style={{ background: "linear-gradient(to top,rgba(139,92,246,0.07),transparent)" }}
+                        style={{ background: "linear-gradient(to top,hsl(169,59%,31%,0.05),transparent)" }}
                     />
                 </motion.div>
 
@@ -573,13 +572,13 @@ export default function RideCreate() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.55, delay: 0.15 }}
                     className="flex-1 relative min-h-0 overflow-hidden md:p-4 p-0"
-                    style={{ background: "#0d0d12" }}
+                    style={{ background: "var(--clr-bg)" }}
                 >
                     <div
                         className="w-full h-full relative md:rounded-2xl overflow-hidden"
                         style={{
                             boxShadow:
-                                "0 0 0 1px rgba(139,92,246,0.1),0 24px 80px rgba(0,0,0,0.55)",
+                                "0 0 0 1px var(--clr-border),0 4px 24px rgba(27,54,58,0.08)",
                         }}
                     >
                         <AnimatePresence mode="wait">
@@ -649,8 +648,8 @@ export default function RideCreate() {
                             transition={{ delay: 0.7 }}
                             className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-sm z-10"
                             style={{
-                                background: "rgba(13,13,18,0.72)",
-                                border: "1px solid rgba(255,255,255,0.07)",
+                                background: "hsl(44,44%,99%,0.72)",
+                                border: "1px solid var(--clr-border)",
                             }}
                         >
                             <motion.div
@@ -658,7 +657,7 @@ export default function RideCreate() {
                                 animate={{ opacity: [1, 0.2, 1] }}
                                 transition={{ duration: 1.2, repeat: Infinity }}
                             />
-                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">
+                            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--clr-foreground)' }}>
                                 Live
                             </span>
                             <Wifi className="w-3 h-3 text-gray-500" />

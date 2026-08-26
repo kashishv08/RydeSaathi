@@ -1,9 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 
+const PRIMARY = 'hsl(169, 59%, 31%)';
+const FG = 'hsl(193, 43%, 15%)';
+const MUTED = 'hsl(193, 15%, 45%)';
+
 const Ring = ({ delay, scale }) => (
     <motion.div
         className="absolute rounded-full"
-        style={{ border: '1.5px solid rgba(139,92,246,0.4)', inset: 0 }}
+        style={{ border: `1.5px solid hsl(169,59%,31%,0.35)`, inset: 0 }}
         initial={{ scale: 0.7, opacity: 0.9 }}
         animate={{ scale, opacity: 0 }}
         transition={{ duration: 2.2, delay, repeat: Infinity, ease: 'easeOut' }}
@@ -20,7 +24,7 @@ export default function RequestingRideModal({ isOpen }) {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                     className="fixed inset-0 z-[200] flex items-center justify-center"
-                    style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(10px)' }}
+                    style={{ background: 'rgba(27,54,58,0.5)', backdropFilter: 'blur(10px)' }}
                 >
                     <motion.div
                         initial={{ scale: 0.88, opacity: 0, y: 20 }}
@@ -37,24 +41,24 @@ export default function RequestingRideModal({ isOpen }) {
                             <motion.div
                                 className="w-16 h-16 rounded-2xl flex items-center justify-center relative z-10"
                                 style={{
-                                    background: 'rgba(139,92,246,0.15)',
-                                    border: '1.5px solid rgba(139,92,246,0.4)',
+                                    background: 'hsl(169,59%,31%,0.15)',
+                                    border: `1.5px solid hsl(169,59%,31%,0.35)`,
                                 }}
                                 animate={{
                                     boxShadow: [
-                                        '0 0 0px rgba(139,92,246,0)',
-                                        '0 0 28px rgba(139,92,246,0.5)',
-                                        '0 0 0px rgba(139,92,246,0)',
+                                        '0 0 0px hsl(169,59%,31%,0)',
+                                        '0 0 28px hsl(169,59%,31%,0.45)',
+                                        '0 0 0px hsl(169,59%,31%,0)',
                                     ]
                                 }}
                                 transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
                             >
-                                {/* Violet spinner */}
+                                {/* Teal spinner */}
                                 <div
                                     className="w-7 h-7 rounded-full animate-spin"
                                     style={{
-                                        border: '3px solid rgba(139,92,246,0.2)',
-                                        borderTopColor: '#8b5cf6',
+                                        border: '3px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                        borderTopColor: PRIMARY,
                                     }}
                                 />
                             </motion.div>
@@ -63,13 +67,14 @@ export default function RequestingRideModal({ isOpen }) {
                         {/* Text */}
                         <div className="text-center">
                             <motion.h3
-                                className="text-2xl font-black text-white tracking-tight mb-1"
+                                className="text-2xl font-black tracking-tight mb-1"
+                                style={{ color: 'hsl(43,38%,97%)', fontFamily: "'Manrope', sans-serif" }}
                                 animate={{ opacity: [0.7, 1, 0.7] }}
                                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                             >
                                 Requesting your ride
                             </motion.h3>
-                            <p className="text-sm font-medium" style={{ color: 'rgba(167,139,250,0.8)' }}>
+                            <p className="text-sm font-medium" style={{ color: 'hsl(169,59%,75%)' }}>
                                 Connecting you to a driver nearby…
                             </p>
                         </div>

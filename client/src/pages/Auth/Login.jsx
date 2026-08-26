@@ -45,7 +45,7 @@ function Login() {
     return (
         <div className="flex min-h-screen bg-white font-sans">
             {/* Left Image Section (Hidden on mobile) */}
-            <div className="hidden lg:block lg:w-1/2 relative bg-black">
+            <div className="hidden lg:block lg:w-1/2 relative bg-[var(--clr-card)]">
                 <img 
                     src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?q=80&w=2072&auto=format&fit=crop" 
                     alt="Login" 
@@ -68,7 +68,9 @@ function Login() {
                 
                 <div className="w-full max-w-md">
                     <div className="mb-10">
-                        <div className="w-12 h-12 bg-black text-white rounded-xl flex items-center justify-center mb-6 shadow-md shadow-black/10">
+                        <div className="w-12 h-12 text-white rounded-xl flex items-center justify-center mb-6 shadow-md"
+                            style={{ background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))' }}
+                        >
                             {step === 1 ? <Mail className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
@@ -104,7 +106,12 @@ function Login() {
                             <button 
                                 type="submit" 
                                 disabled={isSending || !email}
-                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10 hover:shadow-lg hover:shadow-black/20"
+                                className="w-full py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                                style={{
+                                    background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
+                                    color: 'var(--clr-card)',
+                                    boxShadow: '0 4px 16px hsl(169,59%,31%,0.3)',
+                                }}
                             >
                                 {isSending ? "Sending code..." : "Continue"}
                                 {!isSending && <ArrowRight className="w-4 h-4" />}
@@ -112,7 +119,7 @@ function Login() {
 
                             <div className="text-center mt-6">
                                 <span className="text-sm text-gray-500">Don't have an account? </span>
-                                <Link to={"/register"} className="text-sm font-semibold text-black hover:underline transition-all">
+                                <Link to={"/register"} className="text-sm font-semibold hover:underline transition-all" style={{ color: 'var(--clr-primary)' }}>
                                     Sign up
                                 </Link>
                             </div>
@@ -139,7 +146,12 @@ function Login() {
                             <button 
                                 type="submit" 
                                 disabled={isVerifying || otp.length < 6}
-                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10"
+                                className="w-full py-3.5 rounded-xl font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                style={{
+                                    background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
+                                    color: 'var(--clr-card)',
+                                    boxShadow: '0 4px 16px hsl(169,59%,31%,0.25)',
+                                }}
                             >
                                 {isVerifying ? "Verifying..." : "Verify & Sign In"}
                             </button>
@@ -147,8 +159,8 @@ function Login() {
                             <button 
                                 type="button"
                                 onClick={() => setStep(1)} 
-                                className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-black transition-colors justify-center w-full mt-2"
-                            >
+                                className="flex items-center gap-2 text-sm font-medium transition-colors justify-center w-full mt-2"
+                                style={{ color: 'var(--clr-muted)' }}>
                                 <ArrowLeft className="w-4 h-4" />
                                 Wrong email? Go back
                             </button>

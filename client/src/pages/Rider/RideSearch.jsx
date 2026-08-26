@@ -102,7 +102,7 @@ export default function RideSearch() {
         <>
             <div
                 className="h-screen flex flex-col overflow-hidden"
-                style={{ background: "linear-gradient(135deg,#0f0f14 0%,#13131a 60%,#0d0d12 100%)" }}
+                style={{ background: 'var(--clr-bg)' }}
             >
                 <Navbar />
 
@@ -115,8 +115,8 @@ export default function RideSearch() {
                         transition={{ duration: 0.45, ease: "easeOut" }}
                         className="w-full md:w-[460px] shrink-0 z-10 flex flex-col h-full min-h-0 relative border-r"
                         style={{
-                            background: "linear-gradient(180deg,#13131f 0%,#0f0f1a 100%)",
-                            borderColor: "rgba(139,92,246,0.12)",
+                            background: 'var(--clr-card)',
+                            borderColor: 'var(--clr-border)',
                         }}
                     >
                         <div className="p-6 overflow-y-auto overflow-x-hidden flex-1 flex flex-col relative custom-scrollbar">
@@ -140,9 +140,9 @@ export default function RideSearch() {
                                                 transition={{ delay: 0.1 }}
                                                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase mb-3"
                                                 style={{
-                                                    background: "rgba(139,92,246,0.1)",
-                                                    border: "1px solid rgba(139,92,246,0.22)",
-                                                    color: "#a78bfa",
+                                                    background: 'var(--clr-primary-subtle)',
+                                                    border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                                    color: 'var(--clr-primary)',
                                                 }}
                                             >
                                                 <Sparkles className="w-3 h-3" />
@@ -152,7 +152,8 @@ export default function RideSearch() {
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.15 }}
-                                                className="text-4xl font-black tracking-tight text-white"
+                                                className="text-4xl font-black tracking-tight"
+                                                style={{ color: 'var(--clr-foreground)' }}
                                             >
                                                 Get a ride
                                             </motion.h2>
@@ -160,7 +161,8 @@ export default function RideSearch() {
                                                 initial={{ opacity: 0, y: 8 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.2 }}
-                                                className="text-sm text-gray-500 mt-1"
+                                                className="text-sm mt-1"
+                                                style={{ color: 'var(--clr-muted)' }}
                                             >
                                                 Enter your pickup &amp; dropoff to see available drivers
                                             </motion.p>
@@ -194,9 +196,9 @@ export default function RideSearch() {
                                                 <div
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
                                                     style={{
-                                                        background: "rgba(139,92,246,0.08)",
-                                                        border: "1px solid rgba(139,92,246,0.18)",
-                                                        color: "#a78bfa",
+                                                        background: 'var(--clr-primary-subtle)',
+                                                        border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                                        color: 'var(--clr-primary)',
                                                     }}
                                                 >
                                                     <Navigation className="w-3 h-3" />
@@ -205,9 +207,9 @@ export default function RideSearch() {
                                                 <div
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
                                                     style={{
-                                                        background: "rgba(16,185,129,0.08)",
-                                                        border: "1px solid rgba(16,185,129,0.18)",
-                                                        color: "#34d399",
+                                                        background: 'var(--clr-primary-subtle)',
+                                                        border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                                        color: 'var(--clr-primary-light)',
                                                     }}
                                                 >
                                                     <Clock className="w-3 h-3" />
@@ -222,10 +224,11 @@ export default function RideSearch() {
                                             whileTap={{ scale: 0.97 }}
                                             onClick={handleSearchSubmit}
                                             disabled={isRouteFetching || isRideFetching || !routeData}
-                                            className="w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto text-white"
+                                            className="w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto"
                                             style={{
-                                                background: "linear-gradient(135deg,#7c3aed,#5b21b6)",
-                                                boxShadow: "0 6px 28px rgba(124,58,237,0.35)",
+                                                background: 'var(--clr-primary)',
+                                                boxShadow: '0 8px 24px -6px color-mix(in srgb, var(--clr-primary) 50%, transparent)',
+                                                color: 'var(--clr-card)',
                                             }}
                                         >
                                             {isRideFetching ? (
@@ -251,7 +254,8 @@ export default function RideSearch() {
                                     >
                                         {/* Title + stats */}
                                         <div className="flex items-center justify-between">
-                                            <h2 className="text-2xl font-black text-white tracking-tight">
+                                            <h2 className="text-2xl font-black tracking-tight"
+                                                style={{ color: 'var(--clr-foreground)' }}>
                                                 Choose a ride
                                             </h2>
                                             {distance_km && duration_min && (
@@ -259,9 +263,9 @@ export default function RideSearch() {
                                                     <span
                                                         className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold"
                                                         style={{
-                                                            background: "rgba(139,92,246,0.1)",
-                                                            border: "1px solid rgba(139,92,246,0.2)",
-                                                            color: "#a78bfa",
+                                                            background: 'var(--clr-primary-subtle)',
+                                                            border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                                            color: 'var(--clr-primary)',
                                                         }}
                                                     >
                                                         <Navigation className="w-2.5 h-2.5" />
@@ -270,9 +274,9 @@ export default function RideSearch() {
                                                     <span
                                                         className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold"
                                                         style={{
-                                                            background: "rgba(16,185,129,0.1)",
-                                                            border: "1px solid rgba(16,185,129,0.2)",
-                                                            color: "#34d399",
+                                                            background: 'var(--clr-primary-subtle)',
+                                                            border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
+                                                            color: 'var(--clr-primary-light)',
                                                         }}
                                                     >
                                                         <Clock className="w-2.5 h-2.5" />
@@ -290,36 +294,37 @@ export default function RideSearch() {
                                                     onClick={() => setIsRouteExpanded(true)}
                                                     className="rounded-2xl p-4 cursor-pointer flex items-center justify-between group transition-all"
                                                     style={{
-                                                        background: "rgba(255,255,255,0.03)",
-                                                        border: "1px solid rgba(255,255,255,0.08)",
+                                                        background: 'var(--clr-card)',
+                                                        border: '1px solid var(--clr-border)',
                                                     }}
                                                     whileHover={{ borderColor: "rgba(139,92,246,0.25)" }}
+                                                    whileHover={{ borderColor: "color-mix(in srgb, var(--clr-primary) 40%, transparent)" }}
                                                 >
                                                     <div className="flex items-start gap-3.5 overflow-hidden flex-1">
                                                         <div className="flex flex-col items-center mt-0.5 shrink-0 gap-0.5">
                                                             <div
                                                                 className="w-4 h-4 rounded-full flex items-center justify-center"
-                                                                style={{ background: "rgba(139,92,246,0.2)" }}
+                                                                style={{ background: 'color-mix(in srgb, var(--clr-primary) 12%, transparent)' }}
                                                             >
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                                                                <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--clr-primary)' }} />
                                                             </div>
                                                             <div
                                                                 className="w-[2px] h-4 rounded-full"
-                                                                style={{ background: "linear-gradient(to bottom,rgba(139,92,246,0.6),rgba(16,185,129,0.6))" }}
+                                                                style={{ background: 'linear-gradient(to bottom,hsl(169,59%,31%,0.6),hsl(14,83%,62%,0.6))' }}
                                                             />
                                                             <div
                                                                 className="w-4 h-4 rounded-md flex items-center justify-center"
-                                                                style={{ background: "rgba(16,185,129,0.18)" }}
+                                                                style={{ background: 'color-mix(in srgb, var(--clr-accent) 12%, transparent)' }}
                                                             >
-                                                                <MapPin className="w-2.5 h-2.5 text-emerald-400" />
+                                                                <MapPin className="w-2.5 h-2.5" style={{ color: 'var(--clr-accent)' }} />
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col gap-2 min-w-0 flex-1">
-                                                            <p className="text-sm font-semibold text-gray-300 truncate">
+                                                            <p className="text-sm font-semibold truncate" style={{ color: 'var(--clr-muted)' }}>
                                                                 {pickupCoords?.name || "Pickup Location"}
                                                             </p>
-                                                            <p className="text-sm font-semibold text-gray-300 truncate border-t pt-2"
-                                                                style={{ borderColor: "rgba(255,255,255,0.06)" }}
+                                                            <p className="text-sm font-semibold truncate border-t pt-2"
+                                                                style={{ borderColor: 'var(--clr-border)', color: 'var(--clr-muted)' }}
                                                             >
                                                                 {dropCoords?.name || "Dropoff Location"}
                                                             </p>
@@ -327,9 +332,9 @@ export default function RideSearch() {
                                                     </div>
                                                     <div
                                                         className="w-8 h-8 rounded-full flex items-center justify-center ml-3 shrink-0 transition-colors"
-                                                        style={{ background: "rgba(255,255,255,0.05)" }}
+                                                        style={{ background: 'var(--clr-border)' }}
                                                     >
-                                                        <ChevronDown className="text-gray-400" size={16} />
+                                                        <ChevronDown style={{ color: 'var(--clr-muted)' }} size={16} />
                                                     </div>
                                                 </motion.div>
                                             ) : (
@@ -337,22 +342,22 @@ export default function RideSearch() {
                                                     layoutId="route-card"
                                                     className="rounded-2xl p-5"
                                                     style={{
-                                                        background: "rgba(255,255,255,0.03)",
-                                                        border: "1px solid rgba(139,92,246,0.2)",
+                                                        background: 'var(--clr-card)',
+                                                        border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
                                                     }}
                                                 >
                                                     <div className="flex justify-between items-center mb-4">
-                                                        <h3 className="font-bold text-base text-white flex items-center gap-2">
-                                                            <Car className="w-4 h-4 text-violet-400" />
+                                                        <h3 className="font-bold text-base flex items-center gap-2" style={{ color: 'var(--clr-foreground)' }}>
+                                                            <Car className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />
                                                             Edit Route
                                                         </h3>
                                                         <motion.button
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => setIsRouteExpanded(false)}
                                                             className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
-                                                            style={{ background: "rgba(255,255,255,0.07)" }}
+                                                            style={{ background: 'var(--clr-border)' }}
                                                         >
-                                                            <ChevronUp size={16} className="text-gray-400" />
+                                                            <ChevronUp size={16} style={{ color: 'var(--clr-muted)' }} />
                                                         </motion.button>
                                                     </div>
                                                     <LocationInputGroup
@@ -407,10 +412,9 @@ export default function RideSearch() {
                             </AnimatePresence>
                         </div>
 
-                        {/* Ambient violet bottom glow */}
                         <div
                             className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
-                            style={{ background: "linear-gradient(to top,rgba(139,92,246,0.07),transparent)" }}
+                            style={{ background: 'linear-gradient(to top,hsl(169,59%,31%,0.05),transparent)' }}
                         />
                     </motion.div>
 
@@ -420,12 +424,12 @@ export default function RideSearch() {
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.55, delay: 0.15 }}
                         className="flex-1 relative min-h-0 overflow-hidden md:p-4 p-0"
-                        style={{ background: "#0d0d12" }}
+                        style={{ background: 'var(--clr-bg)' }}
                     >
                         <div
                             className="w-full h-full relative md:rounded-2xl overflow-hidden"
                             style={{
-                                boxShadow: "0 0 0 1px rgba(139,92,246,0.1),0 24px 80px rgba(0,0,0,0.55)",
+                                boxShadow: '0 0 0 1px var(--clr-border),0 4px 24px rgba(27,54,58,0.08)',
                             }}
                         >
                             <StaticRouteMap pickup={pickupCoords} drop={dropCoords} routeData={routeData} />

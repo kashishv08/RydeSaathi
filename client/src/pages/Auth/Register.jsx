@@ -62,9 +62,9 @@ function Register() {
     // Step 0: Role Selection
     if (step === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3"></div>
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden" style={{ background: 'var(--clr-bg)' }}>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" style={{ background: 'hsl(169,59%,31%,0.06)' }}></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" style={{ background: 'hsl(14,83%,62%,0.05)' }}></div>
 
                 <div className="w-full max-w-2xl relative z-10 flex flex-col items-center">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-2 text-center">Join RydeSaathi</h1>
@@ -74,14 +74,18 @@ function Register() {
                         {/* Rider Card */}
                         <div
                             onClick={() => selectRole("RIDER")}
-                            className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all group flex flex-col items-center text-center"
+                            className="p-8 rounded-3xl border shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group flex flex-col items-center text-center"
+                            style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}
                         >
-                            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-black group-hover:text-white transition-colors">
-                                <User className="w-10 h-10" />
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 transition-all" style={{ background: 'var(--clr-border)' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--clr-primary)'; e.currentTarget.style.color = 'white'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'var(--clr-border)'; e.currentTarget.style.color = ''; }}
+                            >
+                                <User className="w-10 h-10" style={{ color: 'var(--clr-foreground)' }} />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">Ride with us</h2>
-                            <p className="text-gray-500 text-sm">Book rides easily and reach your destination safely and comfortably.</p>
-                            <div className="mt-8 text-black font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
+                            <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--clr-foreground)' }}>Ride with us</h2>
+                            <p className="text-sm" style={{ color: 'var(--clr-muted)' }}>Book rides easily and reach your destination safely and comfortably.</p>
+                            <div className="mt-8 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all" style={{ color: 'var(--clr-primary)' }}>
                                 Get Started <ArrowRight className="w-4 h-4" />
                             </div>
                         </div>
@@ -89,14 +93,18 @@ function Register() {
                         {/* Driver Card */}
                         <div
                             onClick={() => selectRole("DRIVER")}
-                            className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all group flex flex-col items-center text-center"
+                            className="p-8 rounded-3xl border shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group flex flex-col items-center text-center"
+                            style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}
                         >
-                            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-black group-hover:text-white transition-colors">
-                                <Car className="w-10 h-10" />
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 transition-all" style={{ background: 'var(--clr-border)' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--clr-primary)'; e.currentTarget.style.color = 'white'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'var(--clr-border)'; e.currentTarget.style.color = ''; }}
+                            >
+                                <Car className="w-10 h-10" style={{ color: 'var(--clr-foreground)' }} />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">Drive & Earn</h2>
-                            <p className="text-gray-500 text-sm">Join our network of drivers, set your own schedule, and earn on your terms.</p>
-                            <div className="mt-8 text-black font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
+                            <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--clr-foreground)' }}>Drive & Earn</h2>
+                            <p className="text-sm" style={{ color: 'var(--clr-muted)' }}>Join our network of drivers, set your own schedule, and earn on your terms.</p>
+                            <div className="mt-8 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all" style={{ color: 'var(--clr-primary)' }}>
                                 Get Started <ArrowRight className="w-4 h-4" />
                             </div>
                         </div>
@@ -104,7 +112,7 @@ function Register() {
 
                     <div className="mt-12 text-center">
                         <span className="text-sm text-gray-500">Already have an account? </span>
-                        <Link to={"/login"} className="text-sm font-semibold text-black hover:underline transition-all">
+                        <Link to={"/login"} className="text-sm font-semibold hover:underline transition-all" style={{ color: 'var(--clr-primary)' }}>
                             Log in
                         </Link>
                     </div>
@@ -117,7 +125,7 @@ function Register() {
     return (
         <div className="flex min-h-screen bg-white font-sans">
             {/* Left Image Section (Hidden on mobile) */}
-            <div className="hidden lg:block lg:w-1/2 relative bg-black">
+            <div className="hidden lg:block lg:w-1/2 relative bg-[var(--clr-card)]">
                 <img
                     src={getSideImage()}
                     alt="Registration"
@@ -149,7 +157,9 @@ function Register() {
 
                 <div className="w-full max-w-md">
                     <div className="mb-10">
-                        <div className="w-12 h-12 bg-black text-white rounded-xl flex items-center justify-center mb-6 shadow-md shadow-black/10">
+                        <div className="w-12 h-12 text-white rounded-xl flex items-center justify-center mb-6 shadow-md"
+                            style={{ background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))' }}
+                        >
                             {step === 1 ? (form.role === "DRIVER" ? <Car className="w-6 h-6" /> : <User className="w-6 h-6" />) : <ShieldCheck className="w-6 h-6" />}
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
@@ -185,7 +195,12 @@ function Register() {
                             <button
                                 type="submit"
                                 disabled={isSending || !form.email}
-                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10 hover:shadow-lg hover:shadow-black/20"
+                                className="w-full py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                                style={{
+                                    background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
+                                    color: 'var(--clr-card)',
+                                    boxShadow: '0 4px 16px hsl(169,59%,31%,0.3)',
+                                }}
                             >
                                 {isSending ? "Sending code..." : "Continue"}
                                 {!isSending && <ArrowRight className="w-4 h-4" />}
@@ -193,7 +208,7 @@ function Register() {
 
                             <div className="text-center mt-6">
                                 <span className="text-sm text-gray-500">Already have an account? </span>
-                                <Link to={"/login"} className="text-sm font-semibold text-black hover:underline transition-all">
+                                <Link to={"/login"} className="text-sm font-semibold hover:underline transition-all" style={{ color: 'var(--clr-primary)' }}>
                                     Log in
                                 </Link>
                             </div>
@@ -220,7 +235,12 @@ function Register() {
                             <button
                                 type="submit"
                                 disabled={isVerifying || otp.length < 6}
-                                className="w-full bg-black text-white py-3.5 rounded-xl font-medium hover:bg-gray-900 transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-black/10"
+                                className="w-full py-3.5 rounded-xl font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                style={{
+                                    background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
+                                    color: 'var(--clr-card)',
+                                    boxShadow: '0 4px 16px hsl(169,59%,31%,0.25)',
+                                }}
                             >
                                 {isVerifying ? "Verifying..." : "Verify & Complete"}
                             </button>

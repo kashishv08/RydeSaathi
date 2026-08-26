@@ -1,25 +1,102 @@
 @import "tailwindcss";
-@import "@heroui/styles"; 
+@import "@heroui/styles";
 
-@theme {
-  --color-uber-black: #000000;
-  --color-uber-green: #05a357; /* The exact Uber success green */
-  --color-uber-gray: #f6f6f6;  /* Light gray for page backgrounds */
-  --color-uber-text: #222222;  /* High contrast text instead of pure black */
+/* ── Light Theme Design System ─────────────────────────────────────────────── */
 
-  --font-sans: "Inter", "Roboto", system-ui, sans-serif;
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-sans: var(--app-font-sans);
+  --font-display: var(--app-font-display);
+  --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 48 60% 96%; /* #fbf9f1 */
+  --foreground: 186 45% 16%; /* #17383c */
+  --border: 146 16% 85%; /* #cfded5 */
+  --input: 146 16% 85%;
+  --ring: 174 58% 29%; /* #1f756d */
+  --card: 40 100% 97%; /* #fffaf0 */
+  --card-foreground: 186 45% 16%;
+  --card-border: 146 16% 85%;
+  
+  --primary: 174 58% 29%; /* #1f756d */
+  --primary-foreground: 42 100% 95%; /* #fff8e8 */
+  
+  --secondary: 40 80% 74%; /* #f2cf87 */
+  --secondary-foreground: 186 45% 16%;
+  
+  --muted: 42 35% 91%; /* #f4eddc */
+  --muted-foreground: 165 11% 42%; /* #607873 */
+  
+  --accent: 14 75% 61%; /* #e57453 */
+  --accent-foreground: 42 100% 95%;
+  
+  --destructive: 1 75% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-display: 'Manrope', sans-serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --radius: 0.9rem;
+  --shadow-card: 0 18px 50px rgba(23, 56, 60, .08);
+
+  /* Semantic color aliases used inline in components */
+  --clr-primary: hsl(174, 58%, 29%); /* #1f756d */
+  --clr-primary-light: hsl(174, 58%, 29%, 0.15); 
+  --clr-primary-subtle: hsl(174, 58%, 29%, 0.08);
+  --clr-accent: hsl(14, 75%, 61%); /* #e57453 */
+  --clr-foreground: hsl(186, 45%, 16%); /* #17383c */
+  --clr-muted: hsl(165, 11%, 42%); /* #607873 */
+  --clr-bg: hsl(48, 60%, 96%); /* #fbf9f1 */
+  --clr-card: hsl(40, 100%, 97%); /* #fffaf0 */
+  --clr-border: hsl(146, 16%, 85%); /* #cfded5 */
+  --clr-success: hsl(174, 58%, 29%);
+  --clr-warning: hsl(40, 80%, 74%); /* #f2cf87 */
+  --clr-destructive: hsl(1, 75%, 60%);
 }
 
 @layer base {
+  * { border-color: hsl(var(--border)); }
+  html { scroll-behavior: smooth; }
   body {
-    @apply bg-uber-gray text-uber-text font-sans antialiased;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--app-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+  button, input, textarea, select { font: inherit; }
 }
 
-/* ── Dark-themed custom scrollbar ─────────────────────────────────────────── */
+.font-display { font-family: var(--app-font-display); }
+.font-mono { font-family: var(--app-font-mono); }
+.shadow-card { box-shadow: var(--shadow-card); }
+
+/* ── Light-themed custom scrollbar ─────────────────────────────────────────── */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.35) transparent;
+  scrollbar-color: hsl(169 59% 31% / 0.3) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -31,10 +108,18 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.35);
+  background: hsl(169 59% 31% / 0.3);
   border-radius: 999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.6);
+  background: hsl(169 59% 31% / 0.55);
 }
+
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.animate-rise { animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }

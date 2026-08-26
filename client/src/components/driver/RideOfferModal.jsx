@@ -2,6 +2,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Navigation, Navigation2, Wallet, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+const PRIMARY = 'hsl(169, 59%, 31%)';
+const ACCENT = 'hsl(14, 83%, 62%)';
+const FG = 'hsl(193, 43%, 15%)';
+const MUTED = 'hsl(193, 15%, 45%)';
+const CARD_BG = 'hsl(44, 44%, 99%)';
+const BORDER = 'hsl(38, 24%, 86%)';
+const BG_DARK = 'hsl(193, 43%, 15%)';
+
 export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
     const [timeLeft, setTimeLeft] = useState(0);
 
@@ -41,7 +49,7 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 pointer-events-auto"
-                        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+                        style={{ background: 'rgba(27,54,58,0.55)', backdropFilter: 'blur(8px)' }}
                     />
 
                     {/* Modal */}
@@ -52,16 +60,19 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
                         className="absolute bottom-4 left-4 right-4 rounded-3xl overflow-hidden pointer-events-auto shadow-2xl"
                         style={{
-                            background: 'linear-gradient(180deg,#1a1a2e 0%,#13131f 100%)',
-                            border: '1px solid rgba(139,92,246,0.3)',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(139,92,246,0.1)'
+                            background: CARD_BG,
+                            border: `1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)`,
+                            boxShadow: '0 20px 60px rgba(27,54,58,0.2), 0 0 40px var(--clr-primary-subtle)',
                         }}
                     >
                         {/* Progress Line */}
-                        <div className="w-full h-1.5" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                        <div className="w-full h-1.5" style={{ background: 'var(--clr-border)' }}>
                             <motion.div
-                                className="h-full rounded-r-full shadow-[0_0_12px_rgba(139,92,246,0.8)]"
-                                style={{ background: 'linear-gradient(90deg, #7c3aed, #10b981)' }}
+                                className="h-full rounded-r-full"
+                                style={{
+                                    background: `linear-gradient(90deg, ${PRIMARY}, ${ACCENT})`,
+                                    boxShadow: `0 0 12px hsl(169,59%,31%,0.5)`,
+                                }}
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
                                 transition={{ duration: offer.timeout || 15, ease: "linear" }}
@@ -73,17 +84,17 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                             <div className="flex justify-between items-center mb-5">
                                 <div className="flex items-center gap-2">
                                     <div className="relative flex items-center justify-center">
-                                        <div className="absolute inset-0 bg-violet-500 rounded-full animate-ping opacity-40"></div>
-                                        <div className="w-2.5 h-2.5 bg-violet-400 rounded-full relative z-10 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></div>
+                                        <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ background: PRIMARY }}></div>
+                                        <div className="w-2.5 h-2.5 rounded-full relative z-10" style={{ background: PRIMARY, boxShadow: `0 0 8px hsl(169,59%,31%,0.7)` }}></div>
                                     </div>
-                                    <span className="text-xs font-bold tracking-widest uppercase text-violet-300">New Request</span>
+                                    <span className="text-xs font-bold tracking-widest uppercase" style={{ color: PRIMARY }}>New Request</span>
                                 </div>
                                 <div className="flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm border"
                                     style={{
-                                        background: 'rgba(139,92,246,0.1)',
-                                        borderColor: 'rgba(139,92,246,0.3)',
-                                        color: '#fff',
-                                        boxShadow: '0 0 15px rgba(139,92,246,0.2)'
+                                        background: 'var(--clr-primary-subtle)',
+                                        borderColor: 'hsl(169,59%,31%,0.25)',
+                                        color: FG,
+                                        boxShadow: '0 0 15px hsl(169,59%,31%,0.1)',
                                     }}
                                 >
                                     {timeLeft}
@@ -92,51 +103,51 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
 
                             {/* Fare & Stats */}
                             <div className="mb-6">
-                                <h2 className="text-4xl font-black text-white tracking-tight mb-4">
+                                <h2 className="text-4xl font-black tracking-tight mb-4" style={{ color: FG, fontFamily: "'Manrope', sans-serif" }}>
                                     ₹{offer.amount}
                                 </h2>
                                 
                                 <div className="flex flex-wrap gap-2.5">
                                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border"
-                                        style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+                                        style={{ background: 'hsl(38,24%,96%)', borderColor: BORDER }}
                                     >
-                                        <Clock className="w-4 h-4 text-violet-400" />
-                                        <span className="text-xs font-bold text-gray-300">{offer.duration_min} min</span>
+                                        <Clock className="w-4 h-4" style={{ color: PRIMARY }} />
+                                        <span className="text-xs font-bold" style={{ color: FG }}>{offer.duration_min} min</span>
                                     </div>
                                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border"
-                                        style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+                                        style={{ background: 'hsl(38,24%,96%)', borderColor: BORDER }}
                                     >
-                                        <Navigation className="w-4 h-4 text-emerald-400" />
-                                        <span className="text-xs font-bold text-gray-300">{offer.distance_km} km</span>
+                                        <Navigation className="w-4 h-4" style={{ color: ACCENT }} />
+                                        <span className="text-xs font-bold" style={{ color: FG }}>{offer.distance_km} km</span>
                                     </div>
                                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border"
-                                        style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+                                        style={{ background: 'hsl(38,24%,96%)', borderColor: BORDER }}
                                     >
-                                        <Wallet className="w-4 h-4 text-blue-400" />
-                                        <span className="text-xs font-bold text-gray-300">Cash</span>
+                                        <Wallet className="w-4 h-4" style={{ color: 'hsl(39,66%,50%)' }} />
+                                        <span className="text-xs font-bold" style={{ color: FG }}>Cash</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Route Info Card */}
                             <div className="mb-6 p-4 rounded-2xl border"
-                                style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.08)' }}
+                                style={{ background: 'hsl(43,38%,97%)', borderColor: BORDER }}
                             >
                                 <div className="flex gap-3 relative">
                                     <div className="flex flex-col items-center mt-1">
-                                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#8b5cf6', boxShadow: '0 0 8px rgba(139,92,246,0.6)' }}></div>
-                                        <div className="w-[2px] h-8 my-1" style={{ background: 'linear-gradient(to bottom, #8b5cf6, #10b981)' }}></div>
-                                        <div className="w-2.5 h-2.5 rounded-sm" style={{ background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }}></div>
+                                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: PRIMARY, boxShadow: `0 0 8px hsl(169,59%,31%,0.5)` }}></div>
+                                        <div className="w-[2px] h-8 my-1" style={{ background: `linear-gradient(to bottom, ${PRIMARY}, ${ACCENT})` }}></div>
+                                        <div className="w-2.5 h-2.5 rounded-sm" style={{ background: ACCENT, boxShadow: `0 0 8px hsl(14,83%,62%,0.5)` }}></div>
                                     </div>
 
                                     <div className="flex-1 flex flex-col justify-between py-0.5 space-y-4">
                                         <div>
-                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Pickup</p>
-                                            <p className="text-sm font-semibold text-gray-200 leading-snug line-clamp-2">{offer.pickup_address}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: MUTED }}>Pickup</p>
+                                            <p className="text-sm font-semibold leading-snug line-clamp-2" style={{ color: FG }}>{offer.pickup_address}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Drop-off</p>
-                                            <p className="text-sm font-semibold text-gray-200 leading-snug line-clamp-2">{offer.drop_address}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: MUTED }}>Drop-off</p>
+                                            <p className="text-sm font-semibold leading-snug line-clamp-2" style={{ color: FG }}>{offer.drop_address}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -150,9 +161,9 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                                     onClick={onDecline}
                                     className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center transition-colors cursor-pointer border"
                                     style={{
-                                        background: 'rgba(239,68,68,0.1)',
-                                        borderColor: 'rgba(239,68,68,0.2)',
-                                        color: '#f87171'
+                                        background: 'hsl(1,72%,52%,0.08)',
+                                        borderColor: 'hsl(1,72%,52%,0.2)',
+                                        color: 'hsl(1,72%,45%)',
                                     }}
                                 >
                                     <X className="w-6 h-6" />
@@ -161,15 +172,16 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onAccept}
-                                    className="flex-1 h-14 rounded-2xl text-white font-bold text-base transition-all cursor-pointer flex items-center justify-center gap-2 border"
+                                    className="flex-1 h-14 rounded-2xl font-bold text-base transition-all cursor-pointer flex items-center justify-center gap-2 border"
                                     style={{
-                                        background: 'linear-gradient(135deg,#7c3aed,#5b21b6)',
-                                        borderColor: 'rgba(139,92,246,0.5)',
-                                        boxShadow: '0 6px 20px rgba(124,58,237,0.4)'
+                                        background: `linear-gradient(135deg, ${PRIMARY}, hsl(169,59%,20%))`,
+                                        borderColor: 'hsl(169,59%,31%,0.5)',
+                                        boxShadow: '0 6px 20px hsl(169,59%,31%,0.3)',
+                                        color: 'var(--clr-card)',
                                     }}
                                 >
                                     <span>Accept Ride</span>
-                                    <Navigation2 className="w-5 h-5 text-white transform rotate-90" />
+                                    <Navigation2 className="w-5 h-5 transform rotate-90" />
                                 </motion.button>
                             </div>
                         </div>

@@ -4,6 +4,13 @@ import { Star, User, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSubmitReview } from '../../hooks/useReview';
 
+const PRIMARY = 'hsl(169, 59%, 31%)';
+const FG = 'hsl(193, 43%, 15%)';
+const MUTED = 'hsl(193, 15%, 45%)';
+const CARD_BG = 'hsl(44, 44%, 99%)';
+const BORDER = 'hsl(38, 24%, 86%)';
+const BG_MUTED = 'hsl(43, 38%, 96%)';
+
 const STAR_LABELS = ['', 'Terrible', 'Bad', 'OK', 'Good', 'Excellent'];
 
 export default function RideRating({ rideId, role, personName, personRole, onComplete }) {
@@ -40,7 +47,7 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
                 className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center"
-                style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(8px)' }}
+                style={{ background: 'rgba(27,54,58,0.5)', backdropFilter: 'blur(8px)' }}
                 onClick={onComplete}
             >
                 {/* Sheet */}
@@ -51,24 +58,25 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                     exit={{ y: '100%', opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl px-6 pt-5 pb-10 flex flex-col items-center gap-5 mx-auto"
+                    className="w-full max-w-sm rounded-t-3xl sm:rounded-3xl px-6 pt-5 pb-10 flex flex-col items-center gap-5 mx-auto relative"
                     style={{
-                        background: 'linear-gradient(180deg,#1a1a2e 0%,#13131f 100%)',
-                        border: '1px solid rgba(139,92,246,0.18)',
+                        background: CARD_BG,
+                        border: `1px solid ${BORDER}`,
                         borderBottom: 'none',
+                        boxShadow: '0 -8px 40px rgba(27,54,58,0.12)',
                     }}
                 >
                     {/* Drag handle */}
-                    <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
+                    <div className="w-10 h-1 rounded-full" style={{ background: 'hsl(38,24%,84%)' }} />
 
                     {/* Close */}
                     <motion.button
                         whileTap={{ scale: 0.9 }}
                         onClick={onComplete}
                         className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{ background: 'rgba(255,255,255,0.07)' }}
+                        style={{ background: 'var(--clr-border)' }}
                     >
-                        <X className="w-4 h-4 text-gray-400" />
+                        <X className="w-4 h-4" style={{ color: MUTED }} />
                     </motion.button>
 
                     {/* Avatar */}
@@ -80,26 +88,26 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                     >
                         <motion.div
                             className="absolute inset-0 rounded-full"
-                            animate={{ boxShadow: ['0 0 0px rgba(139,92,246,0)', '0 0 20px rgba(139,92,246,0.4)', '0 0 0px rgba(139,92,246,0)'] }}
+                            animate={{ boxShadow: ['0 0 0px hsl(169,59%,31%,0)', '0 0 20px hsl(169,59%,31%,0.3)', '0 0 0px hsl(169,59%,31%,0)'] }}
                             transition={{ duration: 2.5, repeat: Infinity }}
                         />
                         <div
                             className="w-16 h-16 rounded-full flex items-center justify-center relative"
                             style={{
-                                background: 'rgba(139,92,246,0.1)',
-                                border: '2px solid rgba(139,92,246,0.35)',
+                                background: 'var(--clr-primary-subtle)',
+                                border: `2px solid hsl(169,59%,31%,0.3)`,
                             }}
                         >
-                            <User className="w-8 h-8 text-violet-400" />
+                            <User className="w-8 h-8" style={{ color: PRIMARY }} />
                         </div>
                     </motion.div>
 
                     {/* Name + label */}
                     <div className="text-center">
-                        <h2 className="text-xl font-black text-white tracking-tight">
+                        <h2 className="text-xl font-black tracking-tight" style={{ color: FG, fontFamily: "'Manrope', sans-serif" }}>
                             {personName || 'Your Driver'}
                         </h2>
-                        <p className="text-sm text-gray-500 mt-0.5">
+                        <p className="text-sm mt-0.5" style={{ color: MUTED }}>
                             Rate your {personRole?.toLowerCase() || 'driver'}
                         </p>
                     </div>
@@ -120,8 +128,8 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                                     <Star
                                         className={`w-9 h-9 transition-all duration-200 ${
                                             activeRating >= star
-                                                ? 'fill-violet-400 text-violet-400 drop-shadow-[0_0_6px_rgba(139,92,246,0.6)]'
-                                                : 'fill-transparent text-gray-700'
+                                                ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.6)]'
+                                                : 'fill-transparent text-gray-300'
                                         }`}
                                     />
                                 </motion.button>
@@ -135,7 +143,7 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -4 }}
                                     className="text-xs font-bold"
-                                    style={{ color: 'rgba(167,139,250,0.9)' }}
+                                    style={{ color: PRIMARY }}
                                 >
                                     {STAR_LABELS[activeRating]}
                                 </motion.span>
@@ -148,20 +156,20 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Leave a comment (optional)…"
-                        className="w-full rounded-xl px-4 py-3 text-sm font-medium placeholder-gray-600 resize-none custom-scrollbar"
+                        className="w-full rounded-xl px-4 py-3 text-sm font-medium resize-none custom-scrollbar"
                         style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            color: '#e5e7eb',
+                            background: BG_MUTED,
+                            border: `1px solid ${BORDER}`,
+                            color: FG,
                             outline: 'none',
                             height: '68px',
                         }}
                         onFocus={(e) => {
-                            e.target.style.borderColor = 'rgba(139,92,246,0.4)';
-                            e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,0.08)';
+                            e.target.style.borderColor = 'color-mix(in srgb, var(--clr-primary) 40%, transparent)';
+                            e.target.style.boxShadow = '0 0 0 3px var(--clr-primary-subtle)';
                         }}
                         onBlur={(e) => {
-                            e.target.style.borderColor = 'rgba(255,255,255,0.08)';
+                            e.target.style.borderColor = BORDER;
                             e.target.style.boxShadow = 'none';
                         }}
                     />
@@ -173,13 +181,13 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                             whileTap={rating > 0 ? { scale: 0.97 } : {}}
                             onClick={handleSubmit}
                             disabled={isPending || rating === 0}
-                            className="w-full py-3.5 rounded-2xl font-bold text-sm text-white transition-all"
+                            className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all"
                             style={{
                                 background: rating > 0 && !isPending
-                                    ? 'linear-gradient(135deg,#7c3aed,#5b21b6)'
-                                    : 'rgba(255,255,255,0.06)',
-                                boxShadow: rating > 0 && !isPending ? '0 6px 24px rgba(124,58,237,0.35)' : 'none',
-                                color: rating > 0 && !isPending ? '#fff' : 'rgba(255,255,255,0.3)',
+                                    ? `linear-gradient(135deg, ${PRIMARY}, hsl(169,59%,20%))`
+                                    : 'hsl(38,24%,90%)',
+                                boxShadow: rating > 0 && !isPending ? '0 6px 24px hsl(169,59%,31%,0.3)' : 'none',
+                                color: rating > 0 && !isPending ? 'var(--clr-card)' : MUTED,
                                 cursor: rating > 0 && !isPending ? 'pointer' : 'not-allowed',
                             }}
                         >
@@ -190,7 +198,7 @@ export default function RideRating({ rideId, role, personName, personRole, onCom
                             whileTap={{ scale: 0.98 }}
                             onClick={onComplete}
                             className="w-full py-2.5 rounded-2xl text-sm font-semibold"
-                            style={{ color: 'rgba(255,255,255,0.35)' }}
+                            style={{ color: MUTED }}
                         >
                             Skip for now
                         </motion.button>

@@ -5,6 +5,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LocationInput from "../ui/LocationInput";
 
+const PRIMARY = "hsl(169, 59%, 31%)";
+const ACCENT = "hsl(14, 83%, 62%)";
+
 export default function Hero() {
     const [pickupCoords, setPickupCoords] = useState({});
     const [dropCoords, setDropCoords] = useState({});
@@ -23,45 +26,50 @@ export default function Hero() {
     }
 
     return (
-        <section className="relative bg-[#0A0A0F] text-white pt-12 pb-36 px-6 overflow-hidden min-h-[85vh] flex items-center">
+        <section className="relative pt-12 pb-36 px-6 overflow-hidden min-h-[85vh] flex items-center"
+            style={{ background: "hsl(43, 38%, 96%)" }}
+        >
             {/* Ambient glow field */}
             <div className="absolute inset-0 pointer-events-none">
                 <div
                     className="absolute -top-32 -left-40 w-[32rem] h-[32rem] rounded-full blur-[120px]"
-                    style={{ background: "radial-gradient(circle, rgba(139,92,246,0.22), transparent 70%)" }}
+                    style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--clr-primary) 12%, transparent), transparent 70%)" }}
                 />
                 <div
                     className="absolute bottom-0 right-0 w-[28rem] h-[28rem] rounded-full blur-[120px]"
-                    style={{ background: "radial-gradient(circle, rgba(16,185,129,0.16), transparent 70%)" }}
+                    style={{ background: "radial-gradient(circle, hsl(14,83%,62%,0.1), transparent 70%)" }}
                 />
-                <div className="absolute inset-0 opacity-[0.35]">
+                <div className="absolute inset-0 opacity-[0.18]">
                     <img
                         src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop"
                         alt="City traffic"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F] via-[#0A0A0F]/85 to-[#0A0A0F]/40" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to r, var(--clr-bg) 30%, hsl(43,38%,96%,0.7) 60%, hsl(43,38%,96%,0.3))" }} />
                 </div>
             </div>
 
             <div className="max-w-7xl mx-auto relative z-20 grid md:grid-cols-2 gap-12 items-center w-full">
                 <div className="relative pl-8 md:pl-10">
-                    {/* Signature: animated route line, pickup -> drop-off */}
+                    {/* Animated route line */}
                     <div className="hidden md:flex flex-col items-center absolute left-0 top-2 bottom-2 w-3">
                         <span
-                            className="w-2.5 h-2.5 rounded-full bg-[#8B5CF6] shrink-0"
-                            style={{ boxShadow: "0 0 10px 3px rgba(139,92,246,0.55)" }}
+                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{ background: PRIMARY, boxShadow: `0 0 10px 3px hsl(169,59%,31%,0.45)` }}
                         />
-                        <div className="relative flex-1 w-px my-1.5 overflow-hidden bg-gradient-to-b from-[#8B5CF6]/60 via-white/15 to-[#10B981]/60">
+                        <div className="relative flex-1 w-px my-1.5 overflow-hidden"
+                            style={{ background: `linear-gradient(to bottom, ${PRIMARY}80, hsl(14,83%,62%,0.5) )` }}
+                        >
                             <motion.span
-                                className="absolute left-1/2 -translate-x-1/2 w-1 h-6 rounded-full bg-white/90 blur-[0.5px]"
+                                className="absolute left-1/2 -translate-x-1/2 w-1 h-6 rounded-full"
+                                style={{ background: "hsl(193,43%,15%,0.6)" }}
                                 animate={{ top: ["0%", "88%"] }}
                                 transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
                             />
                         </div>
                         <span
-                            className="w-2.5 h-2.5 rounded-[3px] bg-[#10B981] shrink-0"
-                            style={{ boxShadow: "0 0 10px 3px rgba(16,185,129,0.5)" }}
+                            className="w-2.5 h-2.5 rounded-[3px] shrink-0"
+                            style={{ background: ACCENT, boxShadow: `0 0 10px 3px hsl(14,83%,62%,0.4)` }}
                         />
                     </div>
 
@@ -70,19 +78,30 @@ export default function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-xs font-semibold tracking-wider text-gray-300 backdrop-blur-md mb-6 border border-white/10">
-                            <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" /> REDEFINING COMMUTE
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wider backdrop-blur-md mb-6 border"
+                            style={{
+                                background: "var(--clr-primary-subtle)",
+                                borderColor: "color-mix(in srgb, var(--clr-primary) 20%, transparent)",
+                                color: PRIMARY,
+                            }}
+                        >
+                            <Sparkles className="w-3.5 h-3.5" /> REDEFINING COMMUTE
                         </span>
-                        <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
+                        <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6"
+                            style={{ color: "hsl(193, 43%, 15%)", fontFamily: "'Manrope', sans-serif" }}
+                        >
                             Go anywhere <br className="hidden md:block" />
                             with{" "}
                             <span
-                                className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#a78bfa] to-[#10B981]"
+                                className="text-transparent bg-clip-text"
+                                style={{ backgroundImage: `linear-gradient(to right, ${PRIMARY}, hsl(169,59%,45%), ${ACCENT})` }}
                             >
                                 RydeSaathi
                             </span>
                         </h1>
-                        <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-md font-light leading-relaxed">
+                        <p className="text-lg md:text-xl mb-8 max-w-md font-light leading-relaxed"
+                            style={{ color: "hsl(193, 15%, 45%)" }}
+                        >
                             Request a ride, hop in, and experience seamless travel across the city with real-time tracking.
                         </p>
                     </motion.div>
@@ -92,16 +111,18 @@ export default function Hero() {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="rounded-2xl p-8 max-w-md w-full border border-white/10"
+                    className="rounded-2xl p-8 max-w-md w-full border"
                     style={{
-                        background: "rgba(255,255,255,0.05)",
-                        backdropFilter: "blur(24px)",
-                        boxShadow: "0 8px 40px rgba(0,0,0,0.45)",
+                        background: "hsl(44, 44%, 99%)",
+                        borderColor: "hsl(38, 24%, 86%)",
+                        boxShadow: "0 8px 40px rgba(27,54,58,0.1)",
                     }}
                 >
                     <div className="space-y-5">
-                        <h2 className="text-xl font-bold mb-2 flex items-center gap-2 text-white">
-                            <Compass className="w-5 h-5 text-[#8B5CF6]" /> Book Your Ride
+                        <h2 className="text-xl font-bold mb-2 flex items-center gap-2"
+                            style={{ color: "hsl(193, 43%, 15%)", fontFamily: "'Manrope', sans-serif" }}
+                        >
+                            <Compass className="w-5 h-5" style={{ color: PRIMARY }} /> Book Your Ride
                         </h2>
                         <div className="relative space-y-4">
                             <LocationInput
@@ -118,10 +139,11 @@ export default function Hero() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={handleSearchClick}
-                            className="w-full text-white rounded-xl py-4 font-semibold transition-all flex items-center justify-center gap-2 group"
+                            className="w-full rounded-xl py-4 font-semibold transition-all flex items-center justify-center gap-2 group"
                             style={{
-                                background: "linear-gradient(90deg, #8B5CF6, #7C3AED)",
-                                boxShadow: "0 4px 28px rgba(139,92,246,0.4)",
+                                background: `linear-gradient(90deg, ${PRIMARY}, hsl(169,59%,22%))`,
+                                boxShadow: "0 4px 28px hsl(169,59%,31%,0.35)",
+                                color: "hsl(44, 44%, 99%)",
                             }}
                         >
                             <span>See prices</span>

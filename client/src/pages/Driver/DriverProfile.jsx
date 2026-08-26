@@ -8,8 +8,8 @@ import { motion } from 'framer-motion';
 
 const FONT_DISPLAY = "'Sora', sans-serif";
 const FONT_MONO = "'IBM Plex Mono', monospace";
-const EMERALD = "#22C55E";
-const PAGE_BG = "#0A0A0F";
+const EMERALD = "var(--clr-primary)";
+const PAGE_BG = "var(--clr-bg)";
 
 function RouteRow({ icon, label, isLast }) {
     return (
@@ -17,16 +17,16 @@ function RouteRow({ icon, label, isLast }) {
             <div className="flex w-8 flex-col items-center pt-4">
                 <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full ring-4"
-                    style={{ background: EMERALD, "--tw-ring-color": "rgba(34,197,94,0.12)" }}
+                    style={{ background: EMERALD, "--tw-ring-color": "color-mix(in srgb, var(--clr-primary) 12%, transparent)" }}
                 />
                 {!isLast && (
-                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed rgba(255,255,255,0.14)" }} />
+                    <span className="mt-1 w-px flex-1" style={{ borderLeft: "2px dashed var(--clr-border)" }} />
                 )}
             </div>
-            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "rgba(255,255,255,0.06)" }}>
+            <div className="flex flex-1 items-center justify-between border-b py-4 pr-1" style={{ borderColor: isLast ? "transparent" : "var(--clr-border)" }}>
                 <div className="flex items-center gap-3">
                     {icon}
-                    <span className="font-semibold text-gray-200 transition-colors group-hover:text-white">{label}</span>
+                    <span className="font-semibold transition-colors" style={{ color: 'var(--clr-foreground)' }}>{label}</span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-600 transition-colors group-hover:text-gray-400" />
             </div>
@@ -36,10 +36,10 @@ function RouteRow({ icon, label, isLast }) {
 
 function StatCard({ label, value, icon, tint }) {
     return (
-        <div className="relative overflow-hidden rounded-2xl border p-4" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+        <div className="relative overflow-hidden rounded-2xl border p-4" style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}>
             <div className="absolute -right-2 -top-2 opacity-10" style={{ color: tint }}>{icon}</div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{label}</p>
-            <p className="mt-1.5 text-2xl font-semibold text-white" style={{ fontFamily: FONT_MONO }}>{value}</p>
+            <p className="mt-1.5 text-2xl font-semibold" style={{ fontFamily: FONT_MONO, color: 'var(--clr-foreground)' }}>{value}</p>
         </div>
     );
 }
@@ -52,8 +52,8 @@ export default function DriverProfile() {
 
     if (isLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#0A0A0F]">
-                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md text-violet-400" />
+            <div className="flex min-h-screen items-center justify-center" style={{ background: PAGE_BG }}>
+                <ProgressBar size="sm" isIndeterminate aria-label="Loading..." className="max-w-md" style={{ color: EMERALD }} />
             </div>
         );
     }
@@ -61,15 +61,15 @@ export default function DriverProfile() {
     const user = data?.data;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0F] font-sans">
+        <div className="min-h-screen font-sans" style={{ background: PAGE_BG }}>
             {/* Top bar */}
             <div className="flex items-center justify-between px-6 pt-8 pb-2">
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/driver')}
-                    className="rounded-full border p-2.5 text-gray-300 cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                    className="rounded-full border p-2.5 text-gray-600 cursor-pointer"
+                    style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </motion.button>
@@ -87,18 +87,18 @@ export default function DriverProfile() {
                     <Avatar
                         src="https://api.dicebear.com/7.x/avataaars/svg?seed=Driver"
                         className="mx-auto h-24 w-24 border-4 text-large shadow-lg"
-                        style={{ borderColor: "rgba(34,197,94,0.35)" }}
+                        style={{ borderColor: "hsl(169,59%,31%,0.35)" }}
                     />
                     <div className="absolute bottom-0 right-1/2 translate-x-[38px] rounded-full border-2 p-1.5" style={{ background: EMERALD, borderColor: PAGE_BG }}>
                         <Star className="h-3.5 w-3.5 fill-white text-white" />
                     </div>
                 </div>
 
-                <h2 className="mt-4 text-2xl font-bold tracking-tight text-white" style={{ fontFamily: FONT_DISPLAY }}>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight" style={{ fontFamily: FONT_DISPLAY, color: 'var(--clr-foreground)' }}>
                     {user?.email ? user.email.split('@')[0] : "Driver"}
                 </h2>
                 <div className="mt-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-400">
-                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}>
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5" style={{ borderColor: "var(--clr-border)", background: "var(--clr-card)" }}>
                         <span style={{ fontFamily: FONT_MONO, color: "#F5B942" }}>{user?.rating_avg || "4.9"}</span>
                         <Star className="h-3 w-3" style={{ fill: "#F5B942", color: "#F5B942" }} />
                     </span>
@@ -119,20 +119,20 @@ export default function DriverProfile() {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-3 px-6">
                 <StatCard label="Today's Earnings" value="₹1,250" icon={<TrendingUp className="h-16 w-16" />} tint={EMERALD} />
-                <StatCard label="Online Time" value="4h 30m" icon={<Clock className="h-16 w-16" />} tint="#8B5CF6" />
+                <StatCard label="Online Time" value="4h 30m" icon={<Clock className="h-16 w-16" />} tint="var(--clr-accent)" />
             </div>
 
             {/* Vehicle — boarding pass */}
             <div className="mt-6 px-6">
-                <div className="relative flex overflow-hidden rounded-3xl border" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
-                    <div className="flex w-24 shrink-0 flex-col items-center justify-center border-r-2" style={{ borderColor: "rgba(34,197,94,0.3)", borderStyle: "dashed" }}>
+                <div className="relative flex overflow-hidden rounded-3xl border" style={{ background: "var(--clr-card)", borderColor: "var(--clr-border)" }}>
+                    <div className="flex w-24 shrink-0 flex-col items-center justify-center border-r-2" style={{ borderColor: "hsl(169,59%,31%,0.3)", borderStyle: "dashed" }}>
                         <Car className="h-7 w-7" style={{ color: EMERALD }} />
                     </div>
                     <span className="absolute -top-3 left-24 h-6 w-6 -translate-x-1/2 rounded-full" style={{ background: PAGE_BG }} />
                     <span className="absolute -bottom-3 left-24 h-6 w-6 -translate-x-1/2 rounded-full" style={{ background: PAGE_BG }} />
                     <button className="flex flex-1 cursor-pointer items-center justify-between p-4 pl-5">
                         <div>
-                            <h3 className="text-left font-semibold text-white">Toyota Prius</h3>
+                            <h3 className="text-left font-semibold" style={{ color: 'var(--clr-foreground)' }}>Toyota Prius</h3>
                             <p className="text-sm font-medium text-gray-500" style={{ fontFamily: FONT_MONO }}>MH 01 AB 1234 · White</p>
                         </div>
                         <ChevronRight className="h-5 w-5 text-gray-500" />
