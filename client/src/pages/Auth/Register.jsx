@@ -62,7 +62,7 @@ function Register() {
     // Step 0: Role Selection
     if (step === 0) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden" style={{ background: 'var(--clr-bg)' }}>
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden grain" style={{ background: 'var(--clr-bg)' }}>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" style={{ background: 'hsl(169,59%,31%,0.06)' }}></div>
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" style={{ background: 'hsl(14,83%,62%,0.05)' }}></div>
 
@@ -123,7 +123,7 @@ function Register() {
 
     // Step 1 & 2: Split Screen Layout
     return (
-        <div className="flex min-h-screen bg-white font-sans">
+        <div className="flex min-h-screen bg-white font-sans grain">
             {/* Left Image Section (Hidden on mobile) */}
             <div className="hidden lg:block lg:w-1/2 relative bg-[var(--clr-card)]">
                 <img

@@ -107,7 +107,7 @@ export default function DriverActiveRide() {
     if (!ride) return <div className="h-screen flex items-center justify-center" style={{ background: 'var(--clr-bg)', color: 'var(--clr-foreground)' }}>Loading ride details...</div>;
 
     return (
-        <div className="fixed inset-0 font-sans overflow-hidden" style={{ background: 'var(--clr-bg)' }}>
+        <div className="fixed inset-0 font-sans overflow-hidden grain" style={{ background: 'var(--clr-bg)' }}>
             {/* Map Background */}
             <div className="absolute inset-0 z-0">
                 <ActiveTrackingMap 

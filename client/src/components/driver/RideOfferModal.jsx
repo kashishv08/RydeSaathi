@@ -2,13 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Navigation, Navigation2, Wallet, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const PRIMARY = 'hsl(169, 59%, 31%)';
-const ACCENT = 'hsl(14, 83%, 62%)';
-const FG = 'hsl(193, 43%, 15%)';
-const MUTED = 'hsl(193, 15%, 45%)';
-const CARD_BG = 'hsl(44, 44%, 99%)';
-const BORDER = 'hsl(38, 24%, 86%)';
-const BG_DARK = 'hsl(193, 43%, 15%)';
+const PRIMARY = 'var(--clr-primary)';
+const ACCENT = 'var(--clr-accent)';
+const FG = 'var(--clr-foreground)';
+const MUTED = 'var(--clr-muted)';
+const CARD_BG = 'var(--clr-card)';
+const BORDER = 'var(--clr-border)';
 
 export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
     const [timeLeft, setTimeLeft] = useState(0);

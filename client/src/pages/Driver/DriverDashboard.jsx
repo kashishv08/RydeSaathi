@@ -99,7 +99,7 @@ export default function DriverDashboard() {
     return (
         <>
             <Navbar />
-            <div className="fixed inset-0 top-[60px] flex flex-col overflow-hidden" style={{ background: 'var(--clr-bg)' }}>
+            <div className="fixed inset-0 top-[60px] flex flex-col overflow-hidden grain" style={{ background: 'var(--clr-bg)' }}>
                 {/* Top Navigation / Floating Actions */}
                 <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-6 flex justify-between items-start pointer-events-none">
                     <motion.button

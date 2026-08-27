@@ -43,7 +43,7 @@ function Login() {
     }
 
     return (
-        <div className="flex min-h-screen bg-white font-sans">
+        <div className="flex min-h-screen bg-white font-sans grain">
             {/* Left Image Section (Hidden on mobile) */}
             <div className="hidden lg:block lg:w-1/2 relative bg-[var(--clr-card)]">
                 <img 

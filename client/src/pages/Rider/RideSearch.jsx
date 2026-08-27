@@ -101,12 +101,12 @@ export default function RideSearch() {
     return (
         <>
             <div
-                className="h-screen flex flex-col overflow-hidden"
+                className="h-screen flex flex-col overflow-hidden grain"
                 style={{ background: 'var(--clr-bg)' }}
             >
                 <Navbar />
 
-                <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
+                <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0 relative z-10">
 
                     {/* ── Left Sidebar ──────────────────────────────────────── */}
                     <motion.div
@@ -153,7 +153,7 @@ export default function RideSearch() {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.15 }}
                                                 className="text-4xl font-black tracking-tight"
-                                                style={{ color: 'var(--clr-foreground)' }}
+                                                style={{ color: 'var(--clr-primary)' }}
                                             >
                                                 Get a ride
                                             </motion.h2>
@@ -224,9 +224,9 @@ export default function RideSearch() {
                                             whileTap={{ scale: 0.97 }}
                                             onClick={handleSearchSubmit}
                                             disabled={isRouteFetching || isRideFetching || !routeData}
-                                            className="w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto"
+                                            className="w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto"
                                             style={{
-                                                background: 'var(--clr-primary)',
+                                                background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
                                                 boxShadow: '0 8px 24px -6px color-mix(in srgb, var(--clr-primary) 50%, transparent)',
                                                 color: 'var(--clr-card)',
                                             }}
@@ -255,7 +255,7 @@ export default function RideSearch() {
                                         {/* Title + stats */}
                                         <div className="flex items-center justify-between">
                                             <h2 className="text-2xl font-black tracking-tight"
-                                                style={{ color: 'var(--clr-foreground)' }}>
+                                                style={{ color: 'var(--clr-primary)' }}>
                                                 Choose a ride
                                             </h2>
                                             {distance_km && duration_min && (

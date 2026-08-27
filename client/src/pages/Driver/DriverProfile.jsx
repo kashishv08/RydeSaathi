@@ -61,7 +61,7 @@ export default function DriverProfile() {
     const user = data?.data;
 
     return (
-        <div className="min-h-screen font-sans" style={{ background: PAGE_BG }}>
+        <div className="min-h-screen font-sans grain" style={{ background: PAGE_BG }}>
             {/* Top bar */}
             <div className="flex items-center justify-between px-6 pt-8 pb-2">
                 <motion.button

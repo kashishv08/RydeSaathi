@@ -15,8 +15,8 @@ export default function LocationInputGroup({
         <div className={`space-y-2.5 relative ${extraClasses}`} ref={containerRef}>
             {/* Gradient connector line */}
             <div
-                className="absolute left-[15px] top-[42px] bottom-[42px] w-[2px] rounded-full z-0"
-                style={{ background: 'linear-gradient(to bottom, rgba(139,92,246,0.7), rgba(16,185,129,0.7))' }}
+                className="absolute left-[15.5px] top-[42px] bottom-[42px] w-[2px] rounded-full z-0"
+                style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--clr-primary) 80%, transparent), color-mix(in srgb, var(--clr-accent) 50%, transparent))' }}
             />
 
             {/* Pickup input */}
@@ -32,10 +32,10 @@ export default function LocationInputGroup({
                     }}
                     icon={
                         <div
-                            className="w-3 h-3 rounded-full"
+                            className="w-2.5 h-2.5 rounded-full"
                             style={{
-                                background: 'rgba(139,92,246,0.9)',
-                                boxShadow: '0 0 6px rgba(139,92,246,0.6)',
+                                background: 'var(--clr-primary)',
+                                boxShadow: '0 0 10px 3px var(--clr-primary-subtle)',
                             }}
                         />
                     }
@@ -55,10 +55,10 @@ export default function LocationInputGroup({
                     }}
                     icon={
                         <div
-                            className="w-3 h-3 rounded-md"
+                            className="w-2.5 h-2.5 rounded-[3px]"
                             style={{
-                                background: 'rgba(16,185,129,0.9)',
-                                boxShadow: '0 0 6px rgba(16,185,129,0.5)',
+                                background: 'var(--clr-accent)',
+                                boxShadow: '0 0 10px 3px color-mix(in srgb, var(--clr-accent) 25%, transparent)',
                             }}
                         />
                     }

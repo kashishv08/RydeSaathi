@@ -41,15 +41,15 @@ export default function LocationInput({ placeholder, onSelectLocation, initialVa
                         outline: 'none',
                         transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
                     }}
-                    className="w-full rounded-xl py-3 pl-10 pr-4 text-sm font-medium placeholder-gray-600 focus:placeholder-gray-500"
+                    className="w-full rounded-xl py-3 pl-10 pr-4 text-sm font-medium placeholder-[var(--clr-muted)] focus:placeholder-[var(--clr-muted)] shadow-sm"
                     value={inputValue}
                     onChange={(e) => {
                         userTyped.current = true;
                         setInputValue(e.target.value);
                     }}
                     onFocus={(e) => {
-                        e.target.style.borderColor = 'hsl(169,59%,31%,0.5)';
-                        e.target.style.background = 'hsl(169,59%,31%,0.06)';
+                        e.target.style.borderColor = 'color-mix(in srgb, var(--clr-primary) 40%, transparent)';
+                        e.target.style.background = 'var(--clr-primary-subtle)';
                         e.target.style.boxShadow = '0 0 0 3px var(--clr-primary-subtle)';
                         onFocus?.();
                     }}

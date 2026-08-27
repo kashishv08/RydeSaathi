@@ -308,7 +308,7 @@ export default function RideCreate() {
 
     return (
         <div
-            className="h-screen flex flex-col overflow-hidden"
+            className="h-screen flex flex-col overflow-hidden grain"
             style={{ background: "var(--clr-bg)" }}
         >
             <Navbar />

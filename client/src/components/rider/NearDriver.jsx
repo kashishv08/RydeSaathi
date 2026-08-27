@@ -4,14 +4,14 @@ import { Banknote, ChevronDown, Users, Clock, Zap } from 'lucide-react';
 import { vehicleDetails } from '../../constants/vehicleImages';
 import { getArrivalTime } from '../../utils/vehicleHelpers';
 
-const PRIMARY = 'hsl(169, 59%, 31%)';
-const ACCENT = 'hsl(14, 83%, 62%)';
-const FG = 'hsl(193, 43%, 15%)';
-const MUTED = 'hsl(193, 15%, 45%)';
-const CARD_BG = 'hsl(44, 44%, 99%)';
-const CARD_SEL = 'hsl(169, 59%, 31%, 0.06)';
-const BORDER = 'hsl(38, 24%, 86%)';
-const BORDER_SEL = 'hsl(169, 59%, 31%, 0.4)';
+const PRIMARY = 'var(--clr-primary)';
+const ACCENT = 'var(--clr-accent)';
+const FG = 'var(--clr-foreground)';
+const MUTED = 'var(--clr-muted)';
+const CARD_BG = 'var(--clr-card)';
+const CARD_SEL = 'color-mix(in srgb, var(--clr-primary) 6%, transparent)';
+const BORDER = 'var(--clr-border)';
+const BORDER_SEL = 'color-mix(in srgb, var(--clr-primary) 40%, transparent)';
 
 export default function NearDriver({ options = [], onRequest }) {
     const [selected, setSelected] = useState(options[0]?.vehicle_type || null);

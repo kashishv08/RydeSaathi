@@ -61,7 +61,7 @@ export default function DriverArriving({ onCancel, isInProgress = false, pickupE
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-xl font-black tracking-tight"
-                    style={{ color: FG }}
+                    style={{ color: isInProgress ? ACCENT : PRIMARY }}
                 >
                     {isInProgress ? dropoffText : pickupText}
                 </motion.h2>

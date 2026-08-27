@@ -1,9 +1,9 @@
 import React from 'react';
 
-const CARD_BG = 'hsl(44, 44%, 99%)';
-const CARD_BORDER = '1.5px solid hsl(38, 24%, 86%)';
-const SLAB_BASE = 'hsl(38, 24%, 90%)';
-const SLAB_HIGHLIGHT = 'color-mix(in srgb, var(--clr-primary) 12%, transparent)';
+const CARD_BG = 'var(--clr-card)';
+const CARD_BORDER = '1.5px solid var(--clr-border)';
+const SLAB_BASE = 'color-mix(in srgb, var(--clr-primary) 10%, transparent)';
+const SLAB_HIGHLIGHT = 'color-mix(in srgb, var(--clr-primary) 20%, transparent)';
 
 function ShimmerSlab({ w = 'w-full', h = 'h-4', rounded = 'rounded-lg' }) {
     return (

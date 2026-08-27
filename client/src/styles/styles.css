@@ -93,10 +93,22 @@
 .font-mono { font-family: var(--app-font-mono); }
 .shadow-card { box-shadow: var(--shadow-card); }
 
+/* Grain Effect overlay */
+.grain::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .045;
+    z-index: 50;
+    background-image: repeating-radial-gradient(circle at 0 0, rgba(23, 56, 60, .32) 0, rgba(23, 56, 60, .32) 1px, transparent 1px, transparent 4px);
+    background-size: 7px 7px;
+}
+
 /* ── Light-themed custom scrollbar ─────────────────────────────────────────── */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: hsl(169 59% 31% / 0.3) transparent;
+  scrollbar-color: color-mix(in srgb, var(--clr-primary) 30%, transparent) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -108,12 +120,12 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(169 59% 31% / 0.3);
+  background: color-mix(in srgb, var(--clr-primary) 30%, transparent);
   border-radius: 999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(169 59% 31% / 0.55);
+  background: color-mix(in srgb, var(--clr-primary) 55%, transparent);
 }
 
 @keyframes shimmer-sweep {

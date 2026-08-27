@@ -70,7 +70,7 @@ export default function FindingDriver({ pickup, drop, fare, statusText, subText,
                 </div>
 
                 <div>
-                    <h2 className="text-xl font-black tracking-tight mb-0.5" style={{ color: FG }}>
+                    <h2 className="text-xl font-black tracking-tight mb-0.5" style={{ color: PRIMARY }}>
                         {statusText || 'Ride requested'}
                     </h2>
                     <motion.p
