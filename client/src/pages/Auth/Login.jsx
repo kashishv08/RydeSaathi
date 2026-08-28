@@ -46,9 +46,9 @@ function Login() {
         <div className="flex min-h-screen bg-white font-sans grain">
             {/* Left Image Section (Hidden on mobile) */}
             <div className="hidden lg:block lg:w-1/2 relative bg-[var(--clr-card)]">
-                <img 
-                    src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?q=80&w=2072&auto=format&fit=crop" 
-                    alt="Login" 
+                <img
+                    src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?q=80&w=2072&auto=format&fit=crop"
+                    alt="Login"
                     className="absolute inset-0 w-full h-full object-cover opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
@@ -65,7 +65,7 @@ function Login() {
             {/* Right Form Section */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 xl:p-24 relative">
                 {/* Back to Home / Utility (Optional, leaving space if needed) */}
-                
+
                 <div className="w-full max-w-md">
                     <div className="mb-10">
                         <div className="w-12 h-12 text-white rounded-xl flex items-center justify-center mb-6 shadow-md"
@@ -77,8 +77,8 @@ function Login() {
                             {step === 1 ? "Sign In" : "Verify Email"}
                         </h2>
                         <p className="text-gray-500 mt-2">
-                            {step === 1 
-                                ? "Enter your email to access your account" 
+                            {step === 1
+                                ? "Enter your email to access your account"
                                 : `We sent a 6-digit code to ${email}`
                             }
                         </p>
@@ -103,10 +103,10 @@ function Login() {
                                 </div>
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={isSending || !email}
-                                className="w-full py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="cursor-pointer w-full py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
                                 style={{
                                     background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
                                     color: 'var(--clr-card)',
@@ -119,14 +119,14 @@ function Login() {
 
                             <div className="text-center mt-6">
                                 <span className="text-sm text-gray-500">Don't have an account? </span>
-                                <Link to={"/register"} className="text-sm font-semibold hover:underline transition-all" style={{ color: 'var(--clr-primary)' }}>
+                                <Link to={"/register"} className="cursor-pointer text-sm font-semibold hover:underline transition-all" style={{ color: 'var(--clr-primary)' }}>
                                     Sign up
                                 </Link>
                             </div>
                         </form>
                     ) : (
                         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
-                            
+
                             <div className="w-full py-2">
                                 <InputOTP maxLength={6} value={otp} onChange={setOtp} autoFocus>
                                     <InputOTP.Group>
@@ -143,10 +143,10 @@ function Login() {
                                 </InputOTP>
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={isVerifying || otp.length < 6}
-                                className="w-full py-3.5 rounded-xl font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="cursor-pointer w-full py-3.5 rounded-xl font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                 style={{
                                     background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
                                     color: 'var(--clr-card)',
@@ -156,10 +156,10 @@ function Login() {
                                 {isVerifying ? "Verifying..." : "Verify & Sign In"}
                             </button>
 
-                            <button 
+                            <button
                                 type="button"
-                                onClick={() => setStep(1)} 
-                                className="flex items-center gap-2 text-sm font-medium transition-colors justify-center w-full mt-2"
+                                onClick={() => setStep(1)}
+                                className="cursor-pointer flex items-center gap-2 text-sm font-medium transition-colors justify-center w-full mt-2"
                                 style={{ color: 'var(--clr-muted)' }}>
                                 <ArrowLeft className="w-4 h-4" />
                                 Wrong email? Go back

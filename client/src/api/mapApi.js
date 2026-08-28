@@ -16,7 +16,6 @@ export const autoCompleteAddressApi = async (search) => {
 export const fetchRoutePolylineApi = async ({ pickup, drop }) => {
     const response = await axiosInstanceNoAuth.get(`https://us1.locationiq.com/v1/directions/driving/${pickup.lon},${pickup.lat};${drop.lon},${drop.lat}?key=${LOCATIONIQ_KEY}&geometries=geojson&overview=full`);
     const data = response.data;
-    console.log("data", data)
     return {
         geometry: data.routes[0].geometry,
         durationSeconds: data.routes[0].duration,

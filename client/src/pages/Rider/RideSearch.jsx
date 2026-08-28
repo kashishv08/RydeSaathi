@@ -1,4 +1,4 @@
-import { toast } from "@heroui/react";
+import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import {
     ArrowRight,
@@ -20,7 +20,8 @@ import RequestingRideModal from "../../components/rider/RequestingRideModal";
 import RideListShimmer from "../../components/rider/RideListShimmer";
 import StaticRouteMap from "../../components/shared/StaticRouteMap";
 import Navbar from "../../components/shared/layout/Navbar";
-import { useFetchRoutePolyline, useRideSearch } from "../../hooks/rider";
+import { useFetchRoutePolyline, useRideSearch, useRideDetails } from "../../hooks/rider";
+import { RIDE_STATUS } from "../../constants";
 
 export default function RideSearch() {
     const { state } = useLocation();
@@ -32,6 +33,15 @@ export default function RideSearch() {
     const [cachedOptions, setCachedOptions] = useState(null);
     const [isRequestingRide, setIsRequestingRide] = useState(false);
     const navigate = useNavigate();
+
+    const { data: rideDetails } = useRideDetails();
+
+    useEffect(() => {
+        const status = rideDetails?.data?.status;
+        if (status && status !== RIDE_STATUS.CANCELLED && status !== RIDE_STATUS.COMPLETED) {
+            navigate("/ride/create", { replace: true });
+        }
+    }, [rideDetails, navigate]);
 
     const locationInputsRef = useRef(null);
 

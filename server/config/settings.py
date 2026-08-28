@@ -33,7 +33,7 @@ SECRET_KEY = config("SECRET_KEY")
 ALLOWED_HOSTS = [
     "feuilletonistic-rochelle-inconvincible.ngrok-free.dev",
     "localhost",
-    "halloween-advertise-shuttle-equipped.trycloudflare.com"
+    "rebecca-gamma-mixed-xbox.trycloudflare.com"
 ]
 
 

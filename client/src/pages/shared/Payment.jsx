@@ -1,4 +1,4 @@
-import { toast } from "@heroui/react";
+import { toast } from "sonner";
 
 function Payment() {
 

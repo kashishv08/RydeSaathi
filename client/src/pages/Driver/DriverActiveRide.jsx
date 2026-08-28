@@ -1,15 +1,16 @@
-import { toast } from 'sonner';
-import { MessageSquare, Navigation, Phone, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Check, MessageSquare, Phone } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import ActiveTrackingMap from '../../components/shared/ActiveTrackingMap';
+import RideRating from '../../components/shared/RideRating';
 import { RIDE_STATUS } from '../../constants';
 import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 import { useTransitionRide } from '../../hooks/driver';
 import { useFetchRoutePolyline, useRideDetails } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 import { getDynamicEtaMins } from '../../utils/geoHelpers';
-import { motion } from 'framer-motion';
 
 export default function DriverActiveRide() {
     const navigate = useNavigate();
@@ -110,15 +111,15 @@ export default function DriverActiveRide() {
         <div className="fixed inset-0 font-sans overflow-hidden grain" style={{ background: 'var(--clr-bg)' }}>
             {/* Map Background */}
             <div className="absolute inset-0 z-0">
-                <ActiveTrackingMap 
+                <ActiveTrackingMap
                     startPoint={routeStartPoint}
                     endPoint={routeEndPoint}
                     routeData={routeData}
                     driverLocation={driverloc}
-                    role="DRIVER" 
+                    role="DRIVER"
                     isCompleted={rideStatus === RIDE_STATUS.COMPLETED || rideStatus === 'PAYMENT_SUCCESSFULL'}
                 />
-                
+
                 <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none z-10"
                     style={{ background: 'linear-gradient(to top, var(--clr-card), transparent)' }}
                 />
@@ -126,15 +127,15 @@ export default function DriverActiveRide() {
 
             {/* Top Floating Header */}
             <div className="absolute top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-20 pointer-events-none flex justify-between items-start">
-                <motion.button 
+                <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/driver')} 
+                    onClick={() => navigate('/driver')}
                     className="w-12 h-12 rounded-full flex items-center justify-center pointer-events-auto cursor-pointer border"
                     style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)', boxShadow: '0 2px 12px rgba(27,54,58,0.1)' }}
                 >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--clr-foreground)' }}>
-                        <path d="m15 18-6-6 6-6"/>
+                        <path d="m15 18-6-6 6-6" />
                     </svg>
                 </motion.button>
 
@@ -157,7 +158,7 @@ export default function DriverActiveRide() {
             </div>
 
             {/* Bottom Floating Card */}
-            <motion.div 
+            <motion.div
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
@@ -281,6 +282,16 @@ export default function DriverActiveRide() {
                     )}
                 </div>
             </motion.div>
+
+            {rideStatus === 'PAYMENT_SUCCESSFULL' && (
+                <RideRating
+                    rideId={ride?.id}
+                    role="DRIVER"
+                    personName={ride?.rider_email ? ride.rider_email.split('@')[0] : "Rider"}
+                    personRole="Rider"
+                    onComplete={() => navigate('/driver')}
+                />
+            )}
         </div>
     );
 }
