@@ -139,25 +139,13 @@ export default function NearDriver({ options = [], onRequest }) {
                         style={{ borderColor: 'hsl(169,59%,31%,0.15)' }}
                     >
                         <div className="flex items-center gap-3">
-                            {/* Payment pill */}
-                            <div
-                                className="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all shrink-0"
-                                style={{
-                                    background: 'var(--clr-primary-subtle)',
-                                    border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
-                                }}
-                            >
-                                <Banknote className="w-4 h-4" style={{ color: PRIMARY }} />
-                                <span className="font-bold text-sm" style={{ color: FG }}>Cash</span>
-                                <ChevronDown className="w-3.5 h-3.5" style={{ color: MUTED }} />
-                            </div>
 
                             {/* Request button */}
                             <motion.button
                                 whileHover={{ scale: 1.02, y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => onRequest(selectedOption)}
-                                className="flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-xl transition-all"
+                                className="cursor-pointer flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-xl transition-all"
                                 style={{
                                     background: `linear-gradient(135deg, ${PRIMARY}, hsl(169,59%,20%))`,
                                     boxShadow: '0 6px 24px hsl(169,59%,31%,0.35)',

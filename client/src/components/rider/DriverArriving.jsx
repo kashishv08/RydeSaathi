@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Banknote, MapPin, MessageSquare, Phone, Star, X } from 'lucide-react';
 import { useRideDetails } from '../../hooks/rider';
 import { CancelRideModal } from './CancelRideModal';
+import { vehicleDetails } from '../../constants/vehicleImages';
+import { getAvatarUrl } from '../../utils/avatarHelpers';
 
 const PRIMARY = 'var(--clr-primary)';
 const ACCENT = 'var(--clr-accent)';
@@ -101,22 +103,23 @@ export default function DriverArriving({ onCancel, isInProgress = false, pickupE
             {/* ── Driver Info ─────────────────────────────────────────────── */}
             <GlassCard>
                 <div className="flex items-center justify-between mb-4">
-                    {/* Avatar + name */}
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="relative">
+                    {/* Left: Avatar & Driver Details */}
+                    <div className="flex items-center gap-3 min-w-0">
+                        {/* Avatar */}
+                        <div className="relative shrink-0">
                             <div
                                 className="w-14 h-14 rounded-full overflow-hidden"
                                 style={{ border: `2px solid color-mix(in srgb, var(--clr-primary) 35%, transparent)` }}
                             >
                                 <img
-                                    src="https://i.pravatar.cc/150?img=11"
+                                    src={getAvatarUrl(ride?.driver_details?.name, true)}
                                     alt="Driver"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
                             {/* Star badge */}
                             <div
-                                className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 whitespace-nowrap"
+                                className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"
                                 style={{
                                     background: CARD_BG,
                                     border: `1px solid ${BORDER}`,
@@ -129,41 +132,38 @@ export default function DriverArriving({ onCancel, isInProgress = false, pickupE
                                 </span>
                             </div>
                         </div>
-                        <span className="text-sm font-bold" style={{ color: FG }}>
-                            {ride?.driver_details?.name || 'Driver'}
-                        </span>
-                    </div>
 
-                    {/* Car image */}
-                    <div className="flex-1 flex justify-center">
-                        <img
-                            src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1597151213/assets/67/034ebc-270f-4889-bc86-bc16e91122a2/original/UberXL.png"
-                            alt="Car"
-                            className="w-28 h-16 object-contain"
-                            style={{ filter: `drop-shadow(0 0 8px color-mix(in srgb, var(--clr-primary) 20%, transparent))` }}
-                        />
-                    </div>
-
-                    {/* Plate + type */}
-                    <div className="text-right">
-                        <div
-                            className="px-2.5 py-1 rounded-lg font-black text-sm tracking-wider mb-1"
-                            style={{
-                                background: 'var(--clr-border)',
-                                border: `1px solid ${BORDER}`,
-                                color: FG,
-                            }}
-                        >
-                            {ride?.driver_details?.plate_number || 'UP 16 AB 1234'}
+                        {/* Name & Plate */}
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-base font-bold truncate" style={{ color: FG }}>
+                                {ride?.driver_details?.name || 'Driver'}
+                            </span>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span
+                                    className="px-1.5 py-0.5 rounded md text-[10px] font-black tracking-wider"
+                                    style={{ background: 'var(--clr-border)', color: FG }}
+                                >
+                                    {ride?.driver_details?.plate_number || 'UP 16 AB 1234'}
+                                </span>
+                                <span className="text-[11px] font-medium truncate" style={{ color: MUTED }}>
+                                    {ride?.driver_details?.vehicle_type || 'Vehicle'}
+                                </span>
+                            </div>
                         </div>
-                        <p className="text-xs" style={{ color: MUTED }}>
-                            {ride?.driver_details?.vehicle_type || 'Vehicle'}
-                        </p>
+                    </div>
+
+                    {/* Right: Car Image */}
+                    <div className="w-24 shrink-0 flex justify-end">
+                        <img
+                            src={vehicleDetails[ride?.vehicle_type || 'UBER_GO']?.image || "https://i.ibb.co/cyvcpfF/ubergo.png"}
+                            alt="Car"
+                            className="w-full object-contain drop-shadow-sm"
+                        />
                     </div>
                 </div>
 
                 {/* Message / Call buttons */}
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
@@ -188,7 +188,7 @@ export default function DriverArriving({ onCancel, isInProgress = false, pickupE
                     >
                         <Phone className="w-4 h-4" style={{ color: PRIMARY }} />
                     </motion.button>
-                </div>
+                </div> */}
             </GlassCard>
 
             {/* ── Route Details ───────────────────────────────────────────── */}
@@ -264,7 +264,7 @@ export default function DriverArriving({ onCancel, isInProgress = false, pickupE
                     type="button"
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.97 }}
-                    className="w-full flex items-center justify-center gap-2 text-sm font-bold py-3.5 rounded-2xl transition-all"
+                    className="cursor-pointer w-full flex items-center justify-center gap-2 text-sm font-bold py-3.5 rounded-2xl transition-all"
                     style={{
                         background: 'color-mix(in srgb, var(--clr-destructive) 7%, transparent)',
                         border: '1px solid color-mix(in srgb, var(--clr-destructive) 25%, transparent)',

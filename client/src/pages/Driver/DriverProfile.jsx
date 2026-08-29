@@ -13,6 +13,7 @@ import { useRideDetails } from '../../hooks/rider';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RIDE_STATUS, DRIVER_STATUS } from '../../constants';
 import StaticRouteMap from '../../components/shared/StaticRouteMap';
+import { getAvatarUrl } from '../../utils/avatarHelpers';
 
 // ── Shared sub-components ─────────────────────────────────────────────────────
 
@@ -267,7 +268,7 @@ export default function DriverProfile() {
         activeRide.status !== RIDE_STATUS.COMPLETED;
 
     const userName = user?.email ? user.email.split('@')[0] : 'Driver';
-    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=fff8e8&textColor=1f756d`;
+    const avatarSrc = getAvatarUrl(userName, true);
     const rating = user?.rating_avg || driver?.rating_avg || '4.9';
     const driverStatus = driver?.status || (isOnline ? DRIVER_STATUS.AVAILABLE : DRIVER_STATUS.OFFLINE);
     const sColor = statusColor(driverStatus);

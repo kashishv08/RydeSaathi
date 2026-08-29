@@ -18,9 +18,11 @@ export default function LandingPage() {
                 {loading && <Preloader onComplete={() => setLoading(false)} />}
             </AnimatePresence>
 
-            <div className="grain min-h-[100dvh] overflow-hidden bg-[#fbf9f1] text-[#17383c]">
-                <LandingNavbar />
-                <main>
+            <div className="grain min-h-[100dvh] overflow-hidden bg-[#fbf9f1] text-[#17383c] relative">
+                <div className="fixed top-0 left-0 w-full z-40 bg-[#fbf9f1]/90 backdrop-blur-md border-b border-[#e7dfce]/60">
+                    <LandingNavbar />
+                </div>
+                <main className="mt-[76px]">
                     <Hero />
                     <Stats />
                     <HowItWorks />

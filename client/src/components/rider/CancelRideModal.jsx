@@ -88,7 +88,7 @@ export function CancelRideModal({ children, onConfirm }) {
                                         <motion.button
                                             whileTap={{ scale: 0.9 }}
                                             onClick={() => setIsOpen(false)}
-                                            className="w-8 h-8 rounded-full flex items-center justify-center"
+                                            className="cursor-pointer w-8 h-8 rounded-full flex items-center justify-center"
                                             style={{ background: "var(--clr-border)" }}
                                         >
                                             <X className="w-4 h-4" style={{ color: MUTED }} />
@@ -108,7 +108,7 @@ export function CancelRideModal({ children, onConfirm }) {
                                                     key={r}
                                                     type="button"
                                                     onClick={() => setReason(r)}
-                                                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all"
+                                                    className="cursor-pointer w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all"
                                                     style={{
                                                         background: selected
                                                             ? "var(--clr-primary-subtle)"
@@ -147,7 +147,7 @@ export function CancelRideModal({ children, onConfirm }) {
                                             whileTap={{ scale: 0.97 }}
                                             type="button"
                                             onClick={handleConfirm}
-                                            className="w-full py-3.5 rounded-2xl font-bold text-sm"
+                                            className="cursor-pointer w-full py-3.5 rounded-2xl font-bold text-sm"
                                             style={{
                                                 background: "color-mix(in srgb, var(--clr-destructive) 4%, var(--clr-card))",
                                                 boxShadow: "0 4px 20px color-mix(in srgb, var(--clr-destructive) 15%, transparent)",
@@ -161,7 +161,7 @@ export function CancelRideModal({ children, onConfirm }) {
                                             whileTap={{ scale: 0.98 }}
                                             type="button"
                                             onClick={() => setIsOpen(false)}
-                                            className="w-full py-3.5 rounded-2xl font-bold text-sm"
+                                            className="cursor-pointer w-full py-3.5 rounded-2xl font-bold text-sm"
                                             style={{
                                                 background: "var(--secondary)",
                                                 color: "var(--clr-foreground)",

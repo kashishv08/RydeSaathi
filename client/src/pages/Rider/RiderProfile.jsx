@@ -10,6 +10,7 @@ import { useUserProfile } from '../../hooks/auth';
 import { useRideDetails } from '../../hooks/rider';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RIDE_STATUS } from '../../constants';
+import { getAvatarUrl } from '../../utils/avatarHelpers';
 
 // ── Micro helpers ──────────────────────────────────────────────────────────────
 function StatPill({ label, value, icon, accent }) {
@@ -297,8 +298,7 @@ export default function RiderProfile() {
         activeRide.status !== RIDE_STATUS.COMPLETED;
 
     const userName = user?.email ? user.email.split('@')[0] : 'Rider';
-    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=fff8e8&textColor=e57453`;
-    console.log(avatarSrc);
+    const avatarSrc = getAvatarUrl(userName, false);
     const rating = user?.rating_avg || '5.0';
 
     return (

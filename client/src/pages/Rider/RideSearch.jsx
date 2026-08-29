@@ -234,7 +234,7 @@ export default function RideSearch() {
                                             whileTap={{ scale: 0.97 }}
                                             onClick={handleSearchSubmit}
                                             disabled={isRouteFetching || isRideFetching || !routeData}
-                                            className="w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto"
+                                            className="cursor-pointer w-full font-bold text-sm py-4 rounded-2xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 mt-auto"
                                             style={{
                                                 background: 'linear-gradient(135deg, var(--clr-primary), hsl(169,59%,20%))',
                                                 boxShadow: '0 8px 24px -6px color-mix(in srgb, var(--clr-primary) 50%, transparent)',

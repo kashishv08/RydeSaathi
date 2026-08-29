@@ -8,6 +8,7 @@ import { logoutRequest } from "../../../api/authApi";
 import { useUserProfile } from "../../../hooks/auth";
 import { useRideDetails } from "../../../hooks/rider";
 import { RIDE_STATUS } from "../../../constants";
+import { getAvatarUrl } from "../../../utils/avatarHelpers";
 
 const PRIMARY = "var(--clr-primary)";
 const ACCENT = "var(--clr-accent)";
@@ -21,6 +22,9 @@ function ProfileButton() {
     const user = data?.data;
     const isDriver = user?.role === "DRIVER";
     const roleColor = isDriver ? PRIMARY : ACCENT;
+
+    const userName = user?.email ? user.email.split('@')[0] : 'U';
+    const avatarSrc = getAvatarUrl(userName, isDriver);
 
     const rideStatus = rideData?.data?.status;
     const isAllowLogout = !rideStatus || rideStatus === RIDE_STATUS.CANCELLED || rideStatus === RIDE_STATUS.COMPLETED;
@@ -61,14 +65,14 @@ function ProfileButton() {
             ) : (
                 <>
                     <Dropdown placement="bottom-end">
-                        <Dropdown.Trigger className="rounded-full outline-none">
+                        <Dropdown.Trigger className="rounded-full border border-border">
                             <Avatar
                                 as="button"
                                 className="h-10 w-10 cursor-pointer ring-2 transition-all"
                                 style={{ "--tw-ring-color": `${roleColor}55` }}
-                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
-                                fallback={user?.email?.slice(0, 2).toUpperCase() || "U"}
-                            />
+                            >
+                                <Avatar.Image src={avatarSrc} className="w-full h-full object-cover" />
+                            </Avatar>
                         </Dropdown.Trigger>
                         <Dropdown.Popover
                             className="min-w-[250px] rounded-2xl border p-1.5 shadow-2xl backdrop-blur-2xl"
@@ -79,9 +83,9 @@ function ProfileButton() {
                                 <Avatar
                                     className="h-9 w-9 ring-1"
                                     style={{ "--tw-ring-color": `${roleColor}66` }}
-                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
-                                    fallback={user?.email?.slice(0, 2).toUpperCase() || "U"}
-                                />
+                                >
+                                    <Avatar.Image src={avatarSrc} className="w-full h-full object-cover" />
+                                </Avatar>
                                 <div className="flex flex-col truncate">
                                     <p className="truncate text-sm font-semibold" style={{ color: "hsl(193, 43%, 15%)" }}>{user.email}</p>
                                     <span
