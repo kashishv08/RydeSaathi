@@ -267,7 +267,7 @@ export default function DriverProfile() {
         activeRide.status !== RIDE_STATUS.COMPLETED;
 
     const userName = user?.email ? user.email.split('@')[0] : 'Driver';
-    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=1f756d&textColor=fff8e8`;
+    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=fff8e8&textColor=1f756d`;
     const rating = user?.rating_avg || driver?.rating_avg || '4.9';
     const driverStatus = driver?.status || (isOnline ? DRIVER_STATUS.AVAILABLE : DRIVER_STATUS.OFFLINE);
     const sColor = statusColor(driverStatus);
@@ -279,328 +279,330 @@ export default function DriverProfile() {
 
     return (
         <>
-        <div className="min-h-screen font-sans grain" style={{ background: 'var(--clr-bg)' }}>
+            <div className="min-h-screen font-sans grain" style={{ background: 'var(--clr-bg)' }}>
 
-            {/* ── Top bar ─────────────────────────────────────────────────────── */}
-            <div className="sticky top-0 z-40 flex items-center justify-between px-5 py-4 backdrop-blur-xl border-b"
-                style={{ background: 'color-mix(in srgb, var(--clr-bg) 85%, transparent)', borderColor: 'var(--clr-border)' }}>
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/driver')}
-                    className="rounded-full border p-2.5 cursor-pointer"
-                    style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                    <ArrowLeft className="h-5 w-5" style={{ color: 'var(--clr-foreground)' }} />
-                </motion.button>
+                {/* ── Top bar ─────────────────────────────────────────────────────── */}
+                <div className="sticky top-0 z-40 flex items-center justify-between px-5 py-4 backdrop-blur-xl border-b"
+                    style={{ background: 'color-mix(in srgb, var(--clr-bg) 85%, transparent)', borderColor: 'var(--clr-border)' }}>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/driver')}
+                        className="rounded-full border p-2.5 cursor-pointer"
+                        style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                        <ArrowLeft className="h-5 w-5" style={{ color: 'var(--clr-foreground)' }} />
+                    </motion.button>
 
-                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--clr-muted)' }}>Driver Profile</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--clr-muted)' }}>Driver Profile</span>
 
-                {/* Notification bell */}
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowBell(v => !v)}
-                    className="relative rounded-full border p-2.5 cursor-pointer"
-                    style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                    <Bell className="h-5 w-5" style={{ color: 'var(--clr-foreground)' }} />
-                    {hasActiveRide && (
-                        <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full border-2 animate-pulse"
-                            style={{ background: 'var(--clr-accent)', borderColor: 'var(--clr-card)' }} />
-                    )}
-                </motion.button>
-            </div>
-
-            {/* ── Active Ride Bell Dropdown ────────────────────────────────────── */}
-            <AnimatePresence>
-                {showBell && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                        transition={{ duration: 0.18 }}
-                        className="mx-4 mt-2 rounded-2xl border overflow-hidden relative z-30"
-                        style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)', boxShadow: '0 8px 32px rgba(23,56,60,0.12)' }}>
-                        <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{ borderColor: 'var(--clr-border)' }}>
-                            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Current Ride</span>
-                            <button onClick={() => setShowBell(false)} className="cursor-pointer">
-                                <X className="w-4 h-4" style={{ color: 'var(--clr-muted)' }} />
-                            </button>
-                        </div>
-                        {hasActiveRide ? (
-                            <div className="p-5">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide"
-                                        style={{ background: 'color-mix(in srgb, var(--clr-primary) 12%, transparent)', color: 'var(--clr-primary)' }}>
-                                        {activeRide.status?.replace(/_/g, ' ')}
-                                    </span>
-                                    <span className="font-black text-lg" style={{ color: 'var(--clr-foreground)' }}>₹{activeRide.amount || '—'}</span>
-                                </div>
-                                <div className="space-y-2.5">
-                                    <div className="flex items-start gap-2.5">
-                                        <span className="mt-1 w-2.5 h-2.5 rounded-full shrink-0" style={{ background: 'var(--clr-primary)' }} />
-                                        <p className="text-sm font-medium leading-snug" style={{ color: 'var(--clr-foreground)' }}>{activeRide.pickup_address || 'Pickup'}</p>
-                                    </div>
-                                    <div className="flex items-start gap-2.5">
-                                        <MapPin className="mt-0.5 w-3 h-3 shrink-0" style={{ color: 'var(--clr-accent)' }} />
-                                        <p className="text-sm font-medium leading-snug" style={{ color: 'var(--clr-foreground)' }}>{activeRide.drop_address || 'Drop'}</p>
-                                    </div>
-                                </div>
-                                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                                    onClick={() => navigate('/driver/active')}
-                                    className="mt-4 w-full rounded-xl py-2.5 text-sm font-bold cursor-pointer"
-                                    style={{ background: 'var(--clr-primary)', color: 'hsl(42,100%,95%)' }}>
-                                    Go to Active Ride →
-                                </motion.button>
-                            </div>
-                        ) : (
-                            <div className="px-5 py-8 text-center">
-                                <Car className="mx-auto w-8 h-8 mb-3" style={{ color: 'var(--clr-border)' }} />
-                                <p className="text-sm font-semibold" style={{ color: 'var(--clr-muted)' }}>No active ride right now</p>
-                            </div>
+                    {/* Notification bell */}
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowBell(v => !v)}
+                        className="relative rounded-full border p-2.5 cursor-pointer"
+                        style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                        <Bell className="h-5 w-5" style={{ color: 'var(--clr-foreground)' }} />
+                        {hasActiveRide && (
+                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full border-2 animate-pulse"
+                                style={{ background: 'var(--clr-accent)', borderColor: 'var(--clr-card)' }} />
                         )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    </motion.button>
+                </div>
 
-            {/* ── Hero Banner ──────────────────────────────────────────────────── */}
-            <div className="relative overflow-hidden mx-4 mt-4 rounded-3xl"
-                style={{ background: 'linear-gradient(135deg, hsl(174,58%,25%) 0%, hsl(174,58%,18%) 55%, hsl(186,45%,14%) 100%)' }}>
-                <svg className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none" viewBox="0 0 400 220" fill="none">
-                    <circle cx="380" cy="-30" r="150" stroke="white" strokeWidth="1.5" strokeDasharray="4 10" />
-                    <circle cx="10" cy="230" r="110" stroke="white" strokeWidth="1" strokeDasharray="3 7" />
-                </svg>
+                {/* ── Active Ride Bell Dropdown ────────────────────────────────────── */}
+                <AnimatePresence>
+                    {showBell && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                            transition={{ duration: 0.18 }}
+                            className="mx-4 mt-2 rounded-2xl border overflow-hidden relative z-30"
+                            style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)', boxShadow: '0 8px 32px rgba(23,56,60,0.12)' }}>
+                            <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{ borderColor: 'var(--clr-border)' }}>
+                                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Current Ride</span>
+                                <button onClick={() => setShowBell(false)} className="cursor-pointer">
+                                    <X className="w-4 h-4" style={{ color: 'var(--clr-muted)' }} />
+                                </button>
+                            </div>
+                            {hasActiveRide ? (
+                                <div className="p-5">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide"
+                                            style={{ background: 'color-mix(in srgb, var(--clr-primary) 12%, transparent)', color: 'var(--clr-primary)' }}>
+                                            {activeRide.status?.replace(/_/g, ' ')}
+                                        </span>
+                                        <span className="font-black text-lg" style={{ color: 'var(--clr-foreground)' }}>₹{activeRide.amount || '—'}</span>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-start gap-2.5">
+                                            <span className="mt-1 w-2.5 h-2.5 rounded-full shrink-0" style={{ background: 'var(--clr-primary)' }} />
+                                            <p className="text-sm font-medium leading-snug" style={{ color: 'var(--clr-foreground)' }}>{activeRide.pickup_address || 'Pickup'}</p>
+                                        </div>
+                                        <div className="flex items-start gap-2.5">
+                                            <MapPin className="mt-0.5 w-3 h-3 shrink-0" style={{ color: 'var(--clr-accent)' }} />
+                                            <p className="text-sm font-medium leading-snug" style={{ color: 'var(--clr-foreground)' }}>{activeRide.drop_address || 'Drop'}</p>
+                                        </div>
+                                    </div>
+                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                                        onClick={() => navigate('/driver/active')}
+                                        className="mt-4 w-full rounded-xl py-2.5 text-sm font-bold cursor-pointer"
+                                        style={{ background: 'var(--clr-primary)', color: 'hsl(42,100%,95%)' }}>
+                                        Go to Active Ride →
+                                    </motion.button>
+                                </div>
+                            ) : (
+                                <div className="px-5 py-8 text-center">
+                                    <Car className="mx-auto w-8 h-8 mb-3" style={{ color: 'var(--clr-border)' }} />
+                                    <p className="text-sm font-semibold" style={{ color: 'var(--clr-muted)' }}>No active ride right now</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                <div className="relative z-10 flex items-center gap-5 px-6 py-7">
-                    <div className="relative shrink-0">
-                        <Avatar src={avatarSrc}
-                            className="h-20 w-20 border-4 shadow-2xl"
-                            style={{ borderColor: 'rgba(255,255,255,0.3)' }} />
-                        <motion.button
-                            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                            onClick={() => setEditOpen(v => !v)}
-                            className="absolute -bottom-1 -right-1 flex items-center justify-center w-7 h-7 rounded-full border-2 cursor-pointer"
-                            style={{ background: 'white', borderColor: 'white' }}>
-                            <Edit3 className="w-3.5 h-3.5" style={{ color: 'var(--clr-primary)' }} />
-                        </motion.button>
-                    </div>
+                {/* ── Hero Banner ──────────────────────────────────────────────────── */}
+                <div className="relative overflow-hidden mx-4 mt-4 rounded-3xl"
+                    style={{ background: 'linear-gradient(135deg, hsl(174,58%,25%) 0%, hsl(174,58%,18%) 55%, hsl(186,45%,14%) 100%)' }}>
+                    <svg className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none" viewBox="0 0 400 220" fill="none">
+                        <circle cx="380" cy="-30" r="150" stroke="white" strokeWidth="1.5" strokeDasharray="4 10" />
+                        <circle cx="10" cy="230" r="110" stroke="white" strokeWidth="1" strokeDasharray="3 7" />
+                    </svg>
 
-                    <div className="min-w-0 flex-1">
-                        <h1 className="text-2xl font-black tracking-tight text-white truncate" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                            {displayName || userName}
-                        </h1>
-                        <p className="text-sm text-white/60 truncate mt-0.5">{user?.email || ''}</p>
-                        <div className="flex items-center gap-2 mt-2.5 flex-wrap">
-                            <span className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold"
-                                style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
-                                <Star className="w-3 h-3" style={{ fill: '#F5B942', color: '#F5B942' }} />
-                                {rating}
-                            </span>
-                            <span className="rounded-full px-2.5 py-0.5 text-xs font-bold"
-                                style={{ background: sColor.bg, color: sColor.text }}>
-                                {driverStatus?.replace(/_/g, ' ') || 'Offline'}
-                            </span>
+                    <div className="relative z-10 flex items-center gap-5 px-6 py-7">
+                        <div className="relative shrink-0">
+                            <Avatar>
+                                <Avatar.Image src={avatarSrc}
+                                    className="h-30 w-30 shadow-2xl"
+                                    style={{ borderColor: 'rgba(255,255,255,0.35)', position: "relative" }} />
+                            </Avatar>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                                onClick={() => setEditOpen(v => !v)}
+                                className="absolute -bottom-3 -right-3 flex items-center justify-center w-7 h-7 rounded-full border-2 cursor-pointer"
+                                style={{ background: 'white', borderColor: 'white' }}>
+                                <Edit3 className="w-3.5 h-3.5" style={{ color: 'var(--clr-primary)' }} />
+                            </motion.button>
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                            <h1 className="text-2xl font-black tracking-tight text-white truncate" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                                {displayName || userName}
+                            </h1>
+                            <p className="text-sm text-white/60 truncate mt-0.5">{user?.email || ''}</p>
+                            <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                                <span className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold"
+                                    style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
+                                    <Star className="w-3 h-3" style={{ fill: '#F5B942', color: '#F5B942' }} />
+                                    {rating}
+                                </span>
+                                <span className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+                                    style={{ background: sColor.bg, color: sColor.text }}>
+                                    {driverStatus?.replace(/_/g, ' ') || 'Offline'}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* ── Edit Profile Panel ───────────────────────────────────────────── */}
-            <AnimatePresence>
-                {editOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden mx-4 mt-2">
-                        <div className="rounded-2xl border p-5" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                            <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--clr-muted)' }}>Edit Profile</p>
-                            <div className="space-y-3">
-                                {[
-                                    { label: 'Display Name', value: displayName, set: setDisplayName, ph: userName },
-                                    { label: 'Phone Number', value: phone, set: setPhone, ph: user?.phone || '+91 XXXXX XXXXX' },
-                                    { label: 'Vehicle Number', value: vehicle, set: setVehicle, ph: driver?.vehicle_number || 'MH 01 AB 1234' },
-                                ].map(f => (
-                                    <div key={f.label}>
-                                        <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--clr-muted)' }}>{f.label}</label>
-                                        <input
-                                            value={f.value}
-                                            onChange={e => f.set(e.target.value)}
-                                            placeholder={f.ph}
-                                            className="w-full rounded-xl px-4 py-3 text-sm font-medium border outline-none transition-all"
-                                            style={{ background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-foreground)' }}
-                                            onFocus={e => { e.target.style.borderColor = 'var(--clr-primary)'; }}
-                                            onBlur={e => { e.target.style.borderColor = 'var(--clr-border)'; }}
-                                        />
-                                    </div>
+                {/* ── Edit Profile Panel ───────────────────────────────────────────── */}
+                <AnimatePresence>
+                    {editOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="overflow-hidden mx-4 mt-2">
+                            <div className="rounded-2xl border p-5" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--clr-muted)' }}>Edit Profile</p>
+                                <div className="space-y-3">
+                                    {[
+                                        { label: 'Display Name', value: displayName, set: setDisplayName, ph: userName },
+                                        { label: 'Phone Number', value: phone, set: setPhone, ph: user?.phone || '+91 XXXXX XXXXX' },
+                                        { label: 'Vehicle Number', value: vehicle, set: setVehicle, ph: driver?.vehicle_number || 'MH 01 AB 1234' },
+                                    ].map(f => (
+                                        <div key={f.label}>
+                                            <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--clr-muted)' }}>{f.label}</label>
+                                            <input
+                                                value={f.value}
+                                                onChange={e => f.set(e.target.value)}
+                                                placeholder={f.ph}
+                                                className="w-full rounded-xl px-4 py-3 text-sm font-medium border outline-none transition-all"
+                                                style={{ background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-foreground)' }}
+                                                onFocus={e => { e.target.style.borderColor = 'var(--clr-primary)'; }}
+                                                onBlur={e => { e.target.style.borderColor = 'var(--clr-border)'; }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2 mt-4">
+                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                                        onClick={handleSaveProfile}
+                                        className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold cursor-pointer"
+                                        style={{ background: 'var(--clr-primary)', color: 'hsl(42,100%,95%)' }}>
+                                        {editSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                                        {editSaved ? 'Saved!' : 'Save Changes'}
+                                    </motion.button>
+                                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                                        onClick={() => setEditOpen(false)}
+                                        className="px-4 rounded-xl border text-sm font-semibold cursor-pointer"
+                                        style={{ background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-muted)' }}>
+                                        Cancel
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Online / Offline Toggle ──────────────────────────────────────── */}
+                <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                    <div className="flex items-center justify-between px-5 py-4">
+                        <div>
+                            <p className="font-bold" style={{ color: 'var(--clr-foreground)' }}>
+                                {isOnline ? '🟢 You are Online' : '⚫ You are Offline'}
+                            </p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--clr-muted)' }}>
+                                {isOnline ? 'Receiving ride requests' : 'Not receiving ride requests'}
+                            </p>
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleToggleOnline}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer border transition-all"
+                            style={isOnline
+                                ? { background: 'color-mix(in srgb, var(--clr-primary) 10%, transparent)', borderColor: 'color-mix(in srgb, var(--clr-primary) 30%, transparent)', color: 'var(--clr-primary)' }
+                                : { background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-muted)' }
+                            }>
+                            <Power className="w-4 h-4" />
+                            {isOnline ? 'Go Offline' : 'Go Online'}
+                        </motion.button>
+                    </div>
+                </div>
+
+                {/* ── Stats Strip ─────────────────────────────────────────────────── */}
+                <div className="flex gap-3 px-4 mt-4 overflow-x-auto pb-1 no-scrollbar">
+                    <StatPill label="Today" value="₹1.2k" icon={<TrendingUp className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} accent="var(--clr-primary)" />
+                    <StatPill label="Rides" value="8" icon={<Car className="w-4 h-4" style={{ color: 'var(--clr-accent)' }} />} accent="var(--clr-accent)" />
+                    <StatPill label="Rating" value={rating} icon={<Star className="w-4 h-4" style={{ color: '#F5B942' }} />} accent="#F5B942" />
+                    <StatPill label="Online" value="4h" icon={<Zap className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} accent="var(--clr-primary)" />
+                </div>
+
+
+                {/* ── Earnings Chart + Map  side-by-side ─────────────────────────── */}
+                <div className="mx-4 mt-4 grid gap-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
+
+                    {/* Earnings card */}
+                    <div className="rounded-2xl border overflow-hidden flex flex-col" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                        <div className="px-4 pt-4 pb-2">
+                            <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Earnings</p>
+                            <p className="text-base font-black mt-0.5 leading-none" style={{ color: 'var(--clr-foreground)', fontFamily: "'Manrope',sans-serif" }}>₹7,960</p>
+                            <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'var(--clr-muted)' }}>
+                                <span className="font-bold" style={{ color: 'var(--clr-primary)' }}>↑ 12%</span> this week
+                            </p>
+                        </div>
+                        <div className="h-px mx-3" style={{ background: 'var(--clr-border)' }} />
+                        <div className="px-2 pt-2 pb-3 flex-1">
+                            <EarningsAreaChart data={WEEKLY_EARNINGS} />
+                        </div>
+                    </div>
+
+                    {/* Map card */}
+                    <div className="rounded-2xl border overflow-hidden flex flex-col" style={{ borderColor: 'var(--clr-border)' }}>
+                        <div className="px-4 pt-3.5 pb-2 flex items-center justify-between" style={{ background: 'var(--clr-card)' }}>
+                            <div>
+                                <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Location</p>
+                                <p className="text-xs font-semibold mt-0.5 truncate" style={{ color: 'var(--clr-foreground)' }}>{driverLoc.name}</p>
+                            </div>
+                            <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${isOnline ? 'animate-pulse' : ''}`}
+                                style={isOnline
+                                    ? { background: 'color-mix(in srgb, var(--clr-primary) 12%, transparent)', color: 'var(--clr-primary)' }
+                                    : { background: 'var(--clr-border)', color: 'var(--clr-muted)' }}>
+                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: isOnline ? 'var(--clr-primary)' : 'var(--clr-muted)' }} />
+                                {isOnline ? 'Live' : 'Off'}
+                            </span>
+                        </div>
+                        <div className="h-px" style={{ background: 'var(--clr-border)' }} />
+                        <div className="relative flex-1" style={{ minHeight: '140px' }}>
+                            <StaticRouteMap pickup={driverLoc} isOnline={isOnline} />
+                        </div>
+                    </div>
+                </div>
+
+
+
+                {/* ── Rating Breakdown ─────────────────────────────────────────────── */}
+                <div className="mx-4 mt-4 rounded-2xl border p-5" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                    <div className="flex items-center gap-5">
+                        <div className="text-center shrink-0">
+                            <p className="text-5xl font-black leading-none" style={{ color: 'var(--clr-foreground)', fontFamily: "'Manrope',sans-serif" }}>{rating}</p>
+                            <div className="flex items-center gap-0.5 mt-1.5 justify-center">
+                                {[1, 2, 3, 4, 5].map(s => (
+                                    <Star key={s} className="w-3 h-3"
+                                        style={{ fill: s <= Math.round(parseFloat(rating)) ? '#F5B942' : 'var(--clr-border)', color: s <= Math.round(parseFloat(rating)) ? '#F5B942' : 'var(--clr-border)' }} />
                                 ))}
                             </div>
-                            <div className="flex gap-2 mt-4">
-                                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                                    onClick={handleSaveProfile}
-                                    className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold cursor-pointer"
-                                    style={{ background: 'var(--clr-primary)', color: 'hsl(42,100%,95%)' }}>
-                                    {editSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                                    {editSaved ? 'Saved!' : 'Save Changes'}
-                                </motion.button>
-                                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                                    onClick={() => setEditOpen(false)}
-                                    className="px-4 rounded-xl border text-sm font-semibold cursor-pointer"
-                                    style={{ background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-muted)' }}>
-                                    Cancel
-                                </motion.button>
-                            </div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mt-1.5" style={{ color: 'var(--clr-muted)' }}>Driver Rating</p>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* ── Online / Offline Toggle ──────────────────────────────────────── */}
-            <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                <div className="flex items-center justify-between px-5 py-4">
-                    <div>
-                        <p className="font-bold" style={{ color: 'var(--clr-foreground)' }}>
-                            {isOnline ? '🟢 You are Online' : '⚫ You are Offline'}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--clr-muted)' }}>
-                            {isOnline ? 'Receiving ride requests' : 'Not receiving ride requests'}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                            <StarBreakdown distribution={STAR_DIST} />
+                        </div>
                     </div>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleToggleOnline}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer border transition-all"
-                        style={isOnline
-                            ? { background: 'color-mix(in srgb, var(--clr-primary) 10%, transparent)', borderColor: 'color-mix(in srgb, var(--clr-primary) 30%, transparent)', color: 'var(--clr-primary)' }
-                            : { background: 'var(--clr-bg)', borderColor: 'var(--clr-border)', color: 'var(--clr-muted)' }
-                        }>
-                        <Power className="w-4 h-4" />
-                        {isOnline ? 'Go Offline' : 'Go Online'}
+                </div>
+
+
+                {/* ── Vehicle Card ─────────────────────────────────────────────────── */}
+                <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                    <div className="flex items-center">
+                        <div className="flex w-20 shrink-0 flex-col items-center justify-center self-stretch border-r"
+                            style={{ borderColor: 'color-mix(in srgb, var(--clr-primary) 20%, transparent)', borderStyle: 'dashed', background: 'color-mix(in srgb, var(--clr-primary) 5%, transparent)' }}>
+                            <Car className="w-6 h-6" style={{ color: 'var(--clr-primary)' }} />
+                        </div>
+                        <div className="flex flex-1 items-center justify-between p-4 pl-5">
+                            <div>
+                                <h3 className="font-bold" style={{ color: 'var(--clr-foreground)' }}>
+                                    {driver?.vehicle_name || vehicle || 'Toyota Prius'}
+                                </h3>
+                                <p className="text-sm mt-0.5 font-mono font-medium" style={{ color: 'var(--clr-muted)' }}>
+                                    {driver?.vehicle_number || vehicle || 'MH 01 AB 1234'} · {driver?.vehicle_type || 'White'}
+                                </p>
+                            </div>
+                            <ChevronRight className="h-5 w-5" style={{ color: 'var(--clr-muted)' }} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Account rows ─────────────────────────────────────────────────── */}
+                <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
+                    <div className="px-5 pt-4 pb-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Account</p>
+                    </div>
+                    <div className="px-4 pb-2">
+                        <ActionRow icon={<Shield className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Insurance & Docs" sublabel="Manage documents" badge="Soon" onClick={() => setComingSheet('Insurance & Docs')} />
+                        <ActionRow icon={<Star className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Ratings & Feedback" sublabel="See what riders say" badge="Soon" onClick={() => setComingSheet('Ratings & Feedback')} />
+                        <ActionRow icon={<Clock className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Ride History" sublabel="All completed rides" badge="Soon" onClick={() => setComingSheet('Ride History')} />
+                        <ActionRow icon={<HelpCircle className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Help & Support" sublabel="Get assistance" badge="Soon" onClick={() => setComingSheet('Help & Support')} isLast />
+                    </div>
+                </div>
+
+
+                {/* ── Logout ───────────────────────────────────────────────────────── */}
+                <div className="px-4 pb-16 pt-5">
+                    <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                        onClick={handleLogout}
+                        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border py-4 font-semibold"
+                        style={{ background: 'rgba(248,113,113,0.07)', borderColor: 'rgba(248,113,113,0.2)', color: '#F87171' }}>
+                        <LogOut className="h-[18px] w-[18px]" />
+                        Log Out
                     </motion.button>
                 </div>
             </div>
 
-            {/* ── Stats Strip ─────────────────────────────────────────────────── */}
-            <div className="flex gap-3 px-4 mt-4 overflow-x-auto pb-1 no-scrollbar">
-                <StatPill label="Today" value="₹1.2k" icon={<TrendingUp className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} accent="var(--clr-primary)" />
-                <StatPill label="Rides" value="8" icon={<Car className="w-4 h-4" style={{ color: 'var(--clr-accent)' }} />} accent="var(--clr-accent)" />
-                <StatPill label="Rating" value={rating} icon={<Star className="w-4 h-4" style={{ color: '#F5B942' }} />} accent="#F5B942" />
-                <StatPill label="Online" value="4h" icon={<Zap className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} accent="var(--clr-primary)" />
-            </div>
-
-
-            {/* ── Earnings Chart + Map  side-by-side ─────────────────────────── */}
-            <div className="mx-4 mt-4 grid gap-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
-
-                {/* Earnings card */}
-                <div className="rounded-2xl border overflow-hidden flex flex-col" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                    <div className="px-4 pt-4 pb-2">
-                        <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Earnings</p>
-                        <p className="text-base font-black mt-0.5 leading-none" style={{ color: 'var(--clr-foreground)', fontFamily: "'Manrope',sans-serif" }}>₹7,960</p>
-                        <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'var(--clr-muted)' }}>
-                            <span className="font-bold" style={{ color: 'var(--clr-primary)' }}>↑ 12%</span> this week
-                        </p>
-                    </div>
-                    <div className="h-px mx-3" style={{ background: 'var(--clr-border)' }} />
-                    <div className="px-2 pt-2 pb-3 flex-1">
-                        <EarningsAreaChart data={WEEKLY_EARNINGS} />
-                    </div>
-                </div>
-
-                {/* Map card */}
-                <div className="rounded-2xl border overflow-hidden flex flex-col" style={{ borderColor: 'var(--clr-border)' }}>
-                    <div className="px-4 pt-3.5 pb-2 flex items-center justify-between" style={{ background: 'var(--clr-card)' }}>
-                        <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Location</p>
-                            <p className="text-xs font-semibold mt-0.5 truncate" style={{ color: 'var(--clr-foreground)' }}>{driverLoc.name}</p>
-                        </div>
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${isOnline ? 'animate-pulse' : ''}`}
-                            style={isOnline
-                                ? { background: 'color-mix(in srgb, var(--clr-primary) 12%, transparent)', color: 'var(--clr-primary)' }
-                                : { background: 'var(--clr-border)', color: 'var(--clr-muted)' }}>
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: isOnline ? 'var(--clr-primary)' : 'var(--clr-muted)' }} />
-                            {isOnline ? 'Live' : 'Off'}
-                        </span>
-                    </div>
-                    <div className="h-px" style={{ background: 'var(--clr-border)' }} />
-                    <div className="relative flex-1" style={{ minHeight: '140px' }}>
-                        <StaticRouteMap pickup={driverLoc} isOnline={isOnline} />
-                    </div>
-                </div>
-            </div>
-
-
-
-            {/* ── Rating Breakdown ─────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 rounded-2xl border p-5" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                <div className="flex items-center gap-5">
-                    <div className="text-center shrink-0">
-                        <p className="text-5xl font-black leading-none" style={{ color: 'var(--clr-foreground)', fontFamily: "'Manrope',sans-serif" }}>{rating}</p>
-                        <div className="flex items-center gap-0.5 mt-1.5 justify-center">
-                            {[1, 2, 3, 4, 5].map(s => (
-                                <Star key={s} className="w-3 h-3"
-                                    style={{ fill: s <= Math.round(parseFloat(rating)) ? '#F5B942' : 'var(--clr-border)', color: s <= Math.round(parseFloat(rating)) ? '#F5B942' : 'var(--clr-border)' }} />
-                            ))}
-                        </div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest mt-1.5" style={{ color: 'var(--clr-muted)' }}>Driver Rating</p>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <StarBreakdown distribution={STAR_DIST} />
-                    </div>
-                </div>
-            </div>
-
-
-            {/* ── Vehicle Card ─────────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                <div className="flex items-center">
-                    <div className="flex w-20 shrink-0 flex-col items-center justify-center self-stretch border-r"
-                        style={{ borderColor: 'color-mix(in srgb, var(--clr-primary) 20%, transparent)', borderStyle: 'dashed', background: 'color-mix(in srgb, var(--clr-primary) 5%, transparent)' }}>
-                        <Car className="w-6 h-6" style={{ color: 'var(--clr-primary)' }} />
-                    </div>
-                    <div className="flex flex-1 items-center justify-between p-4 pl-5">
-                        <div>
-                            <h3 className="font-bold" style={{ color: 'var(--clr-foreground)' }}>
-                                {driver?.vehicle_name || vehicle || 'Toyota Prius'}
-                            </h3>
-                            <p className="text-sm mt-0.5 font-mono font-medium" style={{ color: 'var(--clr-muted)' }}>
-                                {driver?.vehicle_number || vehicle || 'MH 01 AB 1234'} · {driver?.vehicle_type || 'White'}
-                            </p>
-                        </div>
-                        <ChevronRight className="h-5 w-5" style={{ color: 'var(--clr-muted)' }} />
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Account rows ─────────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 rounded-2xl border overflow-hidden" style={{ background: 'var(--clr-card)', borderColor: 'var(--clr-border)' }}>
-                <div className="px-5 pt-4 pb-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--clr-muted)' }}>Account</p>
-                </div>
-                <div className="px-4 pb-2">
-                    <ActionRow icon={<Shield className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Insurance & Docs" sublabel="Manage documents" badge="Soon" onClick={() => setComingSheet('Insurance & Docs')} />
-                    <ActionRow icon={<Star className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Ratings & Feedback" sublabel="See what riders say" badge="Soon" onClick={() => setComingSheet('Ratings & Feedback')} />
-                    <ActionRow icon={<Clock className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Ride History" sublabel="All completed rides" badge="Soon" onClick={() => setComingSheet('Ride History')} />
-                    <ActionRow icon={<HelpCircle className="w-4 h-4" style={{ color: 'var(--clr-primary)' }} />} label="Help & Support" sublabel="Get assistance" badge="Soon" onClick={() => setComingSheet('Help & Support')} isLast />
-                </div>
-            </div>
-
-
-            {/* ── Logout ───────────────────────────────────────────────────────── */}
-            <div className="px-4 pb-16 pt-5">
-                <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                    onClick={handleLogout}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border py-4 font-semibold"
-                    style={{ background: 'rgba(248,113,113,0.07)', borderColor: 'rgba(248,113,113,0.2)', color: '#F87171' }}>
-                    <LogOut className="h-[18px] w-[18px]" />
-                    Log Out
-                </motion.button>
-            </div>
-        </div>
-
-        {/* ── Coming Soon Sheet ───────────────────────────────────────────────── */}
-        <AnimatePresence>
-            {comingSheet && (
-                <ComingSoonSheet label={comingSheet} onClose={() => setComingSheet(null)} />
-            )}
-        </AnimatePresence>
+            {/* ── Coming Soon Sheet ───────────────────────────────────────────────── */}
+            <AnimatePresence>
+                {comingSheet && (
+                    <ComingSoonSheet label={comingSheet} onClose={() => setComingSheet(null)} />
+                )}
+            </AnimatePresence>
         </>
     );
 }

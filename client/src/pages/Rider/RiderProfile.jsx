@@ -297,7 +297,8 @@ export default function RiderProfile() {
         activeRide.status !== RIDE_STATUS.COMPLETED;
 
     const userName = user?.email ? user.email.split('@')[0] : 'Rider';
-    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=e57453&textColor=fff8e8`;
+    const avatarSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=fff8e8&textColor=e57453`;
+    console.log(avatarSrc);
     const rating = user?.rating_avg || '5.0';
 
     return (
@@ -392,13 +393,15 @@ export default function RiderProfile() {
 
                     <div className="relative z-10 flex items-center gap-5 px-6 py-7">
                         <div className="relative shrink-0">
-                            <Avatar src={avatarSrc}
-                                className="h-20 w-20 border-4 shadow-2xl"
-                                style={{ borderColor: 'rgba(255,255,255,0.35)' }} />
+                            <Avatar>
+                                <Avatar.Image src={avatarSrc}
+                                    className="h-30 w-30 shadow-2xl"
+                                    style={{ borderColor: 'rgba(255,255,255,0.35)', position: "relative" }} />
+                            </Avatar>
                             <motion.button
                                 whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                                 onClick={() => setEditOpen(v => !v)}
-                                className="absolute -bottom-1 -right-1 flex items-center justify-center w-7 h-7 rounded-full border-2 cursor-pointer"
+                                className="absolute -bottom-2 -right-3 flex items-center justify-center w-7 h-7 rounded-full border-2 cursor-pointer"
                                 style={{ background: 'white', borderColor: 'white' }}>
                                 <Edit3 className="w-3.5 h-3.5" style={{ color: 'var(--clr-accent)' }} />
                             </motion.button>
