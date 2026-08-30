@@ -1,16 +1,16 @@
-import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 import { Menu, Navigation, Power } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import RideOfferModal from '../../components/driver/RideOfferModal';
 import Navbar from '../../components/shared/layout/Navbar';
-import { useDriverPing, useDriverToggle } from '../../hooks/driver';
+import StaticRouteMap from '../../components/shared/StaticRouteMap';
+import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
+import { useDriverToggle } from '../../hooks/driver';
 import { useRideAcceptDriver, useRideDetails } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
-import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
 import LocationSender from '../../utils/currentLocationHelper';
-import StaticRouteMap from '../../components/shared/StaticRouteMap';
-import { motion } from 'framer-motion';
 
 export default function DriverDashboard() {
     const [isOnline, setIsOnline] = useState(() => {
@@ -21,7 +21,6 @@ export default function DriverDashboard() {
     const navigate = useNavigate();
 
     const { mutate: driverToggle } = useDriverToggle();
-    // const { mutate: driverLoc } = useDriverPing();
     const { mutateAsync: rideAccept } = useRideAcceptDriver();
     const { data: activeRideResp } = useRideDetails();
     const { socket } = useDriverWebSocket()
@@ -43,10 +42,6 @@ export default function DriverDashboard() {
             }
 
             if (location?.loc) {
-                // const data = {
-                //     "lat": location.loc.lat,
-                //     "lng": location.loc.lng
-                // }
                 driverToggle({ online: true });
                 if (socket) {
                     socket.send(JSON.stringify({
@@ -55,7 +50,6 @@ export default function DriverDashboard() {
                         "lat": location.loc.lat
                     }));
                 }
-                // driverLoc(data);
             }
         } else {
             setIsOnline(false);

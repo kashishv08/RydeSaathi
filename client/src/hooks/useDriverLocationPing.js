@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import LocationSender from '../utils/currentLocationHelper';
-import { useDriverPing } from './driver';
 import { useDriverWebSocket } from '../contexts/DriverWebSocketContext';
+import LocationSender from '../utils/currentLocationHelper';
 
 export function useDriverLocationPing(enabled = true) {
-    // const { mutate: driverLoc } = useDriverPing();
     const { socket } = useDriverWebSocket();
     const [driverLocation, setDriverLocation] = useState()
 
@@ -18,7 +16,6 @@ export function useDriverLocationPing(enabled = true) {
                         "lat": location.loc.lat,
                         "lng": location.loc.lng
                     }
-                    // driverLoc(data);
                     if (socket) {
                         socket.send(JSON.stringify({
                             "event": "location_update",
