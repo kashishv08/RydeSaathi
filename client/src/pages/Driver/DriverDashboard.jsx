@@ -21,9 +21,10 @@ export default function DriverDashboard() {
     const navigate = useNavigate();
 
     const { mutate: driverToggle } = useDriverToggle();
-    const { mutate: driverLoc } = useDriverPing();
+    // const { mutate: driverLoc } = useDriverPing();
     const { mutateAsync: rideAccept } = useRideAcceptDriver();
     const { data: activeRideResp } = useRideDetails();
+    const { socket } = useDriverWebSocket()
 
     const activeRide = activeRideResp?.data;
 
@@ -42,12 +43,19 @@ export default function DriverDashboard() {
             }
 
             if (location?.loc) {
-                const data = {
-                    "lat": location.loc.lat,
-                    "lng": location.loc.lng
-                }
+                // const data = {
+                //     "lat": location.loc.lat,
+                //     "lng": location.loc.lng
+                // }
                 driverToggle({ online: true });
-                driverLoc(data);
+                if (socket) {
+                    socket.send(JSON.stringify({
+                        "event": "location_update",
+                        "lng": location.loc.lng,
+                        "lat": location.loc.lat
+                    }));
+                }
+                // driverLoc(data);
             }
         } else {
             setIsOnline(false);

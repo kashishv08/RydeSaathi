@@ -1,3 +1,10 @@
+from channels.db import database_sync_to_async
+from locations.geo import update_driver_location
+from drivers.models import DriverProfile
+from locations.geo import set_cached_city
+from rides.services import get_location_from_coord
+from locations.geo import get_cached_city
+from rides.notify import notify_rider_of_driver_loc
 from channels.generic.websocket import  AsyncWebsocketConsumer
 import json
 from .models import Ride
@@ -14,8 +21,56 @@ class DriverConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_name, self.channel_name)
         await self.accept()
 
+    @database_sync_to_async
+    def process_location_update(self, lat, lng):
+        try:
+            profile = DriverProfile.objects.get(user_id=self.driver_id)
+        except DriverProfile.DoesNotExist:
+            return False
+
+        city = get_cached_city(profile.user.id) 
+        if not city:
+            location_info = get_location_from_coord(lat, lng)
+            city = location_info.get("city")
+            print(city)
+            if city:
+                set_cached_city(city, profile.user.id)
+
+                if profile.current_city != city:
+                    profile.current_city = city
+                    profile.save(update_fields=["current_city"])
+
+        if city:
+            update_driver_location(lat, lng, profile.user.id, city)
+
+        active_ride = Ride.objects.filter(
+            driver=profile.user,
+            status__in=[Ride.Status.ACCEPTED, Ride.Status.ARRIVED, Ride.Status.IN_PROGRESS]
+        ).order_by('-requested_at').first()
+
+        if active_ride:
+            notify_rider_of_driver_loc(lat, lng, active_ride)
+            
+        return True
+
+    async def location_update(self, lat, lng):
+        success = await self.process_location_update(lat, lng)
+        if not success:
+            await self.send(text_data=json.dumps({
+                "type": "location_update",
+                "message": "Profile does not exist!"
+            }))
+
     async def receive(self, text_data):
-        pass
+        data = json.loads(text_data)
+        event = data.get("event")
+        lng = data.get("lng")
+        lat = data.get("lat")
+
+        if event == "location_update":
+            if lng is not None and lat is not None:
+                await self.location_update(lat, lng)
+            
     
     async def ride_offer(self, event):
         await self.send(text_data=json.dumps({
