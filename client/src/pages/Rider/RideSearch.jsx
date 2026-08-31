@@ -219,7 +219,7 @@ export default function RideSearch() {
                                                     style={{
                                                         background: 'var(--clr-primary-subtle)',
                                                         border: '1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent)',
-                                                        color: 'var(--clr-primary-light)',
+                                                        color: 'var(--clr-primary)',
                                                     }}
                                                 >
                                                     <Clock className="w-3 h-3" />

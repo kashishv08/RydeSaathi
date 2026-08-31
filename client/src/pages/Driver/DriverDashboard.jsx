@@ -221,7 +221,7 @@ export default function DriverDashboard() {
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--clr-foreground)' }}>Finding rides...</h2>
-                                    <p className="text-sm font-medium" style={{ color: 'var(--clr-primary-light)' }}>You're in a busy area.</p>
+                                    <p className="text-sm font-medium" style={{ color: 'var(--clr-primary)' }}>You're in a busy area.</p>
                                 </div>
                             </div>
                             <motion.button
