@@ -16,6 +16,7 @@ export function useDriverLocationPing(enabled = true) {
                         "lat": location.loc.lat,
                         "lng": location.loc.lng
                     }
+                    console.log(socket)
                     if (socket) {
                         socket.send(JSON.stringify({
                             "event": "location_update",

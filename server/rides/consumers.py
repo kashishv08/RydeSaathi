@@ -28,13 +28,13 @@ class DriverConsumer(AsyncWebsocketConsumer):
         except DriverProfile.DoesNotExist:
             return False
 
-        city = get_cached_city(profile.user.id) 
+        city = get_cached_city(profile.user_id) 
         if not city:
             location_info = get_location_from_coord(lat, lng)
             city = location_info.get("city")
             print(city)
             if city:
-                set_cached_city(city, profile.user.id)
+                set_cached_city(city, profile.user_id)
 
                 if profile.current_city != city:
                     profile.current_city = city
@@ -63,6 +63,7 @@ class DriverConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print(data)
         event = data.get("event")
         lng = data.get("lng")
         lat = data.get("lat")

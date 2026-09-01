@@ -9,7 +9,7 @@ export const useDriverWebSocket = () => {
 
 export const DriverWebSocketProvider = ({ children }) => {
     const { data: profile } = useDriverProfile();
-    const driverId = profile?.data?.user || profile?.data?.id || profile?.data?.driver_id;
+    const driverId = profile?.data?.user;
     console.log("Driver profile data:", profile?.data);
     const [lastMessage, setLastMessage] = useState(null);
     const socketRef = useRef(null);

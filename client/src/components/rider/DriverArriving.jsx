@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
-import { Banknote, MapPin, MessageSquare, Phone, Star, X } from 'lucide-react';
-import { useRideDetails } from '../../hooks/rider';
-import { CancelRideModal } from './CancelRideModal';
+import { Banknote, MapPin, Star, X } from 'lucide-react';
 import { vehicleDetails } from '../../constants/vehicleImages';
+import { useRideDetails } from '../../hooks/rider';
 import { getAvatarUrl } from '../../utils/avatarHelpers';
+import { CancelRideModal } from './CancelRideModal';
 
 const PRIMARY = 'var(--clr-primary)';
 const ACCENT = 'var(--clr-accent)';
