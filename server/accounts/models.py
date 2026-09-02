@@ -18,6 +18,7 @@ class User(AbstractUser):
     email_otp = models.CharField(max_length=6, null=True, blank=True)
     email_otp_created_at = models.DateTimeField(null=True, blank=True) 
     email_verified = models.BooleanField(default=False)  
+    avatar = models.ImageField(upload_to="profile_photo/", null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

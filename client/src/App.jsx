@@ -12,6 +12,7 @@ import RiderProfile from "./pages/Rider/RiderProfile"
 import { DriverWebSocketProvider } from "./contexts/DriverWebSocketContext"
 import PublicRoute from "./components/shared/PublicRoute"
 import ProtectedRoute from "./components/shared/ProtectedRoute"
+import Onboarding from "./pages/Driver/Onboarding"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Route path="" element={<DriverDashboard />} />
                 <Route path="active" element={<DriverActiveRide />} />
                 <Route path="profile" element={<DriverProfile />} />
+                <Route path="onboarding" element={<Onboarding />} />
               </Routes>
             </DriverWebSocketProvider>
           } />

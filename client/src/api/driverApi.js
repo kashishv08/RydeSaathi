@@ -24,3 +24,8 @@ export const transitionRide = async (ride) => {
     const res = await axiosInstance.patch(`/api/rides/${ride.ride_id}/transition/`, { status: ride.status, cancel_reason: ride.cancel_reason || "" })
     return res;
 }
+
+export const completeDriverProfile = async (driverData) => {
+    const res = await axiosInstance.patch("/api/drivers/onboarding/", driverData)
+    return res;
+}

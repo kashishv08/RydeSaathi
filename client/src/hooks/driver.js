@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { driverPing, driverProfile, driverToggleMode, transitionRide } from "../api/driverApi";
+import { completeDriverProfile, driverPing, driverProfile, driverToggleMode, transitionRide } from "../api/driverApi";
 
 export const useDriverProfile = (options = {}) => {
     return useQuery({
@@ -27,6 +27,14 @@ export const useDriverToggle = () => {
 export const useTransitionRide = () => {
     return useMutation({
         mutationFn: (ride) => transitionRide(ride),
+        retry: false,
+        refetchOnWindowFocus: false,
+    })
+}
+
+export const useDriverProfileComplete = () => {
+    return useMutation({
+        mutationFn: (driverData) => completeDriverProfile(driverData),
         retry: false,
         refetchOnWindowFocus: false,
     })

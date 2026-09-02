@@ -7,7 +7,7 @@ import RideOfferModal from '../../components/driver/RideOfferModal';
 import Navbar from '../../components/shared/layout/Navbar';
 import StaticRouteMap from '../../components/shared/StaticRouteMap';
 import { useDriverWebSocket } from '../../contexts/DriverWebSocketContext';
-import { useDriverToggle } from '../../hooks/driver';
+import { useDriverToggle, useDriverProfile } from '../../hooks/driver';
 import { useRideAcceptDriver, useRideDetails } from '../../hooks/rider';
 import { useDriverLocationPing } from '../../hooks/useDriverLocationPing';
 import LocationSender from '../../utils/currentLocationHelper';
@@ -23,9 +23,16 @@ export default function DriverDashboard() {
     const { mutate: driverToggle } = useDriverToggle();
     const { mutateAsync: rideAccept } = useRideAcceptDriver();
     const { data: activeRideResp } = useRideDetails();
-    const { socket } = useDriverWebSocket()
+    const { socket } = useDriverWebSocket();
+    const { data: profileResponse, isLoading: profileLoading } = useDriverProfile();
 
     const activeRide = activeRideResp?.data;
+
+    useEffect(() => {
+        if (!profileLoading && profileResponse?.data && !profileResponse.data.vehicle) {
+            navigate("/driver/onboarding", { replace: true });
+        }
+    }, [profileResponse, profileLoading, navigate]);
 
     async function handleOnlineMode() {
         if (!isOnline) {
