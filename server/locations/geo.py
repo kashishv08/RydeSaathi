@@ -8,7 +8,7 @@ def _key(city: str) -> str:
     return f"drivers:live:{city.lower()}"
 
 def update_driver_location(lat:float, lng:float, driver_id:uuid, city:str) -> None:
-    redis_client.geoadd(_key(city), (lng, lat, str(driver_id)))
+    redis_client.geoadd(_key(city), {str(driver_id): (lng, lat)})
 
 def remove_driver_loc(city:str, driver_id:str) -> None:
     redis_client.zrem(_key(city), driver_id)
