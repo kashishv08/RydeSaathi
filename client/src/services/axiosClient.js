@@ -1,13 +1,15 @@
 import axios from 'axios';
 import { clear_token, get_token, set_token } from '../utils/tokenStore';
 
+const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:8000";
+
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: API_BASE_URL,
     withCredentials: true
 })
 
 export const axiosInstanceNoAuth = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: API_BASE_URL,
 })
 
 axiosInstance.interceptors.request.use((config) => {
@@ -56,7 +58,7 @@ axiosInstance.interceptors.response.use(
         }
         isRefreshing = true;
         try {
-            const response = await axios.post("http://localhost:8000/api/auth/token/refresh/", {}, {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/token/refresh/`, {}, {
                 withCredentials: true
             });
             const newAccessToken = response.data.access;
