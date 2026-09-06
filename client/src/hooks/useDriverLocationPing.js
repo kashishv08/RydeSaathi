@@ -32,7 +32,7 @@ export function useDriverLocationPing(enabled = true) {
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [enabled]);
+    }, [enabled, socket]);
 
     return driverLocation;
 }
