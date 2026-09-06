@@ -1,0 +1,12 @@
+[Unit]
+Description=Daphne WebSocket server for RydeSaathi
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/rydesaathi/server
+ExecStart=/home/ubuntu/rydesaathi/server/venv/bin/daphne -b 127.0.0.1 -p 8001 config.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
