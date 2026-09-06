@@ -34,7 +34,8 @@ ALLOWED_HOSTS = [
     "feuilletonistic-rochelle-inconvincible.ngrok-free.dev",
     "localhost",
     "rebecca-gamma-mixed-xbox.trycloudflare.com",
-    "13.233.117.14"
+    "13.233.117.14",
+    "13.233.117.14.nip.io"
 ]
 
 
