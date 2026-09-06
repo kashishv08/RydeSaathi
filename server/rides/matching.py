@@ -25,7 +25,7 @@ def find_and_offer_driver(ride: Ride, radius_km:float=DEFAULT_RADIUS, exclude_id
         logger.warning(f"[MATCH] No new drivers found in {radius_km}km radius "f"after excluding {len(exclude_ids)} already-offered.")
         return []
 
-    eligible_drivers = DriverProfile.objects.filter(user_id__in=filtered_near_drivers, status=DriverProfile.Status.AVAILABLE, verified=True, vehicle__vehicle_type=ride.vehicle_type)
+    eligible_drivers = DriverProfile.objects.filter(user_id__in=filtered_near_drivers, status=DriverProfile.Status.AVAILABLE, vehicle__vehicle_type=ride.vehicle_type)
     logger.warning(f"[MATCH] Eligible (available+verified+{ride.vehicle_type}) drivers: {list(eligible_drivers.values_list('user_id', flat=True))}")
 
     raw_locations = get_drivers_locations(city, eligible_drivers) # returns (lng, lat)
