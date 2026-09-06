@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { clear_token, get_token, set_token } from '../utils/tokenStore';
 
-const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:8000";
+const API_BASE_URL = import.meta.env.PROD ? "/" : "http://localhost:8000";
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,

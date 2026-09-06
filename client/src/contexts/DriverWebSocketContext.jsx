@@ -18,7 +18,8 @@ export const DriverWebSocketProvider = ({ children }) => {
         if (!driverId) return;
 
         console.log(`Connecting Global Driver WebSocket for ${driverId}`);
-        const WS_BASE_URL = import.meta.env.PROD ? `ws://${window.location.host}` : "ws://localhost:8000";
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const WS_BASE_URL = import.meta.env.PROD ? `${protocol}//${window.location.host}` : "ws://localhost:8000";
         const socket = new WebSocket(`${WS_BASE_URL}/ws/driver/${driverId}/`);
         socketRef.current = socket;
 

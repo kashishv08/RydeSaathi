@@ -8,7 +8,8 @@ export function useActiveRideWebSocket(activeRideId, setRideState, setDriverloc,
     useEffect(() => {
         if (!activeRideId) return;
 
-        const WS_BASE_URL = import.meta.env.PROD ? `ws://${window.location.host}` : "ws://localhost:8000";
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const WS_BASE_URL = import.meta.env.PROD ? `${protocol}//${window.location.host}` : "ws://localhost:8000";
         const socket = new WebSocket(`${WS_BASE_URL}/ws/ride/${activeRideId}/`);
         wsRef.current = socket;
 
