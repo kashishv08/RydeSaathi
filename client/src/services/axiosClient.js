@@ -58,7 +58,8 @@ axiosInstance.interceptors.response.use(
         }
         isRefreshing = true;
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/auth/token/refresh/`, {}, {
+            const refreshUrl = import.meta.env.PROD ? '/api/auth/token/refresh/' : 'http://localhost:8000/api/auth/token/refresh/';
+            const response = await axios.post(refreshUrl, {}, {
                 withCredentials: true
             });
             const newAccessToken = response.data.access;
