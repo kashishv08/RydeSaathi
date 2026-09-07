@@ -160,7 +160,6 @@ class RideSearchView(APIView):
             eligible_drivers = DriverProfile.objects.filter(
                 user_id__in=nearby_drivers_ids,
                 status=DriverProfile.Status.AVAILABLE,
-                verified=True,
                 vehicle__isnull=False,
             ).select_related("vehicle")
 
