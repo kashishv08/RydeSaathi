@@ -91,6 +91,7 @@ export default function RideSearch() {
         if (rideError) {
             const msg = rideError?.response?.data?.message || "No drivers available near your location";
             toast.warning(msg);
+            setSearchTriggered(false);
         }
     }, [rideError]);
 

@@ -129,7 +129,7 @@ export default function PaymentRider() {
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handlePayment}
-                className="w-full flex items-center justify-center gap-2 font-bold text-sm py-4 rounded-2xl"
+                className="cursor-pointer w-full flex items-center justify-center gap-2 font-bold text-sm py-4 rounded-2xl"
                 style={{
                     background: `linear-gradient(135deg, ${PRIMARY}, hsl(169,59%,20%))`,
                     boxShadow: '0 6px 28px hsl(169,59%,31%,0.35)',
