@@ -31,7 +31,8 @@ export default function RideOfferModal({ isOpen, offer, onAccept, onDecline }) {
         }, 1000);
 
         return () => clearInterval(timerId);
-    }, [isOpen, offer, onDecline]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, offer?.ride_id]);
 
     if (!offer || !offer.pickup_address) return null;
 

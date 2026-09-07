@@ -68,8 +68,8 @@ function StepProgress({ rideState }) {
                                     backgroundColor: isCompleted
                                         ? "var(--clr-primary)"
                                         : isActive
-                                        ? "var(--clr-primary)"
-                                        : "var(--clr-border)",
+                                            ? "var(--clr-primary)"
+                                            : "var(--clr-border)",
                                 }}
                                 transition={{
                                     duration: 0.4,
@@ -493,7 +493,7 @@ export default function RideCreate() {
                                         whileHover={{ scale: 1.03, y: -1 }}
                                         whileTap={{ scale: 0.97 }}
                                         onClick={() => handleCancel("timeout")}
-                                        className="w-full flex items-center justify-center gap-2.5 text-white font-bold text-sm py-4 rounded-2xl transition-all"
+                                        className="cursor-pointer w-full flex items-center justify-center gap-2.5 text-white font-bold text-sm py-4 rounded-2xl transition-all"
                                         style={{
                                             background: "var(--clr-primary)",
                                             boxShadow: "0 4px 22px color-mix(in srgb, var(--clr-primary) 35%, transparent)",
