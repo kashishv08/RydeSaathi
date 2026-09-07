@@ -271,11 +271,8 @@ export default function RideCreate() {
             setFindingText(typeof msg === "function" ? msg() : msg);
         }, 4000);
 
-        const timeoutTimer = setTimeout(() => setRideState("timeout"), 60000);
-
         return () => {
             clearInterval(cycleTimer);
-            clearTimeout(timeoutTimer);
         };
     }, [rideState]);
 
@@ -289,19 +286,27 @@ export default function RideCreate() {
         return () => clearInterval(interval);
     }, [activeRideId, rideState, refetchRideDetails]);
 
+    const { mutateAsync: transitionRideAsync } = useTransitionRide();
+
     const handleRatingComplete = () => {
         toast.success("Ride completed successfully!");
         navigate("/ride/search", { replace: true });
     };
 
-    const handleCancel = (reason = "other") => {
+    const handleCancel = async (reason = "other") => {
         const transitionPayload = {
             ride_id: activeRideId,
             status: RIDE_STATUS.CANCELLED,
             cancel_reason: reason,
         };
-        transitionRide(transitionPayload);
-        navigate("/ride/search");
+        try {
+            await transitionRideAsync(transitionPayload);
+        } catch (e) {
+            console.error("Failed to cancel ride:", e);
+        }
+        
+        await refetchRideDetails();
+        navigate("/ride/search", { replace: true });
     };
 
     const statusCfg = STATUS_CFG[rideState] ?? null;

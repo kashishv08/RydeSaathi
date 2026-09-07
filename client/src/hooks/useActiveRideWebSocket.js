@@ -24,7 +24,7 @@ export function useActiveRideWebSocket(activeRideId, setRideState, setDriverloc,
                         refetchRideDetails();
                     }
                 } else if (msg.ride_status === "NO_DRIVERS") {
-                    navigate('/ride/search');
+                    setRideState("timeout");
                 } else if (msg.ride_status === "IN_PROGRESS") {
                     setRideState("in_progress");
                 } else if (msg.ride_status === "COMPLETED") {
