@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSendOtp, useVerifyOtp } from '../../hooks/auth';
-import { InputOTP } from "@heroui/react";
+import { OtpInput, OtpTimer } from '../../components/shared/OtpInput';
 import { toast } from "sonner";
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight, ShieldCheck, ArrowLeft, User, Car } from 'lucide-react';
@@ -26,6 +26,18 @@ function Register() {
             },
             onError: (err) => {
                 toast.error(err?.response?.data?.error || err?.response?.data?.email?.[0] || err?.message || "An error occurred");
+            }
+        })
+    }
+
+    function handleResendOtp() {
+        mutate(form, {
+            onSuccess: () => {
+                setOtp("");
+                toast.success("OTP resent successfully!");
+            },
+            onError: (err) => {
+                toast.error(err?.response?.data?.error || err?.response?.data?.email?.[0] || err?.message || "Failed to resend OTP");
             }
         })
     }
@@ -217,20 +229,11 @@ function Register() {
                         <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
 
                             <div className="w-full py-2">
-                                <InputOTP maxLength={6} value={otp} onChange={setOtp} autoFocus>
-                                    <InputOTP.Group>
-                                        <InputOTP.Slot index={0} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                        <InputOTP.Slot index={1} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                        <InputOTP.Slot index={2} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                    </InputOTP.Group>
-                                    <InputOTP.Separator className="text-gray-300" />
-                                    <InputOTP.Group>
-                                        <InputOTP.Slot index={3} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                        <InputOTP.Slot index={4} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                        <InputOTP.Slot index={5} className="w-12 h-14 text-lg font-bold border-gray-200 rounded-lg" />
-                                    </InputOTP.Group>
-                                </InputOTP>
+                                {/* OTP Boxes */}
+                                <OtpInput value={otp} onChange={setOtp} autoFocus />
                             </div>
+
+                            <OtpTimer onResend={handleResendOtp} isSending={isSending} />
 
                             <button
                                 type="submit"
