@@ -11,6 +11,7 @@ export const DriverWebSocketProvider = ({ children }) => {
     const { data: profile } = useDriverProfile();
     const driverId = profile?.data?.user;
     console.log("Driver profile data:", profile?.data);
+    const [socketNew, setSocket] = useState(null);
     const [lastMessage, setLastMessage] = useState(null);
     const socketRef = useRef(null);
 
@@ -22,6 +23,7 @@ export const DriverWebSocketProvider = ({ children }) => {
         const WS_BASE_URL = import.meta.env.PROD ? `${protocol}//${window.location.host}` : "ws://localhost:8000";
         const socket = new WebSocket(`${WS_BASE_URL}/ws/driver/${driverId}/`);
         socketRef.current = socket;
+        setSocket(socket);
 
         socket.onmessage = (event) => {
             const msg = JSON.parse(event.data);
@@ -32,15 +34,17 @@ export const DriverWebSocketProvider = ({ children }) => {
         socket.onclose = () => {
             console.log("Global Driver WebSocket Disconnected");
             socketRef.current = null;
+            setSocket(null);
         };
 
         return () => {
             socket.close();
+            setSocket(null);
         };
     }, [driverId]);
 
     return (
-        <DriverWebSocketContext.Provider value={{ socket: socketRef.current, lastMessage, setLastMessage }}>
+        <DriverWebSocketContext.Provider value={{ socket: socketNew, lastMessage, setLastMessage }}>
             {children}
         </DriverWebSocketContext.Provider>
     );
