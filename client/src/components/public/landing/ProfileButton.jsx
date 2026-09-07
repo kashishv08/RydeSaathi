@@ -106,12 +106,12 @@ function ProfileButton() {
                                 }}
                             >
 
-                                <Dropdown.Item key="profile" onPress={() => handleMenuAction("profile")}>
+                                {/* <Dropdown.Item key="profile" onPress={() => handleMenuAction("profile")}>
                                     <div className="flex items-center gap-3" style={{ color: "hsl(193, 15%, 45%)" }}>
                                         <User className="h-4 w-4" />
                                         <span style={{ color: "hsl(193, 43%, 15%)" }}>Profile</span>
                                     </div>
-                                </Dropdown.Item>
+                                </Dropdown.Item> */}
 
                                 <Dropdown.Item key="switch_role" onPress={() => handleMenuAction("switch_role")}>
                                     <div className="flex items-center gap-3" style={{ color: PRIMARY }}>

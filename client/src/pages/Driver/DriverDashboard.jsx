@@ -111,7 +111,7 @@ export default function DriverDashboard() {
             <div className="fixed inset-0 top-[60px] flex flex-col overflow-hidden grain" style={{ background: 'var(--clr-bg)' }}>
                 {/* Top Navigation / Floating Actions */}
                 <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-6 flex justify-between items-start pointer-events-none">
-                    <motion.button
+                    {/* <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="p-3 rounded-full shadow-md pointer-events-auto cursor-pointer border"
@@ -122,7 +122,7 @@ export default function DriverDashboard() {
                         onClick={() => navigate('/driver/profile')}
                     >
                         <Menu className="w-5 h-5" style={{ color: 'var(--clr-foreground)' }} />
-                    </motion.button>
+                    </motion.button> */}
 
                     {!activeRide && (
                         <motion.button
