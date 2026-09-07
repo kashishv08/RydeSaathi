@@ -90,7 +90,6 @@ export default function RideSearch() {
     useEffect(() => {
         if (rideError) {
             const msg = rideError?.response?.data?.message || "No drivers available near your location";
-            isRideFetching(false);
             toast.warning(msg);
         }
     }, [rideError]);
