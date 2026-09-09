@@ -142,7 +142,7 @@ class RideSearchView(APIView):
             logger.warning(f"[RideSearch] resolved city: '{city}'")
 
             try:
-                nearby_drivers_ids = get_nearby_driver_ids(city, pickup_lng, pickup_lat)
+                nearby_drivers_ids = get_nearby_driver_ids(city, pickup_lng, pickup_lat, radius=10)
                 logger.warning(f"[RideSearch] nearby_driver_ids from Redis: {nearby_drivers_ids}")
             except Exception as e:
                 logger.error(f"[RideSearch] Redis geo lookup failed: {e}")
