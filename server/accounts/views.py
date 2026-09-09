@@ -12,6 +12,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .utils import generate_otp, send_otp_email, issue_tokens
 from django.utils import timezone
 from datetime import timedelta
+from rest_framework_simplejwt.tokens import UntypedToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 # Create your views here.
 class LogoutView(APIView):
@@ -19,8 +21,19 @@ class LogoutView(APIView):
     permission_classes = []
     def post(self, request):
         refresh = request.COOKIES.get("refresh_token")
-        # if not refresh:
-        #     return Response({"error": "Refresh Token is missing!"}, status=http_status.HTTP_401_UNAUTHORIZED)
+        try:
+            from drivers.models import DriverProfile
+            if refresh:
+                token = UntypedToken(refresh)
+                user_id = token.get("user_id")
+                if user_id:
+                    DriverProfile.objects.filter(
+                        user_id=user_id,
+                        status=DriverProfile.Status.AVAILABLE
+                    ).update(status=DriverProfile.Status.OFFLINE)
+        except Exception:
+            pass 
+
         serializer = TokenBlacklistSerializer(data={"refresh":refresh})
         try:
             serializer.is_valid(raise_exception=True)
